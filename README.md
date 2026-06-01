@@ -22,7 +22,6 @@ V-Manager, modern oyuncuların ihtiyaç duyduğu mod yönetimi, disk alanı tasa
 *   🖼️ **Otomatik Kapak Görseli:** Bulunan oyunlar için **SteamGrid DB API** kullanarak otomatik olarak kapak görsellerini indirir ve şık bir oyun kütüphanesi oluşturur.
 *   ⚡ **Tek Tıkla Grafik Modu Kurulumu:** Oyunlarınıza DLSS Enabler, OptiScaler ve Streamline gibi performans artıran ve kare oluşturma (Frame Generation) sağlayan modları güvenli bir şekilde kurar ve yönetir.
 *   💾 **Akıllı Oyun Sıkıştırma:** Windows'un yerleşik sıkıştırma algoritmalarını (**XPRESS 4K/8K/16K ve LZX**) kullanarak oyun klasörlerinizi sıkıştırır. Oyunlar oynanabilir kalırken diskte devasa alan açılır!
-*   👁️ **Klasör İzleyici (Watcher):** Sıkıştırılmış klasörleri izler ve bu klasörlere yeni dosya eklendiğinde arka planda otomatik olarak sıkıştırma işlemini gerçekleştirir.
 *   📺 **YouTube Entegrasyonu:** Grafik modlarının kurulum rehberlerini ve en yeni oyun videolarını doğrudan uygulama içerisindeki "Videolar" sekmesinden izlemenizi sağlar.
 *   🎨 **Premium Arayüz & Karanlık Tema:** Kullanıcı dostu, modern animasyonlara sahip, `Plus Jakarta Sans` yazı tipiyle tasarlanmış göz yormayan karanlık tema.
 
@@ -108,7 +107,7 @@ Uygulamanın temel modülleri ve görevleri şu şekildedir:
 │       ├── optiScaler.js   # OptiScaler otomatik indirici & kurucu
 │       ├── streamline.js   # Streamline yedekleme ve güncelleme sistemi
 │       ├── uninstaller.js  # Güvenli mod kaldırma modülü
-│       └── compressor.js   # Sıkıştırma ve izleyici motoru
+│       └── compressor.js   # Sıkıştırma motoru
 └── package.json            # Proje bağımlılıkları ve scriptler
 ```
 
