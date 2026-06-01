@@ -3,21 +3,39 @@
   "version": "0.0.1",
   "description": "V-Manager made by vuenxx",
   "main": "main.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vuenxx/v-manager"
+  },
   "scripts": {
     "start": "electron .",
-    "build": "electron-builder --win --x64"
+    "build": "electron-builder --win --x64 --publish always"
   },
   "build": {
     "appId": "com.vuenxx.vmanager",
     "productName": "V-Manager",
+    "publish": {
+      "provider": "github",
+      "owner": "vuenxx",
+      "repo": "v-manager"
+    },
     "asarUnpack": [
       "node_modules/7zip-bin",
       "node_modules/**/7zip-bin/**/*"
     ],
     "extraResources": [
-      { "from": "developer-games.json", "to": "developer-games.json" },
-      { "from": "mods/dlssenabler", "to": "mods/dlssenabler" },
-      { "from": "mods/streamline", "to": "mods/streamline" }
+      {
+        "from": "developer-games.json",
+        "to": "developer-games.json"
+      },
+      {
+        "from": "mods/dlssenabler",
+        "to": "mods/dlssenabler"
+      },
+      {
+        "from": "mods/streamline",
+        "to": "mods/streamline"
+      }
     ],
     "win": {
       "target": "nsis",
@@ -33,6 +51,8 @@
   "dependencies": {
     "7zip-bin": "^5.2.0",
     "adm-zip": "^0.5.17",
+    "electron-log": "^5.1.2",
+    "electron-updater": "^6.8.3",
     "node-7z": "^3.0.0"
   }
 }

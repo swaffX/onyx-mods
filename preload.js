@@ -2,6 +2,7 @@ const { contextBridge, ipcRenderer, shell } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
     getGames: () => ipcRenderer.invoke('get-games'),
+    getAppVersion: () => ipcRenderer.invoke('get-app-version'),
     startScan: (scanSettings) => ipcRenderer.send('start-scan', scanSettings),
     onGameFound: (callback) => ipcRenderer.on('game-found', (_event, game) => callback(game)),
     onScanProgress: (callback) => ipcRenderer.on('scan-progress', (_event, percent) => callback(percent)),
@@ -97,5 +98,26 @@ contextBridge.exposeInMainWorld('electronAPI', {
     getCustomFolders: () => ipcRenderer.invoke('get-custom-folders'),
     saveCustomFolders: (folders) => ipcRenderer.invoke('save-custom-folders', folders),
     getCustomSubfoldersList: () => ipcRenderer.invoke('get-custom-subfolders-list'),
-    saveCustomSubfoldersList: (subfolders) => ipcRenderer.invoke('save-custom-subfolders-list', subfolders)
+    saveCustomSubfoldersList: (subfolders) => ipcRenderer.invoke('save-custom-subfolders-list', subfolders),
+
+    // ── Auto-Updater IPCs ──────────────────────────────────────────────────────
+    checkForUpdatesManual: () => ipcRenderer.invoke('check-for-updates-manual'),
+    startUpdateDownload: () => ipcRenderer.send('start-update-download'),
+    quitAndInstall: () => ipcRenderer.send('quit-and-install'),
+
+    // Updater Event Listeners
+    onUpdateChecking:         (cb) => ipcRenderer.on('update-checking',          ()        => cb()),
+    onUpdateAvailable:        (cb) => ipcRenderer.on('update-available',         (_e, info) => cb(info)),
+    onUpdateNotAvailable:     (cb) => ipcRenderer.on('update-not-available',     (_e, info) => cb(info)),
+    onUpdateDownloadProgress: (cb) => ipcRenderer.on('update-download-progress', (_e, data) => cb(data)),
+    onUpdateDownloaded:       (cb) => ipcRenderer.on('update-downloaded',        (_e, info) => cb(info)),
+    onUpdateError:            (cb) => ipcRenderer.on('update-error',             (_e, msg)  => cb(msg)),
+    removeUpdateListeners: () => {
+        ipcRenderer.removeAllListeners('update-checking');
+        ipcRenderer.removeAllListeners('update-available');
+        ipcRenderer.removeAllListeners('update-not-available');
+        ipcRenderer.removeAllListeners('update-download-progress');
+        ipcRenderer.removeAllListeners('update-downloaded');
+        ipcRenderer.removeAllListeners('update-error');
+    }
 });

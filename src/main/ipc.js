@@ -18,12 +18,17 @@ const compressionDb = require('./mods/compressionDb');
 const compressionWatcher = require('./mods/compressionWatcher');
 const steamScanner = require('./mods/steamScanner');
 const iniEditor = require('./mods/iniEditor');
+const updater = require('./updater');
 
 let isScanning = false;
 
 function registerIpcHandlers() {
     ipcMain.on('log-to-main', (event, msg) => {
         console.log(`[RENDERER] ${msg}`);
+    });
+
+    ipcMain.handle('get-app-version', () => {
+        return require('electron').app.getVersion();
     });
 
     // Game retrieval
@@ -578,6 +583,29 @@ function registerIpcHandlers() {
     // Secure Link Opener via IPC
     ipcMain.on('open-external-link', (event, url) => {
         shell.openExternal(url);
+    });
+
+    // ── Auto-Updater IPCs ──────────────────────────────────────────────────────
+
+    // Kullanıcı "Güncelleme Kontrol Et" butonuna bastığında
+    ipcMain.handle('check-for-updates-manual', async () => {
+        try {
+            const result = await updater.checkForUpdates();
+            return { success: true, result };
+        } catch (e) {
+            console.error('[IPC] check-for-updates-manual ERROR:', e.message);
+            return { success: false, error: e.message };
+        }
+    });
+
+    // Kullanıcı "İndir" butonuna bastığında
+    ipcMain.on('start-update-download', () => {
+        updater.startDownload();
+    });
+
+    // Kullanıcı "Kur ve Yeniden Başlat" butonuna bastığında
+    ipcMain.on('quit-and-install', () => {
+        updater.quitAndInstall();
     });
 }
 

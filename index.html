@@ -221,12 +221,107 @@
 
             <div class="tab-content" id="updates">
                 <h2>Güncellemeler</h2>
-                <p>Uygulama güncellemelerini buradan takip edebilirsiniz.</p>
-                <div class="card">
-                    <h3>Sürüm 0.0.1</h3>
-                    <p>V-Manager ilk sürümü yayınlandı!</p>
+                <p>V-Manager'ı güncel tutmak için bu sayfayı kullanın.</p>
+
+                <!-- ── Durum Kartı ─────────────────────────────────────────── -->
+                <div id="update-status-card" class="update-status-card status-idle">
+                    <div class="update-status-left">
+                        <span id="update-status-icon" class="update-status-icon">⏸️</span>
+                        <div class="update-status-text">
+                            <div id="update-status-message" class="update-status-msg">
+                                Güncelleme kontrolü yapılmadı.
+                            </div>
+                            <div class="update-current-version">
+                                Mevcut Sürüm: <strong id="current-app-version">...</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="check-updates-btn" class="install-btn"
+                        style="width: auto; padding: 10px 22px; white-space: nowrap;">
+                        Güncelleme Kontrol Et
+                    </button>
+                </div>
+
+                <!-- ── Yeni Sürüm Bloğu (güncelleme varsa gösterilir) ──────── -->
+                <div id="update-new-version-block" style="display: none; margin-top: 20px;">
+                    <div class="card" style="padding: 22px;">
+
+                        <!-- Başlık + versiyon rozeti -->
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 18px;">
+                            <span style="font-size: 15px; font-weight: 700;">Yeni Sürüm:</span>
+                            <span id="update-new-version-badge" class="utag utag-dlssEnabler">v0.0.0</span>
+                        </div>
+
+                        <!-- Release Notes -->
+                        <div id="update-release-notes"
+                            style="background: rgba(0,0,0,0.25);
+                                   border: 1px solid rgba(255,255,255,0.06);
+                                   border-radius: 8px;
+                                   padding: 16px;
+                                   font-size: 13px;
+                                   color: var(--text-secondary);
+                                   line-height: 1.6;
+                                   margin-bottom: 22px;
+                                   max-height: 220px;
+                                   overflow-y: auto;">
+                        </div>
+
+                        <!-- İndirme Progress Bar -->
+                        <div id="update-progress-wrapper"
+                            style="display: none; flex-direction: column; gap: 8px; margin-bottom: 18px;">
+                            <div style="display: flex; justify-content: space-between; font-size: 13px;">
+                                <span style="color: var(--text-secondary);">İndiriliyor...</span>
+                                <span id="update-progress-text"
+                                    style="font-weight: 700; color: var(--accent-color);">0%</span>
+                            </div>
+                            <div style="height: 8px; background: rgba(255,255,255,0.08);
+                                        border-radius: 4px; overflow: hidden;">
+                                <div id="update-progress-bar"
+                                    style="height: 100%; width: 0%;
+                                           background: var(--accent-color);
+                                           transition: width 0.25s ease;
+                                           border-radius: 4px;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Aksiyon Butonları -->
+                        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                            <button id="download-update-btn" class="install-btn"
+                                style="display: none; width: auto; padding: 11px 26px;">
+                                ⬇️ Güncellemeyi İndir
+                            </button>
+                            <button id="install-update-btn" class="install-btn"
+                                style="display: none; width: auto; padding: 11px 26px;
+                                       background: linear-gradient(135deg, #22c55e, #16a34a);">
+                                🚀 Kur ve Yeniden Başlat
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── Sürüm Geçmişi ─────────────────────────────────────── -->
+                <div class="card" style="margin-top: 24px; padding: 22px;">
+                    <h3 style="margin-top: 0; margin-bottom: 16px; color: var(--accent-color);
+                               font-size: 15px;">📋 Sürüm Geçmişi</h3>
+                    <div class="card"
+                        style="padding: 16px; background: rgba(255,255,255,0.02);
+                               border: 1px solid rgba(255,255,255,0.05); border-radius: 8px;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                            <span style="font-weight: 700; font-size: 14px;">v0.0.1</span>
+                            <span class="utag"
+                                style="font-size: 11px; background: rgba(255,255,255,0.08);">
+                                İlk Sürüm
+                            </span>
+                        </div>
+                        <p style="margin: 0; font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+                            V-Manager yayınlandı. DLSS Enabler, OptiScaler, Streamline yönetimi
+                            ve Windows sıkıştırma araçları dahil edildi.
+                        </p>
+                    </div>
                 </div>
             </div>
+
 
             <div class="tab-content" id="compress">
                 <div class="compress-tabs-header">

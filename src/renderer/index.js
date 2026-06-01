@@ -16,6 +16,7 @@ import { initModSelectionListeners } from './ui/modals/modSelection.js';
 import { initSettingsListeners as initModalSettingsListeners } from './ui/modals/settings.js';
 import { initDlssVersionListeners } from './ui/modals/dlssVersions.js';
 import { initVideos } from './ui/videos.js';
+import { initUpdatesTab } from './ui/updates-tab.js';
 
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -42,6 +43,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     initSettingsListeners();
     initCompress();
     initVideos();
+    initUpdatesTab();
 
     // 4. Initial Load
     initGames();

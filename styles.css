@@ -2130,5 +2130,85 @@ body:not([data-theme="dark"]) .game-search-input:focus {
     z-index: 2000 !important;
 }
 
+/* ── Güncellemeler Sekmesi ───────────────────────────────────────────────────── */
+.update-status-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px 24px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.02);
+    transition: border-color 0.3s ease, background 0.3s ease;
+}
+
+.update-status-card.status-idle {
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+.update-status-card.status-latest {
+    border-color: rgba(68, 214, 44, 0.25);
+    background: rgba(68, 214, 44, 0.04);
+}
+
+.update-status-card.status-checking {
+    border-color: rgba(99, 179, 237, 0.25);
+    background: rgba(99, 179, 237, 0.04);
+}
+
+.update-status-card.status-available {
+    border-color: rgba(251, 191, 36, 0.35);
+    background: rgba(251, 191, 36, 0.06);
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.08);
+}
+
+.update-status-card.status-downloading {
+    border-color: rgba(99, 179, 237, 0.30);
+    background: rgba(99, 179, 237, 0.05);
+}
+
+.update-status-card.status-downloaded {
+    border-color: rgba(68, 214, 44, 0.35);
+    background: rgba(68, 214, 44, 0.06);
+    box-shadow: 0 0 20px rgba(68, 214, 44, 0.08);
+}
+
+.update-status-card.status-error {
+    border-color: rgba(239, 68, 68, 0.35);
+    background: rgba(239, 68, 68, 0.06);
+}
+
+.update-status-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+    min-width: 0;
+}
+
+.update-status-icon {
+    font-size: 28px;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.update-status-text {
+    min-width: 0;
+}
+
+.update-status-msg {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.update-current-version {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+
 
 
