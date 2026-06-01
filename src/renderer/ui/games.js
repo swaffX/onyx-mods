@@ -72,7 +72,7 @@ export function createGameCard(game) {
                 <div class="game-actions-wrapper">
                     <button class="mod-install-btn" data-game="${game.name}">Modu Kur</button>
                     ${(game.hasDlssEnabler || game.hasStreamline || game.hasOptiscaler) ? `<button class="mod-manage-btn" data-game="${game.name}">Değiştir / Kaldır</button>` : ''}
-                    ${game.hasDlssEnabler ? `<button class="mod-settings-btn" data-game="${game.name}">Modu Yönet</button>` : ''}
+                    ${(game.hasDlssEnabler || game.hasOptiscaler) ? `<button class="mod-settings-btn" data-game="${game.name}">Modu Yönet</button>` : ''}
                 </div>
                 <button class="remove-game-btn" data-game="${game.name}">❌ Listeden Kaldır</button>
             </div>

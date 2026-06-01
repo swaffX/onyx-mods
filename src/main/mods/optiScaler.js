@@ -2,8 +2,27 @@ const fs = require('fs');
 const path = require('path');
 const { app } = require('electron');
 const extract = require('extract-zip');
+const { execFile } = require('child_process');
+const { path7za } = require('7zip-bin');
 
 const config = require('../config');
+
+async function extractArchive(archivePath, targetDir) {
+    const lower = archivePath.toLowerCase();
+    if (lower.endsWith('.7z')) {
+        return new Promise((resolve, reject) => {
+            execFile(path7za, ['x', archivePath, `-o${targetDir}`, '-y'], (err, stdout, stderr) => {
+                if (err) {
+                    console.error('7za extract error:', err, stderr);
+                    return reject(new Error(`7z extraction failed: ${err.message || stderr}`));
+                }
+                resolve();
+            });
+        });
+    } else {
+        await extract(archivePath, { dir: targetDir });
+    }
+}
 const utils = require('../utils');
 const scanner = require('../scanner');
 const optiPatcher = require('./optiPatcher');
@@ -17,7 +36,7 @@ async function getOptiScalerReleases() {
         if (!response.ok) throw new Error(`GitHub API HTTP error: ${response.status}`);
         const releases = await response.json();
 
-        return releases.slice(0, 5).map(r => {
+        return releases.slice(0, 10).map(r => {
             const tag = r.tag_name;
             const targetDir = path.join(config.modsPath, 'optiscaler', tag);
             let installed = false;
@@ -27,13 +46,16 @@ async function getOptiScalerReleases() {
                     if (files.length > 0) {
                         installed = true;
                     }
-                } catch(e) {}
+                } catch (e) { }
             }
 
             return {
                 name: r.name || r.tag_name,
                 tag: tag,
-                downloadUrl: r.assets.find(a => a.name.toLowerCase().endsWith('.zip'))?.browser_download_url,
+                downloadUrl: r.assets.find(a => {
+                    const nameLow = a.name.toLowerCase();
+                    return nameLow.endsWith('.zip') || nameLow.endsWith('.7z');
+                })?.browser_download_url,
                 installed: installed
             };
         });
@@ -55,10 +77,12 @@ async function downloadOptiScalerVersion(event, tag, downloadUrl) {
             const dirFiles = fs.readdirSync(targetDir).map(f => f.toLowerCase());
             const hasCritical = criticalFiles.some(cf => dirFiles.includes(cf.toLowerCase()));
             if (hasCritical) return { success: true, targetDir, alreadyExists: true };
-        } catch(e) {}
+        } catch (e) { }
     }
 
-    const tempZipPath = path.join(app.getPath('temp'), `optiscaler_${tag.replace(/[^a-z0-9.-]/gi, '_')}.zip`);
+    const is7z = downloadUrl.toLowerCase().endsWith('.7z');
+    const ext = is7z ? '.7z' : '.zip';
+    const tempZipPath = path.join(app.getPath('temp'), `optiscaler_${tag.replace(/[^a-z0-9.-]/gi, '_')}${ext}`);
 
     const zipResponse = await fetch(downloadUrl);
     if (!zipResponse.ok) throw new Error(`Download failed: ${zipResponse.status}`);
@@ -67,8 +91,8 @@ async function downloadOptiScalerVersion(event, tag, downloadUrl) {
     const reader = zipResponse.body.getReader();
     let receivedLength = 0;
     let chunks = [];
-    while(true) {
-        const {done, value} = await reader.read();
+    while (true) {
+        const { done, value } = await reader.read();
         if (done) break;
         chunks.push(value);
         receivedLength += value.length;
@@ -87,10 +111,10 @@ async function downloadOptiScalerVersion(event, tag, downloadUrl) {
     if (event && event.sender && !event.sender.isDestroyed()) {
         event.sender.send('optiscaler-download-progress', { percent: 100, stage: 'extracting' });
     }
-    // Extract using extract-zip
-    await extract(tempZipPath, { dir: targetDir });
+    // Extract using extractArchive
+    await extractArchive(tempZipPath, targetDir);
 
-    try { fs.unlinkSync(tempZipPath); } catch(e) {}
+    try { fs.unlinkSync(tempZipPath); } catch (e) { }
 
     return { success: true, targetDir };
 }
@@ -108,10 +132,12 @@ async function downloadOptiScalerRelease(event, { tag, downloadUrl }) {
                 const dirFiles = fs.readdirSync(targetDir).map(f => f.toLowerCase());
                 const hasCritical = criticalFiles.some(cf => dirFiles.includes(cf.toLowerCase()));
                 if (hasCritical) return { success: true, alreadyExists: true, targetDir };
-            } catch(e) {}
+            } catch (e) { }
         }
 
-        const tempZipPath = path.join(app.getPath('temp'), `optiscaler_${tag.replace(/[^a-z0-9.-]/gi, '_')}.zip`);
+        const is7z = downloadUrl.toLowerCase().endsWith('.7z');
+        const ext = is7z ? '.7z' : '.zip';
+        const tempZipPath = path.join(app.getPath('temp'), `optiscaler_${tag.replace(/[^a-z0-9.-]/gi, '_')}${ext}`);
 
         const zipResponse = await fetch(downloadUrl);
         if (!zipResponse.ok) throw new Error(`Download failed: ${zipResponse.status}`);
@@ -121,8 +147,8 @@ async function downloadOptiScalerRelease(event, { tag, downloadUrl }) {
         let receivedLength = 0;
         let chunks = [];
 
-        while(true) {
-            const {done, value} = await reader.read();
+        while (true) {
+            const { done, value } = await reader.read();
             if (done) break;
             chunks.push(value);
             receivedLength += value.length;
@@ -144,12 +170,12 @@ async function downloadOptiScalerRelease(event, { tag, downloadUrl }) {
         if (event && event.sender && !event.sender.isDestroyed()) {
             event.sender.send('optiscaler-download-progress', { percent: 100, stage: 'extracting' });
         }
-        // Extract using extract-zip
-        await extract(tempZipPath, { dir: targetDir });
+        // Extract using extractArchive
+        await extractArchive(tempZipPath, targetDir);
 
         try {
             fs.unlinkSync(tempZipPath);
-        } catch(e) {}
+        } catch (e) { }
 
         return { success: true, targetDir };
     } catch (e) {
@@ -194,11 +220,11 @@ async function installOptiScaler(event, { game, version, tag, downloadUrl, injec
         try {
             const exes = fs.readdirSync(targetExeDir).filter(f => f.toLowerCase().endsWith('.exe'));
             if (exes.length > 0) exeToCheck = path.join(targetExeDir, exes[0]);
-        } catch(e) {}
+        } catch (e) { }
 
         const running = await utils.isGameRunning(exeToCheck);
         if (running) {
-            return { success: false, error: 'Oyun şu an açık. Lütfen oyunu kapatıp tekrar deneyin.' };     
+            return { success: false, error: 'Oyun şu an açık. Lütfen oyunu kapatıp tekrar deneyin.' };
         }
 
         const versionDir = path.join(config.modsPath, 'optiscaler', tag);
@@ -212,7 +238,7 @@ async function installOptiScaler(event, { game, version, tag, downloadUrl, injec
                 const hasCritical = criticalFiles.some(cf => dirFiles.includes(cf.toLowerCase()));
                 if (hasCritical) alreadyDownloaded = true;
                 else console.log(`[OPTISCALER] Klasör mevcut ama kritik dosyalar eksik — yeniden indirilecek.`);
-            } catch(e) {}
+            } catch (e) { }
         }
 
         if (!alreadyDownloaded) {
@@ -253,7 +279,7 @@ async function installOptiScaler(event, { game, version, tag, downloadUrl, injec
             // FIX 4b: fs.renameSync fails across different drives. Use copy+delete as fallback.
             try {
                 fs.renameSync(optiDllSrc, targetDllPath);
-            } catch(renameErr) {
+            } catch (renameErr) {
                 if (renameErr.code === 'EXDEV') {
                     console.log(`[OPTISCALER] Cross-drive rename tespit edildi, kopyalama + silme yöntemi kullanılıyor.`);
                     fs.copyFileSync(optiDllSrc, targetDllPath);
@@ -379,7 +405,7 @@ async function installOptiScaler(event, { game, version, tag, downloadUrl, injec
                 // 1. İndirilmiş mi kontrol et
                 const fsr4Dir = path.join(config.modsPath, 'fsr4files', fsr4Name);
                 const isDownloaded = fs.existsSync(fsr4Dir) && (() => {
-                    try { return fs.readdirSync(fsr4Dir).length > 0; } catch(e) { return false; }
+                    try { return fs.readdirSync(fsr4Dir).length > 0; } catch (e) { return false; }
                 })();
 
                 if (!isDownloaded) {
@@ -407,7 +433,7 @@ async function installOptiScaler(event, { game, version, tag, downloadUrl, injec
         }
 
         return { success: true, savedToUserGames, optiPatcherInstalled, fsr4Installed, games: config.getExistingGamesState() };
-    } catch(e) {
+    } catch (e) {
         console.error('install-optiscaler error:', e);
         return { success: false, error: e.message };
     }

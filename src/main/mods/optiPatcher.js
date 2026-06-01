@@ -12,7 +12,7 @@ async function getOptiPatcherReleases() {
         if (!response.ok) throw new Error(`GitHub API HTTP error: ${response.status}`);
         const releases = await response.json();
 
-        return releases.slice(0, 5).map(r => {
+        return releases.slice(0, 10).map(r => {
             const tag = r.tag_name;
             const targetDir = path.join(config.modsPath, 'OptiPatcher', tag);
             const targetFile = path.join(targetDir, 'OptiPatcher.asi');

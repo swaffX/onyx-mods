@@ -80,7 +80,7 @@ const IGNORED_EXACT_NAMES = [
     'retroarch',
     'wallpaper engine',
     'soundpad',
-    'redlauncher'
+    'REDlauncher'
 ];
 
 // Executable basenames (lowercased) to always ignore
@@ -107,7 +107,8 @@ const IGNORED_EXE_NAMES = [
     'curseforge.exe',
     'tlauncher.exe',
     'lunar client.exe',
-    'badlion client.exe'
+    'badlion client.exe',
+    'REDlauncher'
 ];
 
 // Path fragments (uppercased) to detect launcher install dirs
@@ -187,10 +188,7 @@ async function detectUpscalers(gamePath) {
                     if (!result.xess && xessFiles.includes(nameLow)) result.xess = true;
                     if (!result.fsr && fsrFiles.includes(nameLow)) result.fsr = true;
 
-                    if (nameLow === 'dlss-enabler.ini') {
-                        result.dlssEnabler = true;
-                        result.dlssEnablerPath = current.path;
-                    } else if (nameLow.startsWith('sl.') && nameLow.endsWith('.dll')) {
+                    if (nameLow.startsWith('sl.') && nameLow.endsWith('.dll')) {
                         result.streamline = true;
                         if (!result.streamlinePath || current.depth > result.streamlineDepth) {
                             result.streamlinePath = current.path;
@@ -425,9 +423,9 @@ async function processAndStreamGame(game, event, scanSettings) {
         console.log(`[SCANNER] Existing game entry found for ${finalizedName}. Merging mod states...`);
 
         // 3. Mod Durumlarını Aktar (Merge statuses and version fields, prioritizing positive flags)
-        existingGame.hasDlssEnabler = detectedUpscalers.dlssEnabler || existingGame.hasDlssEnabler || false;
-        existingGame.dlssEnablerVersion = detectedUpscalers.dlssEnablerVersion || existingGame.dlssEnablerVersion || null;
-        existingGame.dlssEnablerPath = detectedUpscalers.dlssEnablerPath || existingGame.dlssEnablerPath || null;
+        existingGame.hasDlssEnabler = detectedUpscalers.dlssEnabler;
+        existingGame.dlssEnablerVersion = detectedUpscalers.dlssEnablerVersion || null;
+        existingGame.dlssEnablerPath = detectedUpscalers.dlssEnablerPath || null;
 
         existingGame.hasStreamline = detectedUpscalers.streamline || existingGame.hasStreamline || false;
         existingGame.streamlineVersion = detectedUpscalers.streamlineVersion || existingGame.streamlineVersion || null;

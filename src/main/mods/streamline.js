@@ -7,17 +7,15 @@ const config = require('../config');
 const utils = require('../utils');
 
 const STREAMLINE_FILES = [
-    'sl.common.dll',
-    'sl.deepvc.dll',
-    'sl.deepdvc.dll',
-    'sl.dlss.dll',
-    'sl.dlss_d.dll',
-    'sl.dlss_g.dll',
-    'sl.interposer.dll',
-    'sl.nis.dll',
-    'sl.nvperf.dll',
+    'sl.reflex.dll',
     'sl.pcl.dll',
-    'sl.reflex.dll'
+    'sl.nvperf.dll',
+    'sl.nis.dll',
+    'sl.interposer.dll',
+    'sl.dlss.dll',
+    'sl.directsr.dll',
+    'sl.deepdvc.dll',
+    'sl.common.dll'
 ];
 
 function findStreamlineDir(rootDir) {
@@ -518,8 +516,8 @@ async function installStreamline(game, version, targetDir) {
     try {
         const streamlineHashes = game.streamlineHashes || {};
 
-        // Get all files from the mod source directory
-        const relativeFiles = getAllFiles(sourceDir);
+        // Get only the whitelisted files that exist in the mod source directory
+        const relativeFiles = STREAMLINE_FILES.filter(file => fs.existsSync(path.join(sourceDir, file)));
         
         console.log(`[STREAMLINE] Yedekleme döngüsü başlatılıyor. Taranan kaynak dosya sayısı: ${relativeFiles.length}`);
 
@@ -557,10 +555,24 @@ async function installStreamline(game, version, targetDir) {
         // Copy modded files immediately after the backup loop
         console.log(`[STREAMLINE] Mod dosyaları kopyalanıyor...`);
         try {
-            await utils.copyDir(sourceDir, targetDir);
+            for (const file of relativeFiles) {
+                const srcPath = path.join(sourceDir, file);
+                const destPath = path.join(targetDir, file);
+                const destDir = path.dirname(destPath);
+                if (!fs.existsSync(destDir)) {
+                    fs.mkdirSync(destDir, { recursive: true });
+                }
+                try {
+                    fs.copyFileSync(srcPath, destPath);
+                    console.log(`[STREAMLINE] Kopyalandı: "${srcPath}" -> "${destPath}"`);
+                } catch(err) {
+                    console.error(`[STREAMLINE] Dosya kopyalama hatası ("${file}"):`, err);
+                    throw err; // throw to trigger outer catch block for rollback
+                }
+            }
         } catch(copyErr) {
             // FIX 3a: copyDir failed — roll back all backups we just made
-            console.error(`[STREAMLINE] copyDir başarısız, rollback başlatılıyor...`, copyErr);
+            console.error(`[STREAMLINE] Dosya kopyalama başarısız, rollback başlatılıyor...`, copyErr);
             for (const { backupPath, activePath } of backedUpFiles) {
                 try {
                     if (fs.existsSync(backupPath)) {
@@ -621,7 +633,7 @@ async function getStreamlineReleases() {
         if (!response.ok) throw new Error(`GitHub API HTTP error: ${response.status}`);
         const releases = await response.json();
 
-        return releases.slice(0, 5).map(r => {
+        return releases.slice(0, 10).map(r => {
             const tag = r.tag_name;
             const targetDir = path.join(config.streamlineModsPath, tag);
             let installed = false;
@@ -723,8 +735,20 @@ async function downloadStreamlineRelease(event, { tag, downloadUrl }) {
         }
         fs.mkdirSync(targetDir, { recursive: true });
 
-        // Copy everything inside binX64Path to targetDir
-        await utils.copyDir(binX64Path, targetDir);
+        // Copy only whitelisted files inside binX64Path to targetDir with try-catch
+        for (const file of STREAMLINE_FILES) {
+            const srcPath = path.join(binX64Path, file);
+            if (fs.existsSync(srcPath)) {
+                const destPath = path.join(targetDir, file);
+                try {
+                    fs.copyFileSync(srcPath, destPath);
+                    console.log(`[STREAMLINE-DOWNLOAD] Kopyalandı: "${srcPath}" -> "${destPath}"`);
+                } catch(copyErr) {
+                    console.error(`[STREAMLINE-DOWNLOAD] Dosya kopyalama hatası ("${file}"):`, copyErr);
+                    throw copyErr;
+                }
+            }
+        }
 
         // Clean up temporary files
         try {

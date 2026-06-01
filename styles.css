@@ -2154,6 +2154,153 @@ body:not([data-theme="dark"]) .game-search-input:focus {
     color: var(--text-secondary);
 }
 
+/* ── Sürüm Geçmişi Kartları ─────────────────────────────────────────────────── */
+.release-history-item {
+    padding: 18px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
 
+.release-history-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
 
+.release-history-item:first-child {
+    padding-top: 0;
+}
 
+.release-history-item.release-latest .release-version-tag {
+    color: var(--accent-color);
+}
+
+.release-history-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.release-version-tag {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: 0.3px;
+}
+
+.release-title {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.release-date {
+    font-size: 12px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+/* ── Markdown Render Stilleri (release notes gövdesi) ─────────────────────────*/
+.release-notes-body {
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--text-secondary);
+}
+
+.release-notes-body .rn-h2 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 14px 0 8px;
+}
+
+.release-notes-body .rn-h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 12px 0 6px;
+}
+
+.release-notes-body .rn-h4 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent-color);
+    margin: 10px 0 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.release-notes-body .rn-ul {
+    list-style: none;
+    padding: 0;
+    margin: 6px 0;
+}
+
+.release-notes-body .rn-li {
+    padding: 3px 0 3px 18px;
+    position: relative;
+}
+
+.release-notes-body .rn-li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--accent-color);
+    font-size: 11px;
+    top: 4px;
+}
+
+.release-notes-body .rn-li-done::before { content: ''; }
+.release-notes-body .rn-li-open::before { content: ''; }
+
+.release-notes-body .rn-p {
+    margin: 6px 0;
+}
+
+.release-notes-body .rn-code {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: var(--accent-color);
+}
+
+.release-notes-body .rn-hr {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    margin: 12px 0;
+}
+
+.release-notes-body .rn-link {
+    color: var(--accent-color);
+    text-decoration: underline;
+    text-decoration-color: rgba(68, 214, 44, 0.4);
+    cursor: pointer;
+    transition: text-decoration-color 0.2s;
+}
+
+.release-notes-body .rn-link:hover {
+    text-decoration-color: var(--accent-color);
+}
+
+/* Aynı stiller update-release-notes (yeni sürüm bloğu) için de geçerli */
+#update-release-notes .rn-h2,
+#update-release-notes .rn-h3,
+#update-release-notes .rn-h4,
+#update-release-notes .rn-ul,
+#update-release-notes .rn-li,
+#update-release-notes .rn-p,
+#update-release-notes .rn-code,
+#update-release-notes .rn-hr,
+#update-release-notes .rn-link {
+    /* İnherit all release-notes-body styles via direct class match above */
+}
+
+#update-release-notes {
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--text-secondary);
+}

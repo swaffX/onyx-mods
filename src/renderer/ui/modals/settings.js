@@ -1,12 +1,13 @@
 import { state } from '../../state.js';
 import { openModal } from './base.js';
-import { DLSS_ENABLER_SCHEMA, OPTISCALER_SCHEMA } from './iniSchema.js';
+import { DLSS_ENABLER_SCHEMA, OPTISCALER_FOCUSED_KEYS } from './iniSchema.js';
 
 let currentSettingsData = {};
 let currentActiveMod = null;
 
 export function initSettingsListeners() {
     document.getElementById('tab-dlss-enabler')?.addEventListener('click', () => loadModSettings('dlss-enabler'));
+    document.getElementById('tab-optiscaler')?.addEventListener('click', () => loadModSettings('optiscaler'));
 
     document.getElementById('settings-save-btn')?.addEventListener('click', async () => {
         await saveModSettings();
@@ -20,21 +21,19 @@ export function openSettingsModal(game) {
             window.electronAPI.logToMain(`[RENDERER settings.js] openSettingsModal triggered for game: ${game.name}`);
         }
         state.currentSelectedGame = game;
-        const coverEl = document.getElementById('settings-game-cover');
+
+        const coverEl     = document.getElementById('settings-game-cover');
         const placeholder = document.getElementById('settings-game-placeholder');
-        const nameEl = document.getElementById('settings-game-name');
-        
+        const nameEl      = document.getElementById('settings-game-name');
+
         if (nameEl) {
             nameEl.textContent = game.name;
         } else {
             console.warn('[RENDERER settings.js] settings-game-name element NOT FOUND');
         }
-        
+
         if (game.cover) {
-            if (coverEl) {
-                coverEl.src = game.cover;
-                coverEl.style.display = 'block';
-            }
+            if (coverEl) { coverEl.src = game.cover; coverEl.style.display = 'block'; }
             if (placeholder) placeholder.style.display = 'none';
         } else {
             if (coverEl) coverEl.style.display = 'none';
@@ -43,32 +42,34 @@ export function openSettingsModal(game) {
 
         const tabDlss = document.getElementById('tab-dlss-enabler');
         const tabOpti = document.getElementById('tab-optiscaler');
-        
-        console.log('[RENDERER settings.js] game.hasDlssEnabler flag:', game.hasDlssEnabler);
-        if (tabDlss) {
-            tabDlss.style.display = game.hasDlssEnabler ? 'block' : 'none';
-        } else {
-            console.warn('[RENDERER settings.js] tab-dlss-enabler element NOT FOUND');
-        }
-        
-        // OptiScaler config sekmesi kaldırıldı
-        if (tabOpti) tabOpti.style.display = 'none';
+
+        console.log('[RENDERER settings.js] game.hasDlssEnabler:', game.hasDlssEnabler);
+        console.log('[RENDERER settings.js] game.hasOptiscaler:', game.hasOptiscaler);
+
+        if (tabDlss) tabDlss.style.display = game.hasDlssEnabler ? 'block' : 'none';
+        if (tabOpti) tabOpti.style.display = (game.hasOptiscaler || game.hasDlssEnabler) ? 'block' : 'none';
 
         const contentDiv = document.getElementById('settings-content');
-        if (contentDiv) {
-            contentDiv.innerHTML = '';
-        } else {
-            console.warn('[RENDERER settings.js] settings-content element NOT FOUND');
-        }
-        
+        if (contentDiv) contentDiv.innerHTML = '';
+
         hideError();
 
-        // Default: sadece DLSS Enabler sekmesi
+        // Varsayılan sekmeyi belirle: önce DLSS, yoksa OptiScaler
         if (game.hasDlssEnabler) {
-            console.log('[RENDERER settings.js] hasDlssEnabler is true, calling loadModSettings("dlss-enabler")');
+            console.log('[RENDERER settings.js] Defaulting to dlss-enabler tab');
             loadModSettings('dlss-enabler');
+        } else if (game.hasOptiscaler) {
+            console.log('[RENDERER settings.js] Defaulting to optiscaler tab');
+            loadModSettings('optiscaler');
         } else {
-            console.log('[RENDERER settings.js] hasDlssEnabler is false, not calling loadModSettings');
+            console.log('[RENDERER settings.js] No mod available for settings');
+            if (contentDiv) {
+                contentDiv.innerHTML = `
+                    <div style="text-align: center; color: var(--text-secondary); padding: 30px;">
+                        <div style="font-size: 32px; margin-bottom: 10px;">ℹ️</div>
+                        <div style="font-size: 14px;">Bu oyunda yapılandırılabilir mod bulunamadı.</div>
+                    </div>`;
+            }
         }
 
         openModal('settings-modal');
@@ -77,89 +78,199 @@ export function openSettingsModal(game) {
         if (window.electronAPI && window.electronAPI.logToMain) {
             window.electronAPI.logToMain(`[RENDERER settings.js] CRITICAL EXCEPTION in openSettingsModal for "${game ? game.name : 'unknown'}": ${err.stack || err.message}`);
         }
-        throw err;
     }
 }
 
+// ─── Ortak tab stil güncelleyicisi ───────────────────────────────────────────
+function updateTabStyles(activeMod) {
+    const tabDlss = document.getElementById('tab-dlss-enabler');
+    const tabOpti = document.getElementById('tab-optiscaler');
+
+    const active   = { opacity: '1', borderWidth: '2px' };
+    const inactive = { opacity: '0.5', borderWidth: '1px' };
+
+    const dlssStyle = activeMod === 'dlss-enabler' ? active : inactive;
+    const optiStyle = activeMod === 'optiscaler'   ? active : inactive;
+
+    if (tabDlss) { tabDlss.style.opacity = dlssStyle.opacity; tabDlss.style.borderWidth = dlssStyle.borderWidth; }
+    if (tabOpti) { tabOpti.style.opacity = optiStyle.opacity; tabOpti.style.borderWidth = optiStyle.borderWidth; }
+}
+
+// ─── Mod ayarlarını yükle ────────────────────────────────────────────────────
 async function loadModSettings(mod) {
     const game = state.currentSelectedGame;
     currentActiveMod = mod;
-    console.log(`[RENDERER settings.js] loadModSettings: mod="${mod}", game name="${game ? game.name : 'undefined'}"`);
+    console.log(`[RENDERER settings.js] loadModSettings: mod="${mod}", game="${game ? game.name : 'undefined'}"`);
     if (window.electronAPI && window.electronAPI.logToMain) {
         window.electronAPI.logToMain(`[RENDERER settings.js] loadModSettings: mod="${mod}", game="${game ? game.name : 'undefined'}"`);
     }
-    
-    // Tab styles update
-    const tabDlss = document.getElementById('tab-dlss-enabler');
-    const tabOpti = document.getElementById('tab-optiscaler');
-    if (mod === 'dlss-enabler') {
-        if (tabDlss) {
-            tabDlss.style.opacity = '1';
-            tabDlss.style.borderWidth = '2px';
-        }
-        if (tabOpti) {
-            tabOpti.style.opacity = '0.5';
-            tabOpti.style.borderWidth = '1px';
-        }
-    } else {
-        if (tabOpti) {
-            tabOpti.style.opacity = '1';
-            tabOpti.style.borderWidth = '2px';
-        }
-        if (tabDlss) {
-            tabDlss.style.opacity = '0.5';
-            tabDlss.style.borderWidth = '1px';
-        }
-    }
+
+    updateTabStyles(mod);
 
     const contentDiv = document.getElementById('settings-content');
     contentDiv.innerHTML = '<div style="color:var(--text-secondary);">Yükleniyor...</div>';
     hideError();
 
     try {
-        console.log('[RENDERER settings.js] invoking window.electronAPI.readModIni...');
+        console.log('[RENDERER settings.js] invoking readModIni...');
         const result = await window.electronAPI.readModIni(game, mod);
         console.log('[RENDERER settings.js] readModIni result:', JSON.stringify(result, null, 2));
         if (window.electronAPI && window.electronAPI.logToMain) {
-            window.electronAPI.logToMain(`[RENDERER settings.js] readModIni result exists: ${result.exists}`);
+            window.electronAPI.logToMain(`[RENDERER settings.js] readModIni result.exists: ${result.exists}`);
         }
-        
+
         if (!result.exists) {
-            console.log('[RENDERER settings.js] INI file does not exist, showing warning in UI.');
+            console.log('[RENDERER settings.js] INI file does not exist');
             contentDiv.innerHTML = `
                 <div style="text-align: center; color: var(--text-secondary); padding: 30px;">
                     <div style="font-size: 32px; margin-bottom: 10px;">⚠️</div>
                     <div style="font-size: 14px;">Henüz INI dosyası oluşturulmadı.<br>Oyunu bir kez başlatırsanız dosya otomatik oluşacaktır.</div>
                 </div>`;
             currentSettingsData = {};
-            document.getElementById('settings-save-btn').disabled = true;
-            document.getElementById('settings-save-btn').style.opacity = '0.5';
+            const saveBtn = document.getElementById('settings-save-btn');
+            if (saveBtn) { saveBtn.disabled = true; saveBtn.style.opacity = '0.5'; }
             return;
         }
 
-        console.log('[RENDERER settings.js] INI file exists, enabling save button and rendering settings UI.');
-        document.getElementById('settings-save-btn').disabled = false;
-        document.getElementById('settings-save-btn').style.opacity = '1';
-        
-        currentSettingsData = result.data;
-        renderSettingsUI(mod, currentSettingsData);
-        
+        const saveBtn = document.getElementById('settings-save-btn');
+        if (saveBtn) { saveBtn.disabled = false; saveBtn.style.opacity = '1'; }
+
+        if (mod === 'dlss-enabler') {
+            currentSettingsData = result.data;
+            renderSettingsUI(mod, currentSettingsData);
+        } else if (mod === 'optiscaler') {
+            // Sadece OPTISCALER_FOCUSED_KEYS'teki key'leri extract et
+            const focused = extractFocusedKeys(result.data, OPTISCALER_FOCUSED_KEYS);
+            currentSettingsData = focused;
+            renderFocusedSettingsUI(focused, OPTISCALER_FOCUSED_KEYS);
+        }
+
     } catch (err) {
         console.error('[RENDERER settings.js] error in loadModSettings:', err);
         if (window.electronAPI && window.electronAPI.logToMain) {
             window.electronAPI.logToMain(`[RENDERER settings.js] error in loadModSettings: ${err.message}`);
         }
-        showError('Hata: ' + err.message);
+        showError('INI dosyası okunurken hata oluştu: ' + err.message);
         contentDiv.innerHTML = '';
     }
 }
 
+// ─── Focused-keys extraction ─────────────────────────────────────────────────
+/**
+ * iniData (tam parse edilmiş INI) içinden sadece focusedSchema'daki key'leri çeker.
+ * Bulunamayan key'ler için varsayılan değer 'auto' olur.
+ * Dönen yapı: { section: { key: value } }
+ */
+function extractFocusedKeys(iniData, focusedSchema) {
+    const result = {};
+    for (const [section, keys] of Object.entries(focusedSchema)) {
+        result[section] = {};
+        const iniSection = findSectionCaseInsensitive(iniData, section);
+        for (const key of Object.keys(keys)) {
+            let val = 'auto'; // default
+            if (iniSection) {
+                const iniVal = findKeyCaseInsensitive(iniSection, key);
+                if (iniVal !== undefined) {
+                    // readIni sayısal değerleri Number'a çevirir; biz string olarak saklıyoruz
+                    val = String(iniVal);
+                }
+            }
+            result[section][key] = val;
+        }
+    }
+    return result;
+}
+
+function findSectionCaseInsensitive(data, sectionName) {
+    const target = sectionName.toLowerCase();
+    for (const [k, v] of Object.entries(data)) {
+        if (k.toLowerCase() === target) return v;
+    }
+    return null;
+}
+
+function findKeyCaseInsensitive(sectionObj, keyName) {
+    const target = keyName.toLowerCase();
+    for (const [k, v] of Object.entries(sectionObj)) {
+        if (k.toLowerCase() === target) return v;
+    }
+    return undefined;
+}
+
+// ─── Focused UI renderer (OptiScaler) ────────────────────────────────────────
+/**
+ * Sadece focusedSchema'daki key'leri dropdown olarak tek bir grid'de gösterir.
+ * Section başlıkları da gösterilir, daha temiz görünüm için.
+ */
+function renderFocusedSettingsUI(focusedData, focusedSchema) {
+    const contentDiv = document.getElementById('settings-content');
+    contentDiv.innerHTML = '';
+    contentDiv.style.gridTemplateColumns = 'repeat(auto-fit, minmax(320px, 1fr))';
+
+    for (const [section, keys] of Object.entries(focusedSchema)) {
+        const sectionEl = document.createElement('div');
+        sectionEl.style.cssText = 'background:rgba(255,255,255,0.02);padding:15px;border-radius:8px;border:1px solid rgba(255,255,255,0.05);';
+
+        const titleEl = document.createElement('h3');
+        titleEl.textContent = `[${section}]`;
+        titleEl.style.cssText = 'margin-top:0;margin-bottom:15px;color:var(--accent-color);font-size:15px;';
+        sectionEl.appendChild(titleEl);
+
+        const gridEl = document.createElement('div');
+        gridEl.style.cssText = 'display:grid;grid-template-columns:minmax(0,1fr);gap:12px;';
+
+        for (const [key, def] of Object.entries(keys)) {
+            const currentVal = (focusedData[section] && focusedData[section][key] !== undefined)
+                ? String(focusedData[section][key])
+                : 'auto';
+
+            const wrapper = document.createElement('div');
+            wrapper.style.cssText = 'display:flex;flex-direction:column;gap:6px;min-width:0;';
+
+            const label = document.createElement('label');
+            label.textContent = def.label || key;
+            label.style.cssText = 'font-size:12px;color:var(--text-secondary);font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+            label.title = key;
+            wrapper.appendChild(label);
+
+            // Tüm focused key'ler dropdown
+            const select = document.createElement('select');
+            select.className = 'dlss-select-box';
+            select.style.cssText = 'padding:8px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);color:white;border-radius:4px;width:100%;box-sizing:border-box;min-width:0;';
+
+            for (const opt of def.options) {
+                const optEl = document.createElement('option');
+                optEl.value = String(opt.val);
+                optEl.textContent = opt.label;
+                select.appendChild(optEl);
+            }
+
+            // Mevcut değeri seç — eşleşme string karşılaştırması ile
+            select.value = currentVal;
+            // Eğer eşleşme yoksa (beklenmedik değer) ilk seçeneği seç
+            if (select.value !== currentVal) {
+                select.selectedIndex = 0;
+            }
+
+            select.addEventListener('change', () => {
+                if (!currentSettingsData[section]) currentSettingsData[section] = {};
+                currentSettingsData[section][key] = select.value;
+            });
+
+            wrapper.appendChild(select);
+            gridEl.appendChild(wrapper);
+        }
+
+        sectionEl.appendChild(gridEl);
+        contentDiv.appendChild(sectionEl);
+    }
+}
+
+// ─── DLSS Enabler tam şema UI renderer ───────────────────────────────────────
 function findSchemaSection(schema, sectionName) {
     const target = sectionName.toLowerCase();
     for (const [key, val] of Object.entries(schema)) {
-        if (key.toLowerCase() === target) {
-            return { key, val };
-        }
+        if (key.toLowerCase() === target) return { key, val };
     }
     return null;
 }
@@ -167,9 +278,7 @@ function findSchemaSection(schema, sectionName) {
 function findSchemaKey(sectionSchema, keyName) {
     const target = keyName.toLowerCase();
     for (const [key, val] of Object.entries(sectionSchema)) {
-        if (key.toLowerCase() === target) {
-            return { key, val };
-        }
+        if (key.toLowerCase() === target) return { key, val };
     }
     return null;
 }
@@ -177,57 +286,43 @@ function findSchemaKey(sectionSchema, keyName) {
 function renderSettingsUI(mod, data) {
     const contentDiv = document.getElementById('settings-content');
     contentDiv.innerHTML = '';
-    
-    const schema = mod === 'dlss-enabler' ? DLSS_ENABLER_SCHEMA : OPTISCALER_SCHEMA;
-    
-    // Iterate over sections in data
+
+    const schema = DLSS_ENABLER_SCHEMA;
+
     for (const [section, keys] of Object.entries(data)) {
         const schemaSectionMatch = findSchemaSection(schema, section);
         if (!schemaSectionMatch) continue;
-        
-        const sectionSchema = schemaSectionMatch.val;
+
+        const sectionSchema  = schemaSectionMatch.val;
         const schemaSectionKey = schemaSectionMatch.key;
-        
-        // Filter and map keys case-insensitively
+
         const keysToShow = [];
         for (const [key, val] of Object.entries(keys)) {
             const schemaKeyMatch = findSchemaKey(sectionSchema, key);
             if (schemaKeyMatch) {
-                keysToShow.push({
-                    rawKey: key,
-                    schemaKey: schemaKeyMatch.key,
-                    value: val,
-                    def: schemaKeyMatch.val
-                });
+                keysToShow.push({ rawKey: key, schemaKey: schemaKeyMatch.key, value: val, def: schemaKeyMatch.val });
             }
         }
-        
         if (keysToShow.length === 0) continue;
-        
+
         const sectionEl = document.createElement('div');
-        sectionEl.style.background = 'rgba(255,255,255,0.02)';
-        sectionEl.style.padding = '15px';
-        sectionEl.style.borderRadius = '8px';
-        sectionEl.style.border = '1px solid rgba(255,255,255,0.05)';
-        
+        sectionEl.style.cssText = 'background:rgba(255,255,255,0.02);padding:15px;border-radius:8px;border:1px solid rgba(255,255,255,0.05);';
+
         const titleEl = document.createElement('h3');
         titleEl.textContent = `[${schemaSectionKey}]`;
-        titleEl.style.marginTop = '0';
-        titleEl.style.marginBottom = '15px';
-        titleEl.style.color = 'var(--accent-color)';
-        titleEl.style.fontSize = '15px';
+        titleEl.style.cssText = 'margin-top:0;margin-bottom:15px;color:var(--accent-color);font-size:15px;';
         sectionEl.appendChild(titleEl);
-        
+
         const gridEl = document.createElement('div');
         gridEl.style.display = 'grid';
         gridEl.style.gridTemplateColumns = 'minmax(0, 1fr) minmax(0, 1fr)';
         gridEl.style.gap = '15px';
-        
+
         for (const item of keysToShow) {
             const inputWrapper = createInputControl(section, item.rawKey, item.value, item.def);
             gridEl.appendChild(inputWrapper);
         }
-        
+
         sectionEl.appendChild(gridEl);
         contentDiv.appendChild(sectionEl);
     }
@@ -235,179 +330,128 @@ function renderSettingsUI(mod, data) {
 
 function createInputControl(section, key, currentValue, def) {
     const wrapper = document.createElement('div');
-    wrapper.style.display = 'flex';
-    wrapper.style.flexDirection = 'column';
-    wrapper.style.gap = '6px';
-    wrapper.style.minWidth = '0'; // Prevent grid blowout
-    
+    wrapper.style.cssText = 'display:flex;flex-direction:column;gap:6px;min-width:0;';
+
     const label = document.createElement('label');
     label.textContent = def.label || key;
-    label.style.fontSize = '12px';
-    label.style.color = 'var(--text-secondary)';
-    label.style.fontWeight = 'bold';
-    label.title = key; // hover to see raw key name
-    label.style.whiteSpace = 'nowrap';
-    label.style.overflow = 'hidden';
-    label.style.textOverflow = 'ellipsis';
+    label.style.cssText = 'font-size:12px;color:var(--text-secondary);font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+    label.title = key;
     wrapper.appendChild(label);
-    
+
     if (def.type === 'toggle') {
         const select = document.createElement('select');
         select.className = 'dlss-select-box';
-        select.style.padding = '8px';
-        select.style.background = 'rgba(0,0,0,0.3)';
-        select.style.border = '1px solid rgba(255,255,255,0.1)';
-        select.style.color = 'white';
-        select.style.borderRadius = '4px';
-        select.style.width = '100%';
-        select.style.boxSizing = 'border-box';
-        select.style.minWidth = '0';
-        
-        const optTrue = document.createElement('option');
-        optTrue.value = 'true';
-        optTrue.textContent = 'Açık';
-        const optFalse = document.createElement('option');
-        optFalse.value = 'false';
-        optFalse.textContent = 'Kapalı';
-        
+        select.style.cssText = 'padding:8px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);color:white;border-radius:4px;width:100%;box-sizing:border-box;min-width:0;';
+
+        const optTrue  = document.createElement('option'); optTrue.value  = 'true';  optTrue.textContent  = 'Açık';
+        const optFalse = document.createElement('option'); optFalse.value = 'false'; optFalse.textContent = 'Kapalı';
         select.appendChild(optTrue);
         select.appendChild(optFalse);
-        
-        // currentValue true/false or 'true'/'false' string
-        if (currentValue === true || String(currentValue).toLowerCase() === 'true') select.value = 'true';
-        else select.value = 'false';
-        
+
+        select.value = (currentValue === true || String(currentValue).toLowerCase() === 'true') ? 'true' : 'false';
         select.addEventListener('change', () => {
             currentSettingsData[section][key] = select.value === 'true';
         });
         wrapper.appendChild(select);
-        
+
     } else if (def.type === 'dropdown') {
         const select = document.createElement('select');
         select.className = 'dlss-select-box';
-        select.style.padding = '8px';
-        select.style.background = 'rgba(0,0,0,0.3)';
-        select.style.border = '1px solid rgba(255,255,255,0.1)';
-        select.style.color = 'white';
-        select.style.borderRadius = '4px';
-        select.style.width = '100%';
-        select.style.boxSizing = 'border-box';
-        select.style.minWidth = '0';
-        
+        select.style.cssText = 'padding:8px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);color:white;border-radius:4px;width:100%;box-sizing:border-box;min-width:0;';
+
         for (const opt of def.options) {
             const optionEl = document.createElement('option');
             optionEl.value = opt.val;
             optionEl.textContent = opt.label;
             select.appendChild(optionEl);
         }
-        
         select.value = String(currentValue);
         select.addEventListener('change', () => {
             let newVal = select.value;
-            // auto-cast if numeric
             if (!isNaN(Number(newVal)) && newVal !== '') newVal = Number(newVal);
             currentSettingsData[section][key] = newVal;
         });
         wrapper.appendChild(select);
-        
+
     } else if (def.type === 'slider') {
-        const flexDiv = document.createElement('div');
-        flexDiv.style.display = 'flex';
-        flexDiv.style.alignItems = 'center';
-        flexDiv.style.gap = '10px';
-        flexDiv.style.width = '100%';
-        flexDiv.style.minWidth = '0';
-        
+        const flexDiv   = document.createElement('div');
+        flexDiv.style.cssText = 'display:flex;align-items:center;gap:10px;width:100%;min-width:0;';
+
         const slider = document.createElement('input');
-        slider.type = 'range';
-        slider.min = def.min;
-        slider.max = def.max;
-        slider.step = def.step;
+        slider.type  = 'range';
+        slider.min   = def.min; slider.max = def.max; slider.step = def.step;
         slider.value = currentValue;
-        slider.style.flex = '1';
-        slider.style.minWidth = '0';
-        slider.style.width = '100%';
-        
+        slider.style.cssText = 'flex:1;min-width:0;width:100%;';
+
         const valDisplay = document.createElement('span');
         valDisplay.textContent = currentValue;
-        valDisplay.style.fontSize = '12px';
-        valDisplay.style.width = '30px';
-        valDisplay.style.textAlign = 'right';
-        valDisplay.style.flexShrink = '0';
-        
+        valDisplay.style.cssText = 'font-size:12px;width:30px;text-align:right;flex-shrink:0;';
+
         slider.addEventListener('input', () => {
             valDisplay.textContent = slider.value;
             currentSettingsData[section][key] = Number(slider.value);
         });
-        
+
         flexDiv.appendChild(slider);
         flexDiv.appendChild(valDisplay);
         wrapper.appendChild(flexDiv);
-        
+
     } else {
-        // Fallback or explicit text
         const input = document.createElement('input');
-        input.type = 'text';
+        input.type  = 'text';
         input.value = currentValue;
-        input.style.padding = '8px';
-        input.style.background = 'rgba(0,0,0,0.3)';
-        input.style.border = '1px solid rgba(255,255,255,0.1)';
-        input.style.color = 'white';
-        input.style.borderRadius = '4px';
-        input.style.width = '100%';
-        input.style.boxSizing = 'border-box';
-        input.style.minWidth = '0';
-        
+        input.style.cssText = 'padding:8px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);color:white;border-radius:4px;width:100%;box-sizing:border-box;min-width:0;';
         input.addEventListener('input', () => {
             currentSettingsData[section][key] = input.value;
         });
         wrapper.appendChild(input);
     }
-    
+
     return wrapper;
 }
 
+// ─── Kaydetme ────────────────────────────────────────────────────────────────
 async function saveModSettings() {
     const game = state.currentSelectedGame;
     if (!game || !currentActiveMod) return;
-    
-    const btn = document.getElementById('settings-save-btn');
-    const oldText = btn.textContent;
-    btn.textContent = 'Kaydediliyor...';
-    btn.disabled = true;
+
+    const btn     = document.getElementById('settings-save-btn');
+    const oldText = btn ? btn.textContent : 'Kaydet';
+    if (btn) { btn.textContent = 'Kaydediliyor...'; btn.disabled = true; }
     hideError();
-    
+
     try {
         const result = await window.electronAPI.writeModIni(game, currentActiveMod, currentSettingsData);
         if (result.success) {
-            btn.style.backgroundColor = '#10b981'; // Green
-            btn.textContent = 'Kaydedildi ✓';
-            setTimeout(() => {
-                btn.style.backgroundColor = '#3b82f6'; // Back to blue
-                btn.textContent = oldText;
-                btn.disabled = false;
-            }, 2000);
+            if (btn) {
+                btn.style.backgroundColor = '#10b981';
+                btn.textContent = 'Kaydedildi ✓';
+                setTimeout(() => {
+                    btn.style.backgroundColor = '#22c55e';
+                    btn.textContent = oldText;
+                    btn.disabled = false;
+                }, 2000);
+            }
         } else {
-            throw new Error(result.error);
+            throw new Error(result.error || 'Bilinmeyen kaydetme hatası');
         }
     } catch (err) {
-        showError(err.message);
-        btn.textContent = oldText;
-        btn.disabled = false;
+        console.error('[RENDERER settings.js] error in saveModSettings:', err);
+        if (window.electronAPI && window.electronAPI.logToMain) {
+            window.electronAPI.logToMain(`[RENDERER settings.js] error in saveModSettings: ${err.message}`);
+        }
+        showError('Kaydetme sırasında hata oluştu: ' + err.message);
+        if (btn) { btn.textContent = oldText; btn.disabled = false; }
     }
 }
 
+// ─── Yardımcılar ─────────────────────────────────────────────────────────────
 function showError(msg) {
     const errBanner = document.getElementById('settings-error-banner');
-    if (errBanner) {
-        errBanner.textContent = msg;
-        errBanner.style.display = 'block';
-    }
+    if (errBanner) { errBanner.textContent = msg; errBanner.style.display = 'block'; }
 }
 
 function hideError() {
     const errBanner = document.getElementById('settings-error-banner');
-    if (errBanner) {
-        errBanner.style.display = 'none';
-    }
+    if (errBanner) errBanner.style.display = 'none';
 }

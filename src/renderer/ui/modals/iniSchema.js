@@ -202,3 +202,56 @@ export const DLSS_ENABLER_SCHEMA = {
         ]}
     }
 };
+
+/**
+ * OptiScaler INI'sinden yalnızca gösterilecek / düzenlenecek 4 key.
+ * Format: { section: { key: { label, type, options[] } } }
+ * Değerler ham olarak yazılır (auto, true, 0, 1 …).
+ */
+export const OPTISCALER_FOCUSED_KEYS = {
+    Plugins: {
+        LoadAsiPlugins: {
+            label: 'ASI Eklentiler (LoadAsiPlugins)',
+            type: 'dropdown',
+            options: [
+                { val: 'auto', label: 'Kapalı (Varsayılan)' },
+                { val: 'true', label: 'Açık' }
+            ]
+        }
+    },
+    Menu: {
+        ShowFps: {
+            label: 'FPS Göster (ShowFps)',
+            type: 'dropdown',
+            options: [
+                { val: 'auto', label: 'Kapalı (Varsayılan)' },
+                { val: 'true', label: 'Açık' }
+            ]
+        },
+        FpsOverlayPos: {
+            label: 'FPS Pozisyonu (FpsOverlayPos)',
+            type: 'dropdown',
+            options: [
+                { val: 'auto', label: 'Varsayılan' },
+                { val: '0',    label: 'Sol Üst' },
+                { val: '1',    label: 'Sağ Üst' },
+                { val: '2',    label: 'Sol Alt' },
+                { val: '3',    label: 'Sağ Alt' }
+            ]
+        },
+        FpsOverlayType: {
+            label: 'FPS Tipi (FpsOverlayType)',
+            type: 'dropdown',
+            options: [
+                { val: 'auto', label: 'Varsayılan' },
+                { val: '0',    label: 'Sadece FPS' },
+                { val: '1',    label: 'Basitleştirilmiş' },
+                { val: '2',    label: 'Detaylı' },
+                { val: '3',    label: 'Detaylı + Grafikli' },
+                { val: '4',    label: 'Full' },
+                { val: '5',    label: 'Full + Grafikli' },
+                { val: '6',    label: 'Reflex Zamanlamaları' }
+            ]
+        }
+    }
+};

@@ -3,21 +3,26 @@
  *
  * Durum makinesi: idle → checking → available → downloading → downloaded
  *                                              ↘ error (herhangi bir aşamada)
+ *
+ * Sürüm geçmişi: GitHub Releases API'den tüm sürümleri çeker ve gösterir.
  */
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
 
 export function initUpdatesTab() {
     // Mevcut uygulama versiyonunu göster
-    const versionEl = document.getElementById('current-app-version');
-    if (versionEl && window.electronAPI.getAppVersion) {
+    if (window.electronAPI.getAppVersion) {
         window.electronAPI.getAppVersion().then(v => {
-            versionEl.textContent = `v${v}`;
+            const el = document.getElementById('current-app-version');
+            if (el) el.textContent = `v${v}`;
         }).catch(() => {});
     }
 
     _setupButtonListeners();
     _setupIpcListeners();
+
+    // Sürüm geçmişini arka planda yükle (sekme açık olmasa da)
+    _loadReleaseHistory();
 }
 
 // ─── Buton Listener'ları ──────────────────────────────────────────────────────
@@ -27,7 +32,6 @@ function _setupButtonListeners() {
         _setState('checking');
         try {
             await window.electronAPI.checkForUpdatesManual();
-            // Sonuç IPC event'leri ile gelir (update-available / update-not-available)
         } catch (e) {
             _setState('error', e.message || 'Bilinmeyen hata');
         }
@@ -46,7 +50,6 @@ function _setupButtonListeners() {
 // ─── IPC Event Listener'ları ──────────────────────────────────────────────────
 
 function _setupIpcListeners() {
-    // Önce eski listener'ları temizle (tekrar init edilirse birikiyor)
     window.electronAPI.removeUpdateListeners?.();
 
     window.electronAPI.onUpdateChecking(() => {
@@ -58,7 +61,7 @@ function _setupIpcListeners() {
     });
 
     window.electronAPI.onUpdateNotAvailable(() => {
-        _setState('idle', null, true); // isLatest = true
+        _setState('idle', null, true);
     });
 
     window.electronAPI.onUpdateDownloadProgress((data) => {
@@ -74,13 +77,68 @@ function _setupIpcListeners() {
     });
 }
 
+// ─── Sürüm Geçmişi ────────────────────────────────────────────────────────────
+
+async function _loadReleaseHistory() {
+    const container = document.getElementById('release-history-list');
+    if (!container) return;
+
+    // Yükleniyor göstergesi
+    container.innerHTML = `
+        <div style="text-align:center; padding: 20px; color: var(--text-secondary); font-size: 13px;">
+            🔄 Sürüm geçmişi yükleniyor...
+        </div>`;
+
+    try {
+        const releases = await window.electronAPI.fetchAllReleases();
+
+        if (!releases || releases.length === 0) {
+            container.innerHTML = `
+                <div style="color: var(--text-secondary); font-size: 13px; padding: 10px 0;">
+                    Sürüm geçmişi bulunamadı.
+                </div>`;
+            return;
+        }
+
+        container.innerHTML = releases.map((r, i) => {
+            const date = r.published_at
+                ? new Date(r.published_at).toLocaleDateString('tr-TR', {
+                    year: 'numeric', month: 'long', day: 'numeric'
+                  })
+                : '';
+
+            const isLatest = i === 0;
+            const isPrerelease = r.prerelease;
+
+            return `
+                <div class="release-history-item ${isLatest ? 'release-latest' : ''}">
+                    <div class="release-history-header">
+                        <div style="display:flex; align-items:center; gap: 10px; flex-wrap:wrap;">
+                            <span class="release-version-tag">${_escSafe(r.tag_name)}</span>
+                            ${isLatest ? '<span class="utag utag-dlssEnabler" style="font-size:11px;">En Güncel</span>' : ''}
+                            ${isPrerelease ? '<span class="utag" style="font-size:11px; background:rgba(251,191,36,0.15); color:#fbbf24; border:1px solid rgba(251,191,36,0.3);">Pre-release</span>' : ''}
+                            ${r.name && r.name !== r.tag_name ? `<span class="release-title">${_escSafe(r.name)}</span>` : ''}
+                        </div>
+                        ${date ? `<span class="release-date">${date}</span>` : ''}
+                    </div>
+                    ${r.body ? `
+                    <div class="release-notes-body">
+                        ${_markdownToHtml(r.body)}
+                    </div>` : '<p style="margin:8px 0 0; font-size:13px; color:var(--text-secondary);">Değişiklik notu eklenmemiş.</p>'}
+                </div>`;
+        }).join('');
+
+    } catch (err) {
+        console.error('[UpdatesTab] Release geçmişi yüklenemedi:', err);
+        container.innerHTML = `
+            <div style="color: var(--text-secondary); font-size: 13px; padding: 10px 0;">
+                ⚠️ Sürüm geçmişi yüklenirken hata oluştu. İnternet bağlantınızı kontrol edin.
+            </div>`;
+    }
+}
+
 // ─── Durum Makinesi ───────────────────────────────────────────────────────────
 
-/**
- * @param {'idle'|'checking'|'available'|'downloading'|'downloaded'|'error'} state
- * @param {object|string|null} data
- * @param {boolean} isLatest
- */
 function _setState(state, data = null, isLatest = false) {
     const $ = (id) => document.getElementById(id);
 
@@ -97,9 +155,9 @@ function _setState(state, data = null, isLatest = false) {
     const progressBar  = $('update-progress-bar');
     const progressText = $('update-progress-text');
 
-    if (!statusCard) return; // Sekme henüz DOM'a yüklenmediyse çık
+    if (!statusCard) return;
 
-    // Hepsini varsayılana sıfırla
+    // Reset
     newVerBlock.style.display  = 'none';
     progressWrap.style.display = 'none';
     downloadBtn.style.display  = 'none';
@@ -113,7 +171,7 @@ function _setState(state, data = null, isLatest = false) {
             statusMsg.textContent  = isLatest
                 ? 'En güncel sürümü kullanıyorsunuz.'
                 : 'Güncelleme kontrolü yapılmadı.';
-            checkBtn.textContent   = 'Güncelleme Kontrol Et';
+            checkBtn.textContent = 'Güncelleme Kontrol Et';
             statusCard.classList.add(isLatest ? 'status-latest' : 'status-idle');
             break;
 
@@ -130,9 +188,9 @@ function _setState(state, data = null, isLatest = false) {
             statusMsg.textContent  = `Yeni sürüm mevcut: v${data?.version}`;
             checkBtn.textContent   = 'Tekrar Kontrol Et';
             statusCard.classList.add('status-available');
-
-            newVerBadge.textContent = `v${data?.version ?? ''}`;
-            releaseNotes.innerHTML  = _formatReleaseNotes(data?.releaseNotes);
+            newVerBadge.textContent        = `v${data?.version ?? ''}`;
+            // HTML olarak render et (electron-updater HTML döner)
+            releaseNotes.innerHTML = _renderNotes(data?.releaseNotes);
             newVerBlock.style.display  = 'block';
             downloadBtn.style.display  = 'inline-flex';
             break;
@@ -189,15 +247,91 @@ function _updateProgressBar(percent, bytesPerSec) {
     }
 }
 
-function _formatReleaseNotes(notes) {
+/**
+ * electron-updater'dan gelen releaseNotes HTML veya string olabilir.
+ * Dizi gelirse (multi-release) son elemanı al.
+ */
+function _renderNotes(notes) {
     if (!notes) return '<p style="color:var(--text-secondary);">Değişiklik notları mevcut değil.</p>';
-    // GitHub release notes genellikle Markdown gelir; temel formatting uygula
-    return `<pre style="margin:0; white-space:pre-wrap; font-family:inherit;">${_escapeHtml(notes)}</pre>`;
+
+    // Dizi formatında gelebilir [{ version, note }]
+    if (Array.isArray(notes)) {
+        return notes.map(n =>
+            `<div style="margin-bottom:12px;">
+                <strong style="color:var(--accent-color); font-size:12px;">v${_escSafe(n.version)}</strong>
+                <div style="margin-top:6px;">${_markdownToHtml(n.note || '')}</div>
+             </div>`
+        ).join('<hr style="border:none;border-top:1px solid rgba(255,255,255,0.06);margin:12px 0;">');
+    }
+
+    // HTML mi yoksa markdown mı kontrol et
+    if (typeof notes === 'string' && notes.trim().startsWith('<')) {
+        // HTML gelmiş — doğrudan render et
+        return `<div class="release-notes-rendered">${notes}</div>`;
+    }
+
+    // Markdown gelmiş — dönüştür
+    return _markdownToHtml(String(notes));
 }
 
-function _escapeHtml(str) {
+/**
+ * Temel Markdown → HTML dönüştürücü.
+ * GitHub release body'sini güzel render eder.
+ */
+function _markdownToHtml(md) {
+    if (!md) return '';
+
+    let html = _escSafe(md);
+
+    // Başlıklar
+    html = html.replace(/^### (.+)$/gm, '<h4 class="rn-h4">$1</h4>');
+    html = html.replace(/^## (.+)$/gm,  '<h3 class="rn-h3">$1</h3>');
+    html = html.replace(/^# (.+)$/gm,   '<h2 class="rn-h2">$1</h2>');
+
+    // Bold & italic
+    html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    html = html.replace(/\*(.+?)\*/g,     '<em>$1</em>');
+
+    // Inline code
+    html = html.replace(/`([^`]+)`/g, '<code class="rn-code">$1</code>');
+
+    // Checkbox liste öğeleri
+    html = html.replace(/^- \[x\] (.+)$/gm, '<li class="rn-li rn-li-done">✅ $1</li>');
+    html = html.replace(/^- \[ \] (.+)$/gm, '<li class="rn-li rn-li-open">⬜ $1</li>');
+
+    // Normal liste öğeleri (- veya *)
+    html = html.replace(/^[-*] (.+)$/gm, '<li class="rn-li">$1</li>');
+
+    // Ardışık <li>'leri <ul> ile sar
+    html = html.replace(/(<li class="rn-li[^"]*">[^]*?<\/li>\n?)+/g, (match) => `<ul class="rn-ul">${match}</ul>`);
+
+    // Link
+    html = html.replace(/\[(.+?)\]\((.+?)\)/g,
+        '<a class="rn-link" href="#" onclick="event.preventDefault(); window.electronAPI.openExternalLink(\'$2\')">$1</a>');
+
+    // Yatay çizgi
+    html = html.replace(/^---$/gm, '<hr class="rn-hr">');
+
+    // Paragraf (boş satırla ayrılmış bloklar)
+    html = html
+        .split(/\n{2,}/)
+        .map(block => {
+            block = block.trim();
+            if (!block) return '';
+            // Zaten HTML tag içeriyorsa sarmadan bırak
+            if (/^<(h[2-4]|ul|hr|div)/.test(block)) return block;
+            return `<p class="rn-p">${block.replace(/\n/g, '<br>')}</p>`;
+        })
+        .join('\n');
+
+    return html;
+}
+
+/** HTML özel karakterlerini kaçırır (XSS önlemi — linklerin URL'si hariç kullanılır) */
+function _escSafe(str) {
     return String(str)
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
 }

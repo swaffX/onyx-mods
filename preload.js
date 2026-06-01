@@ -94,6 +94,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
     fetchYoutubeVideos: () => ipcRenderer.invoke('fetch-youtube-videos'),
     openExternalLink: (url) => ipcRenderer.send('open-external-link', url),
 
+    // GitHub Releases API — tüm sürümleri çek
+    fetchAllReleases: () => ipcRenderer.invoke('fetch-all-releases'),
+
     // Custom scan folders API
     getCustomFolders: () => ipcRenderer.invoke('get-custom-folders'),
     saveCustomFolders: (folders) => ipcRenderer.invoke('save-custom-folders', folders),

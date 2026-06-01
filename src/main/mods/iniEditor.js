@@ -78,14 +78,25 @@ function findIniPath(game, mod) {
         console.log(`[INI EDITOR] findIniPath: Step 1 checking game.dlssEnablerPath "${targetPath}" - exists: ${exists}`);
         if (exists) return targetPath;
     }
-    if (mod === 'optiscaler' && game.optiscalerPath) {
-        const opti1 = path.join(game.optiscalerPath, 'OptiScaler.ini');
-        const opti2 = path.join(game.optiscalerPath, 'optiscaler.ini');
-        const exists2 = fs.existsSync(opti2);
-        const exists1 = fs.existsSync(opti1);
-        console.log(`[INI EDITOR] findIniPath: Step 1 checking game.optiscalerPath. optiscaler.ini exists: ${exists2}, OptiScaler.ini exists: ${exists1}`);
-        if (exists2) return opti2;
-        if (exists1) return opti1;
+    if (mod === 'optiscaler') {
+        if (game.optiscalerPath) {
+            const opti1 = path.join(game.optiscalerPath, 'OptiScaler.ini');
+            const opti2 = path.join(game.optiscalerPath, 'optiscaler.ini');
+            const exists2 = fs.existsSync(opti2);
+            const exists1 = fs.existsSync(opti1);
+            console.log(`[INI EDITOR] findIniPath: Step 1 checking game.optiscalerPath. optiscaler.ini exists: ${exists2}, OptiScaler.ini exists: ${exists1}`);
+            if (exists2) return opti2;
+            if (exists1) return opti1;
+        }
+        if (game.dlssEnablerPath) {
+            const opti1 = path.join(game.dlssEnablerPath, 'OptiScaler.ini');
+            const opti2 = path.join(game.dlssEnablerPath, 'optiscaler.ini');
+            const exists2 = fs.existsSync(opti2);
+            const exists1 = fs.existsSync(opti1);
+            console.log(`[INI EDITOR] findIniPath: Step 1 checking game.dlssEnablerPath for OptiScaler. optiscaler.ini exists: ${exists2}, OptiScaler.ini exists: ${exists1}`);
+            if (exists2) return opti2;
+            if (exists1) return opti1;
+        }
     }
 
     // 2. Standart konum: EXE'nin bulunduğu klasör

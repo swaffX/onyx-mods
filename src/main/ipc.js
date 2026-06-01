@@ -452,6 +452,53 @@ function registerIpcHandlers() {
         });
     });
 
+    // GitHub Releases API — tüm sürümleri çek
+    ipcMain.handle('fetch-all-releases', async () => {
+        return new Promise((resolve, reject) => {
+            const options = {
+                hostname: 'api.github.com',
+                path: '/repos/vuenxx/v-manager/releases',
+                method: 'GET',
+                headers: {
+                    'User-Agent': 'V-Manager-App',
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            };
+            const req = https.get(options, (res) => {
+                let data = '';
+                res.on('data', (chunk) => { data += chunk; });
+                res.on('end', () => {
+                    try {
+                        const releases = JSON.parse(data);
+                        if (!Array.isArray(releases)) {
+                            console.error('[IPC] fetch-all-releases: Beklenmedik yanıt:', data.slice(0, 200));
+                            resolve([]);
+                            return;
+                        }
+                        // Sadece gerekli alanları gönder
+                        const filtered = releases.map(r => ({
+                            tag_name:    r.tag_name,
+                            name:        r.name,
+                            body:        r.body,
+                            published_at: r.published_at,
+                            prerelease:  r.prerelease,
+                            draft:       r.draft,
+                            html_url:    r.html_url
+                        }));
+                        resolve(filtered);
+                    } catch (e) {
+                        console.error('[IPC] fetch-all-releases parse hatası:', e.message);
+                        reject(e);
+                    }
+                });
+            });
+            req.on('error', (err) => {
+                console.error('[IPC] fetch-all-releases request hatası:', err.message);
+                reject(err);
+            });
+        });
+    });
+
     // Custom scan folders
     ipcMain.handle('get-custom-folders', async () => {
         return config.getCustomFolders();

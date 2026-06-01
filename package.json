@@ -1,6 +1,6 @@
 {
   "name": "v-manager",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "V-Manager made by vuenxx",
   "main": "main.js",
   "repository": {
@@ -37,6 +37,7 @@
     "electron-builder": "^24.13.3"
   },
   "dependencies": {
+    "7zip-bin": "~5.2.0",
     "adm-zip": "^0.5.17",
     "electron-log": "^5.1.2",
     "electron-updater": "^6.8.3",
