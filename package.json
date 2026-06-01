@@ -39,7 +39,7 @@
     ],
     "win": {
       "target": "nsis",
-      "icon": "build/icon.png"
+      "icon": "icons/program_logo.ico"
     }
   },
   "author": "vuenxx",
