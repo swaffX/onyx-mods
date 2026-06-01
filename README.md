@@ -49,8 +49,6 @@ Uygulamanın **Sıkıştır** sekmesi altında, Windows'un Compact OS teknolojis
 *   **XPRESS 8K / 16K:** Dengeli ve yüksek sıkıştırma oranları.
 *   **LZX:** Maksimum sıkıştırma oranı (Yüksek işlemci gücü gerektirir, arşiv veya büyük oyunlar için idealdir).
 *   **Topluluk Veritabanı (Compression DB):** Hangi oyunun hangi yöntemle ne kadar sıkıştığına dair topluluk verilerini inceleyerek en doğru kararı verin.
-*   **İzleme Modu:** Seçilen klasörlerdeki dosya değişiklikleri anlık olarak izlenir ve yeni eklenen dosyalar otomatik sıkıştırılır.
-
 ---
 
 ## 🚀 Geliştiriciler İçin Kurulum

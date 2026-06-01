@@ -42,10 +42,6 @@ export function initNavigation() {
     });
 }
 export function switchTab(tabId) {
-    if (tabId === 'compress') {
-        showInfoModal('Bilgi', '⚠️ BURASI YAPIM AŞAMASINDA', false);
-        return;
-    }
     window.electronAPI.logToMain(`Navigation: switchTab called -> ${tabId}`);
     const navItems = document.querySelectorAll('.nav-item');
     const tabContents = document.querySelectorAll('.tab-content');
