@@ -80,7 +80,7 @@ const IGNORED_EXACT_NAMES = [
     'retroarch',
     'wallpaper engine',
     'soundpad',
-    'REDlauncher'
+    'redlauncher'
 ];
 
 // Executable basenames (lowercased) to always ignore
@@ -108,7 +108,7 @@ const IGNORED_EXE_NAMES = [
     'tlauncher.exe',
     'lunar client.exe',
     'badlion client.exe',
-    'REDlauncher'
+    'redlauncher.exe'
 ];
 
 // Path fragments (uppercased) to detect launcher install dirs
@@ -138,7 +138,7 @@ async function detectUpscalers(gamePath) {
         dlss: false, xess: false, fsr: false,
         dlssEnabler: false, optiscaler: false, streamline: false,
         dlssEnablerVersion: null, optiscalerVersion: null, streamlineVersion: null,
-        dlssEnablerPath: null, optiscalerPath: null,
+        dlssEnablerPath: null, optiscalerPath: null, optiscalerInjection: null,
         streamlinePath: null, streamlineDepth: -1
     };
     if (!fs.existsSync(gamePath)) return result;
@@ -207,6 +207,7 @@ async function detectUpscalers(gamePath) {
                         if (descLow.includes('optiscaler')) {
                             result.optiscaler = true;
                             result.optiscalerPath = current.path;
+                            result.optiscalerInjection = file.name;
                             if (!result.optiscalerVersion) {
                                 const ver = await utils.getFileVersion(filePath);
                                 if (ver) result.optiscalerVersion = ver;
@@ -432,12 +433,10 @@ async function processAndStreamGame(game, event, scanSettings) {
         existingGame.streamlinePath = detectedUpscalers.streamlinePath || existingGame.streamlinePath || null;
         existingGame.streamlineHashes = existingGame.streamlineHashes || {};
 
-        existingGame.hasOptiscaler = detectedUpscalers.optiscaler || existingGame.hasOptiscaler || false;
-        existingGame.optiscalerVersion = detectedUpscalers.optiscalerVersion || existingGame.optiscalerVersion || null;
-        existingGame.optiscalerPath = detectedUpscalers.optiscalerPath || existingGame.optiscalerPath || null;
-        if (detectedUpscalers.optiscalerInjection || existingGame.optiscalerInjection) {
-            existingGame.optiscalerInjection = detectedUpscalers.optiscalerInjection || existingGame.optiscalerInjection || null;
-        }
+        existingGame.hasOptiscaler = detectedUpscalers.optiscaler;
+        existingGame.optiscalerVersion = detectedUpscalers.optiscalerVersion || null;
+        existingGame.optiscalerPath = detectedUpscalers.optiscalerPath || null;
+        existingGame.optiscalerInjection = detectedUpscalers.optiscalerInjection || null;
 
         // Merge upscalers object fields safely
         existingGame.upscalers = {
@@ -796,6 +795,10 @@ async function runScan(event, scanSettings) {
 
     // Disk'ten mevcut veriyi belleğe yükle (veriyi koruma amaçlı)
     config.loadExistingGames();
+
+    // Filtre: Yoksayılan oyunları listeden temizle (kara listedekiler, launcher'lar vb.)
+    const filteredInitialGames = config.getExistingGamesState().filter(g => !isIgnoredGame(g));
+    config.setExistingGamesState(filteredInitialGames);
 
     // KURAL 2: Kaynak Filtresi — sadece seçili platformları tara
     const sources = scanSettings?.sources || ['Steam', 'Epic', 'GOG', 'EA', 'Ubisoft', 'Xbox'];

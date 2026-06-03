@@ -92,6 +92,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
     // YouTube RSS and External Link opening
     fetchYoutubeVideos: () => ipcRenderer.invoke('fetch-youtube-videos'),
+    fetchFreeGames: () => ipcRenderer.invoke('fetch-free-games'),
     openExternalLink: (url) => ipcRenderer.send('open-external-link', url),
 
     // GitHub Releases API — tüm sürümleri çek

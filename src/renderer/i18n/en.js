@@ -8,6 +8,7 @@ export const en = {
         updates: 'Updates',
         videos: 'Videos',
         settings: 'Settings',
+        freeGames: 'Free Games',
     },
     header: {
         changeTheme: 'Toggle Theme',
@@ -133,6 +134,8 @@ export const en = {
     settings: {
         title: 'Settings',
         subtitle: 'Manage your application preferences here.',
+        appTab: 'Application Settings',
+        gameTab: 'Game Settings',
         languageTitle: 'Language / Dil',
         blacklistTitle: 'Blacklist',
         blacklistDesc: 'Games you removed from the list appear here.',
@@ -448,5 +451,15 @@ export const en = {
     info: {
         closeBtn: 'Close',
         okBtn: 'OK',
+    },
+    freeGames: {
+        title: 'Free Games',
+        subtitle: 'Current free games and giveaways fetched from GamerPower.',
+        loading: 'Loading free games...',
+        error: 'An error occurred while loading free games. Please check your connection.',
+        worth: 'Worth:',
+        getGiveaway: 'Get Deal ➔',
+        refreshBtn: 'Refresh Deals',
+        attribution: 'Provided by GamerPower.com',
     },
 };

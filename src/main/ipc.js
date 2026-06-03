@@ -452,6 +452,24 @@ function registerIpcHandlers() {
         });
     });
 
+    // GamerPower Free Games Fetcher using modern fetch API
+    ipcMain.handle('fetch-free-games', async () => {
+        try {
+            const response = await fetch('https://www.gamerpower.com/api/giveaways', {
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                }
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('[IPC] fetch-free-games error:', error);
+            throw error;
+        }
+    });
+
     // GitHub Releases API — tüm sürümleri çek
     ipcMain.handle('fetch-all-releases', async () => {
         return new Promise((resolve, reject) => {

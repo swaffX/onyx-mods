@@ -8,6 +8,7 @@ export const tr = {
         updates: 'Güncellemeler',
         videos: 'Videolar',
         settings: 'Ayarlar',
+        freeGames: 'Ücretsiz Oyunlar',
     },
     header: {
         changeTheme: 'Temayı Değiştir',
@@ -146,6 +147,8 @@ export const tr = {
     settings: {
         title: 'Ayarlar',
         subtitle: 'Uygulama tercihlerinizi buradan yönetebilirsiniz.',
+        appTab: 'Uygulama Ayarları',
+        gameTab: 'Oyun Ayarları',
         languageTitle: 'Dil / Language',
         blacklistTitle: 'Kara Liste',
         blacklistDesc: 'Listeden kaldırdığınız oyunlar burada görünür.',
@@ -461,5 +464,15 @@ export const tr = {
     info: {
         closeBtn: 'Kapat',
         okBtn: 'Tamam',
+    },
+    freeGames: {
+        title: 'Ücretsiz Oyunlar',
+        subtitle: 'GamerPower tarafından listelenen ve şu an ücretsiz olan güncel oyunlar ile fırsatlar.',
+        loading: 'Ücretsiz oyunlar yükleniyor...',
+        error: 'Ücretsiz oyunlar yüklenirken bir hata oluştu. Lütfen bağlantınızı kontrol edin.',
+        worth: 'Değer:',
+        getGiveaway: 'Fırsata Git ➔',
+        refreshBtn: 'Fırsatları Yenile',
+        attribution: 'GamerPower.com tarafından sağlanmaktadır',
     },
 };

@@ -70,6 +70,8 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 
 .header-logo {
@@ -99,13 +101,32 @@ body {
     flex: 1;
     margin-left: 40px;
     margin-right: 40px;
+    display: flex;
+    justify-content: center;
 }
 
 .nav-list {
     list-style: none;
     display: flex;
     align-items: center;
-    gap: 6px;
+    width: fit-content;
+    background: rgba(255, 255, 255, 0.015);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 0;
+    gap: 0;
+    overflow: hidden;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.nav-list li {
+    display: flex;
+    align-items: center;
+}
+
+.nav-list li:not(:last-child) {
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .nav-item {
@@ -122,17 +143,25 @@ body {
     white-space: nowrap;
 }
 
-.nav-item:hover {
-    color: var(--accent-color);
+.nav-list .nav-item {
+    padding: 10px 20px;
+    border-top: 2px solid transparent;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    font-size: 13.5px;
+}
+
+.nav-list .nav-item:hover {
+    color: var(--text-primary);
     background: rgba(255, 255, 255, 0.02);
 }
 
-.nav-item.active {
-    background: rgba(68, 214, 44, 0.06);
-    border: 1px solid rgba(68, 214, 44, 0.12);
+.nav-list .nav-item.active {
+    background: rgba(68, 214, 44, 0.02);
+    border-bottom-color: var(--accent-color);
     color: var(--accent-color);
     font-weight: 700;
-    box-shadow: 0 0 10px rgba(68, 214, 44, 0.02);
+    text-shadow: 0 0 8px rgba(68, 214, 44, 0.2);
 }
 
 .header-controls {
@@ -141,25 +170,129 @@ body {
     gap: 10px;
 }
 
-.settings-nav-btn {
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    background: rgba(255, 255, 255, 0.02);
-    padding: 8px 14px;
-    border-radius: 8px;
+/* Ücretsiz Oyunlar Button & Floating Badge */
+.free-games-btn-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.free-games-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(68, 214, 44, 0.05) !important;
+    border: 1px solid rgba(68, 214, 44, 0.3) !important;
+    border-radius: 10px !important;
+    color: var(--accent-color) !important;
+    font-weight: 700 !important;
+    transition: all 0.25s ease;
+    cursor: pointer;
+}
+
+.free-games-nav-btn:hover {
+    background: rgba(68, 214, 44, 0.12) !important;
+    border-color: var(--accent-color) !important;
+    box-shadow: 0 0 12px rgba(68, 214, 44, 0.2);
+    transform: translateY(-1px);
+}
+
+.free-games-nav-btn.active {
+    background: rgba(68, 214, 44, 0.25) !important;
+    border-color: var(--accent-color) !important;
+    box-shadow: 0 0 15px rgba(68, 214, 44, 0.35);
+}
+
+.free-games-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #0ea5e9;
+    color: white;
+    font-size: 8px;
+    width: 14px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    box-shadow: 0 0 6px #0ea5e9;
+    animation: badgePulse 2s infinite ease-in-out;
+    pointer-events: none;
+    z-index: 10;
+}
+
+@keyframes badgePulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 4px #0ea5e9;
+    }
+    50% {
+        transform: scale(1.15);
+        box-shadow: 0 0 10px #0ea5e9, 0 0 14px #0ea5e9;
+    }
+}
+
+.btn-icon {
+    display: inline-block;
     font-size: 13px;
+}
+
+/* Settings navigation button */
+.settings-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.015);
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
     color: var(--text-secondary);
+    transition: all 0.2s ease;
+    cursor: pointer;
 }
 
 .settings-nav-btn:hover {
     color: var(--text-primary);
     background: rgba(255, 255, 255, 0.04);
     border-color: rgba(255, 255, 255, 0.08);
+    transform: translateY(-1px);
 }
 
 .settings-nav-btn.active {
-    background: rgba(68, 214, 44, 0.06);
-    border: 1px solid rgba(68, 214, 44, 0.12);
-    color: var(--accent-color);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: var(--text-primary);
+}
+
+/* Language and theme buttons */
+.lang-select-btn {
+    font-size: 13px;
+    font-weight: 700;
+    width: auto;
+    padding: 0 12px;
+    height: 36px;
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.015);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s ease;
+    text-align: center;
+    text-align-last: center;
+}
+
+.lang-select-btn:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.lang-select-btn option {
+    background: var(--card-bg);
+    color: var(--text-primary);
 }
 
 /* Main Content Styles */
@@ -2303,4 +2436,250 @@ body:not([data-theme="dark"]) .game-search-input:focus {
     font-size: 13px;
     line-height: 1.65;
     color: var(--text-secondary);
+}
+
+/* ==========================================
+   Free Games (Ücretsiz Oyunlar) Tab Styles
+   ========================================== */
+
+.free-games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+    margin-top: 20px;
+    margin-bottom: 40px;
+}
+
+.free-game-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), 
+                box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), 
+                border-color 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+}
+
+.free-game-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 32px rgba(68, 214, 44, 0.1), 0 4px 16px rgba(0, 0, 0, 0.5);
+    border-color: var(--accent-color);
+}
+
+.free-game-thumb-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background-color: #050505;
+}
+
+.free-game-thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.free-game-card:hover .free-game-thumb {
+    transform: scale(1.06);
+}
+
+.free-game-worth-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background-color: rgba(13, 13, 13, 0.85);
+    color: #ef4444;
+    text-decoration: line-through;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.free-game-info {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.free-game-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+    line-height: 1.4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.free-game-platforms {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 18px;
+}
+
+.platform-badge {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--text-secondary);
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.free-game-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--accent-color), #5ee042);
+    color: #000000;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    margin-top: auto;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(68, 214, 44, 0.25);
+}
+
+.free-game-card:hover .free-game-btn {
+    box-shadow: 0 6px 18px rgba(68, 214, 44, 0.4);
+    transform: scale(1.02);
+}
+
+/* Attribution Styling */
+.gamerpower-attribution {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.attribution-link {
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.2s ease;
+    opacity: 0.7;
+}
+
+.attribution-link::after {
+    content: '➔';
+    font-size: 11px;
+    transition: transform 0.2s ease;
+}
+
+.attribution-link:hover {
+    color: var(--accent-color);
+    opacity: 1;
+}
+
+.attribution-link:hover::after {
+    transform: translateX(4px);
+}
+
+/* Pagination Styles */
+.free-games-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+
+.pagination-btn {
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+    outline: none;
+}
+
+.pagination-btn:hover {
+    border-color: var(--accent-color);
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.pagination-btn.active {
+    background: rgba(68, 214, 44, 0.12);
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    font-weight: 700;
+    box-shadow: 0 0 10px rgba(68, 214, 44, 0.1);
+}
+
+.pagination-btn.disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: none;
+    border-color: var(--border-color);
+}
+
+.pagination-dots {
+    color: var(--text-secondary);
+    padding: 0 4px;
+    font-weight: 600;
+    user-select: none;
+}
+
+/* Settings Sub-Tab Navigation */
+.settings-sub-nav {
+    display: flex;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 4px;
+    border-radius: 10px;
+}
+
+.settings-sub-nav-item {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.settings-sub-nav-item:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.settings-sub-nav-item.active {
+    background: var(--accent-color);
+    color: #000000;
+    font-weight: 700;
 }

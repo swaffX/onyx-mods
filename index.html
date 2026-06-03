@@ -20,29 +20,37 @@
             <header class="top-header">
                 <div class="header-brand">
                     <img src="program_logo.png" alt="V-Manager Logo" class="header-logo">
-                    <h1>V-Manager</h1>
+                    <h3>Manager</h3>
                 </div>
 
                 <nav class="header-nav">
                     <ul class="nav-list">
-                        <li><button class="nav-item active" data-target="home" data-i18n="nav.home">Ana Sayfa</button></li>
+                        <li><button class="nav-item active" data-target="home" data-i18n="nav.home">Ana Sayfa</button>
+                        </li>
                         <li><button class="nav-item" data-target="games" data-i18n="nav.games">Oyunlar</button></li>
                         <li><button class="nav-item" data-target="modes" data-i18n="nav.mods">Modlar</button></li>
-                        <li><button class="nav-item" data-target="compress" data-i18n="nav.compress">Sıkıştır</button></li>
-                        <li><button class="nav-item" data-target="updates" data-i18n="nav.updates">Güncellemeler</button></li>
+                        <li><button class="nav-item" data-target="compress" data-i18n="nav.compress">Sıkıştır</button>
+                        </li>
+                        <li><button class="nav-item" data-target="updates"
+                                data-i18n="nav.updates">Güncellemeler</button></li>
                         <li><button class="nav-item" data-target="videos" data-i18n="nav.videos">Videolar</button></li>
                     </ul>
                 </nav>
 
                 <div class="header-controls">
-                    <button class="nav-item settings-nav-btn" data-target="settings-tab" data-i18n-title="nav.settings">⚙️
-                        <span data-i18n="nav.settings">Ayarlar</span></button>
-                    <select id="lang-select" class="theme-toggle-btn" title="Switch Language" style="font-size: 13px; font-weight: 700; width: auto; padding: 0 10px; color: var(--text-primary); cursor: pointer; outline: none; border-radius: 8px; text-align: center; text-align-last: center;">
-                        <option value="tr" style="background: var(--card-bg); color: var(--text-primary);">TR</option>
-                        <option value="en" style="background: var(--card-bg); color: var(--text-primary);">EN</option>
-                    </select>
-                    <button id="theme-toggle" class="theme-toggle-btn" data-i18n-title="header.changeTheme" title="Temayı Değiştir">
-                        <span id="theme-icon">🌙</span>
+                    <!-- Ücretsiz Oyunlar Standalone Button with Badge -->
+                    <div class="free-games-btn-wrapper">
+                        <button class="nav-item free-games-nav-btn" data-target="free-games" data-i18n-title="nav.freeGames">
+                            <span class="btn-icon">🎁</span>
+                            <span data-i18n="nav.freeGames">Ücretsiz Oyunlar</span>
+                        </button>
+                        <span class="free-games-badge">🎁</span>
+                    </div>
+
+                    <!-- Ayarlar Button -->
+                    <button class="nav-item settings-nav-btn" data-target="settings-tab" data-i18n-title="nav.settings">
+                        <span class="btn-icon">⚙️</span>
+                        <span data-i18n="nav.settings">Ayarlar</span>
                     </button>
                 </div>
             </header>
@@ -51,7 +59,8 @@
             <div class="tab-content active" id="home">
                 <div class="dashboard-welcome">
                     <h2 data-i18n="home.title">V-Manager Kontrol Paneli</h2>
-                    <p data-i18n="home.subtitle">Uygulama durumunu izleyin, kurulu modlarınızı yönetin ve yeni içeriklere hızlıca erişin.</p>
+                    <p data-i18n="home.subtitle">Uygulama durumunu izleyin, kurulu modlarınızı yönetin ve yeni
+                        içeriklere hızlıca erişin.</p>
                 </div>
 
                 <div class="stats-container">
@@ -89,7 +98,8 @@
                             <div class="promo-icon">🎮</div>
                             <h4 data-i18n="home.promoGamesTitle">Oyun Kütüphanesi</h4>
                         </div>
-                        <p class="promo-desc" data-i18n="home.promoGamesDesc">Buradan oyunlarınıza DLSS Enabler, Optiscaler kurabilir ve Streamline
+                        <p class="promo-desc" data-i18n="home.promoGamesDesc">Buradan oyunlarınıza DLSS Enabler,
+                            Optiscaler kurabilir ve Streamline
                             dosyalarını güncelleyebilirsiniz.</p>
                         <button class="promo-action-btn" data-i18n="home.promoGamesBtn">Oyunları Yönet ➔</button>
                     </div>
@@ -100,7 +110,8 @@
                             <div class="promo-icon">📦</div>
                             <h4 data-i18n="home.promoModsTitle">Mod Sürümleri</h4>
                         </div>
-                        <p class="promo-desc" data-i18n="home.promoModsDesc">Modlar yerinden programda olan modların (DLSS Enabler, Optiscaler vs)
+                        <p class="promo-desc" data-i18n="home.promoModsDesc">Modlar yerinden programda olan modların
+                            (DLSS Enabler, Optiscaler vs)
                             sürümlerini güncelleyebilirsiniz.</p>
                         <button class="promo-action-btn" data-i18n="home.promoModsBtn">Sürümleri İncele ➔</button>
                     </div>
@@ -111,7 +122,8 @@
                             <div class="promo-icon">📺</div>
                             <h4 data-i18n="home.promoVideosTitle">Youtube Rehberleri</h4>
                         </div>
-                        <p class="promo-desc" data-i18n="home.promoVideosDesc">Videolar yerinden Youtube kanalımda işinize yarayabilecek içerikleri
+                        <p class="promo-desc" data-i18n="home.promoVideosDesc">Videolar yerinden Youtube kanalımda
+                            işinize yarayabilecek içerikleri
                             görüntüleyip, izleyebilirsiniz.</p>
                         <button class="promo-action-btn" data-i18n="home.promoVideosBtn">Videoları İzle ➔</button>
                     </div>
@@ -123,8 +135,8 @@
                     <h2 data-i18n="games.title">Oyunlar</h2>
                     <div style="display: flex; gap: 10px; align-items: center;">
                         <div class="game-search-wrapper">
-                            <input type="text" id="game-search-input" data-i18n-placeholder="games.searchPlaceholder" placeholder="Oyunlarda ara..."
-                                class="game-search-input">
+                            <input type="text" id="game-search-input" data-i18n-placeholder="games.searchPlaceholder"
+                                placeholder="Oyunlarda ara..." class="game-search-input">
                             <span class="game-search-icon">🔍</span>
                             <button id="game-search-clear" class="game-search-clear"
                                 style="display: none;">&times;</button>
@@ -134,17 +146,21 @@
                             <option value="source" data-i18n="games.sortPlatform">Sırala: Platform</option>
                         </select>
                         <button id="refresh-games-btn" class="install-btn"
-                            style="width: auto; padding: 10px 20px; background-color: var(--text-secondary);" data-i18n="games.refreshBtn">Listeyi
+                            style="width: auto; padding: 10px 20px; background-color: var(--text-secondary);"
+                            data-i18n="games.refreshBtn">Listeyi
                             Yenile</button>
-                        <button id="add-game-btn" class="install-btn" style="width: auto; padding: 10px 20px;" data-i18n="games.addGameBtn">Manuel
+                        <button id="add-game-btn" class="install-btn" style="width: auto; padding: 10px 20px;"
+                            data-i18n="games.addGameBtn">Manuel
                             Oyun Ekle</button>
                     </div>
                 </div>
-                <p data-i18n="games.subtitle">Sisteminizde yüklü olan oyunlar aşağıda listelenmektedir. Yıldız simgesiyle favorilerinizi başa
+                <p data-i18n="games.subtitle">Sisteminizde yüklü olan oyunlar aşağıda listelenmektedir. Yıldız
+                    simgesiyle favorilerinizi başa
                     tutturabilirsiniz.</p>
 
                 <div id="loading-games"
-                    style="display: none; text-align: center; padding: 40px; color: var(--text-secondary);" data-i18n="games.scanning">
+                    style="display: none; text-align: center; padding: 40px; color: var(--text-secondary);"
+                    data-i18n="games.scanning">
                     Oyunlar taranıyor ve kapaklar indiriliyor, lütfen bekleyin...
                 </div>
 
@@ -166,11 +182,13 @@
                         <div class="package-features">
                             <p data-i18n="mods.dlssDesc">Neredeyse tüm kartlara Multi Frame Generation uygular.</p>
                             <div class="package-links">
-                                <a href="#" class="external-link" data-url="https://www.youtube.com/" data-i18n="mods.video">Video</a>
+                                <a href="#" class="external-link" data-url="https://www.youtube.com/"
+                                    data-i18n="mods.video">Video</a>
                             </div>
                         </div>
                         <div class="package-actions">
-                            <button id="dlss-versions-btn" class="install-btn" data-i18n="mods.versionsBtn">Sürümler</button>
+                            <button id="dlss-versions-btn" class="install-btn"
+                                data-i18n="mods.versionsBtn">Sürümler</button>
                         </div>
                     </div>
                     <!-- Package 2 -->
@@ -181,11 +199,13 @@
                         <div class="package-features">
                             <p data-i18n="mods.optiDesc">Çeşitli ölçeklendirme seçenekleri ve optimizasyonlar sunar.</p>
                             <div class="package-links">
-                                <a href="#" class="external-link" data-url="https://www.youtube.com/" data-i18n="mods.video">Video</a>
+                                <a href="#" class="external-link" data-url="https://www.youtube.com/"
+                                    data-i18n="mods.video">Video</a>
                             </div>
                         </div>
                         <div class="package-actions">
-                            <button id="optiscaler-versions-btn" class="install-btn" data-i18n="mods.versionsBtn">Sürümler</button>
+                            <button id="optiscaler-versions-btn" class="install-btn"
+                                data-i18n="mods.versionsBtn">Sürümler</button>
                         </div>
                     </div>
                     <!-- Package 3 -->
@@ -269,7 +289,8 @@
 
                         <!-- Başlık + versiyon rozeti -->
                         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 18px;">
-                            <span style="font-size: 15px; font-weight: 700;" data-i18n="updates.newVersion">Yeni Sürüm:</span>
+                            <span style="font-size: 15px; font-weight: 700;" data-i18n="updates.newVersion">Yeni
+                                Sürüm:</span>
                             <span id="update-new-version-badge" class="utag utag-dlssEnabler">v0.0.0</span>
                         </div>
 
@@ -290,7 +311,8 @@
                         <div id="update-progress-wrapper"
                             style="display: none; flex-direction: column; gap: 8px; margin-bottom: 18px;">
                             <div style="display: flex; justify-content: space-between; font-size: 13px;">
-                                <span style="color: var(--text-secondary);" data-i18n="updates.downloading">İndiriliyor...</span>
+                                <span style="color: var(--text-secondary);"
+                                    data-i18n="updates.downloading">İndiriliyor...</span>
                                 <span id="update-progress-text"
                                     style="font-weight: 700; color: var(--accent-color);">0%</span>
                             </div>
@@ -337,9 +359,11 @@
                 <div class="compress-tabs-header">
                     <h2 data-i18n="compress.title">Sıkıştır</h2>
                     <div class="compress-sub-nav">
-                        <button class="sub-nav-item active" data-sub-target="compress-tools" data-i18n="compress.toolsTab">Sıkıştırma
+                        <button class="sub-nav-item active" data-sub-target="compress-tools"
+                            data-i18n="compress.toolsTab">Sıkıştırma
                             Araçları</button>
-                        <button class="sub-nav-item" data-sub-target="compress-db" data-i18n="compress.dbTab">Sıkıştırma DB</button>
+                        <button class="sub-nav-item" data-sub-target="compress-db" data-i18n="compress.dbTab">Sıkıştırma
+                            DB</button>
                     </div>
                 </div>
 
@@ -347,22 +371,26 @@
 
                 <!-- Sub-Tab: Tools -->
                 <div class="sub-tab-content active" id="compress-tools">
-                    <p class="compress-info" data-i18n="compress.info">Bu sıkıştırma yöntemiyle birlikte oyunlarınızı ve klasörlerinizi
+                    <p class="compress-info" data-i18n="compress.info">Bu sıkıştırma yöntemiyle birlikte oyunlarınızı ve
+                        klasörlerinizi
                         sıkıştırabilip diskte yer kazanabilirsiniz. Sıkıştırma yapıldığında hala içerik (oyun, program
                         vs) kullanılabilir olacak.</p>
 
                     <div class="compress-container">
                         <!-- Left: Folder List -->
                         <div class="compress-left">
-                            <button id="select-folder-btn" class="install-btn" data-i18n="compress.selectFolderBtn">Klasör Seç</button>
+                            <button id="select-folder-btn" class="install-btn"
+                                data-i18n="compress.selectFolderBtn">Klasör Seç</button>
                             <div id="added-folders-list" class="folder-list">
                                 <!-- Folders will be listed here -->
                             </div>
                             <div class="compress-action-group"
                                 style="display: none; flex-direction: column; gap: 10px; margin-top: auto;">
-                                <button id="compress-selected-btn" class="install-btn" data-i18n="compress.compressBtn">Seçilen Klasörü Sıkıştır</button>
+                                <button id="compress-selected-btn" class="install-btn"
+                                    data-i18n="compress.compressBtn">Seçilen Klasörü Sıkıştır</button>
                                 <button id="uncompress-selected-btn" class="install-btn"
-                                    style="background-color: var(--text-secondary);" data-i18n="compress.uncompressBtn">Sıkıştırmayı Geri Al</button>
+                                    style="background-color: var(--text-secondary);"
+                                    data-i18n="compress.uncompressBtn">Sıkıştırmayı Geri Al</button>
                             </div>
                         </div>
 
@@ -370,11 +398,14 @@
                         <div class="compress-right" id="folder-details-view" style="display: none;">
                             <div class="folder-header">
                                 <h3 id="detail-folder-name" data-i18n="compress.folderName">Klasör İsmi</h3>
-                                <p id="detail-folder-path" class="small-text" data-i18n="compress.folderPath">Klasör Yolu</p>
+                                <p id="detail-folder-path" class="small-text" data-i18n="compress.folderPath">Klasör
+                                    Yolu</p>
                             </div>
                             <div class="folder-stats">
-                                <p><span data-i18n="compress.uncompressedSize">Sıkıştırılmamış boyutu:</span> <span id="detail-folder-size">-</span></p>
-                                <p><span data-i18n="compress.fileCount">Dosya sayısı:</span> <span id="detail-file-count">-</span></p>
+                                <p><span data-i18n="compress.uncompressedSize">Sıkıştırılmamış boyutu:</span> <span
+                                        id="detail-folder-size">-</span></p>
+                                <p><span data-i18n="compress.fileCount">Dosya sayısı:</span> <span
+                                        id="detail-file-count">-</span></p>
                             </div>
                             <hr class="compress-divider">
 
@@ -386,7 +417,8 @@
                                     <!-- Compression Method Info -->
                                     <div id="detected-method-container"
                                         style="margin-bottom: 15px; display: none; align-items: center; justify-content: space-between;">
-                                        <span style="font-size: 13px; color: var(--text-secondary);" data-i18n="compress.usedMethod">Kullanılan
+                                        <span style="font-size: 13px; color: var(--text-secondary);"
+                                            data-i18n="compress.usedMethod">Kullanılan
                                             Yöntem</span>
                                         <span id="detected-method-name" class="utag utag-dlss"
                                             style="background: var(--accent-color); color: black; font-weight: bold;">-</span>
@@ -400,7 +432,8 @@
                                         </div>
                                         <div id="realtime-status-text"
                                             style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">
-                                            <span data-i18n="compress.processing">İşleniyor...</span></div>
+                                            <span data-i18n="compress.processing">İşleniyor...</span>
+                                        </div>
                                     </div>
 
                                     <!-- Original Size Bar -->
@@ -470,10 +503,12 @@
                     <div class="db-header-row">
                         <div class="db-info-text">
                             <h3 data-i18n="compress.dbTitle">Sıkıştırma Veritabanı</h3>
-                            <p data-i18n="compress.dbSubtitle">Topluluk sonuçlarına göre en verimli sıkıştırma yöntemlerini inceleyin.</p>
+                            <p data-i18n="compress.dbSubtitle">Topluluk sonuçlarına göre en verimli sıkıştırma
+                                yöntemlerini inceleyin.</p>
                         </div>
                         <div class="db-search-box">
-                            <input type="text" id="db-search-input" data-i18n-placeholder="compress.dbSearchPlaceholder" placeholder="Oyunlarda ara..." class="opti-select">
+                            <input type="text" id="db-search-input" data-i18n-placeholder="compress.dbSearchPlaceholder"
+                                placeholder="Oyunlarda ara..." class="opti-select">
                         </div>
                     </div>
 
@@ -486,130 +521,177 @@
             </div>
 
             <div class="tab-content" id="settings-tab" style="background: rgba(255,255,255,0.01); min-height: 100%;">
-                <h2 data-i18n="settings.title">Ayarlar</h2>
-                <p data-i18n="settings.subtitle">Uygulama tercihlerinizi buradan yönetebilirsiniz.</p>
-
-                <div class="settings-section">
-                    <h3 data-i18n="settings.blacklistTitle">Kara Liste</h3>
-                    <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 10px;" data-i18n="settings.blacklistDesc">
-                        Listeden kaldırdığınız oyunlar burada görünür.
-                    </p>
-                    <button id="toggle-blacklist-btn" class="install-btn" data-i18n="settings.showBlacklist"
-                        style="width: auto; padding: 8px 16px; font-size: 14px;">Kara Listeyi Göster</button>
-
-                    <div id="blacklist-container" class="blacklist-container">
-                        <!-- Blacklist items will be injected here -->
+                <div class="compress-tabs-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <div>
+                        <h2 data-i18n="settings.title">Ayarlar</h2>
+                        <p data-i18n="settings.subtitle" style="margin-bottom: 0;">Uygulama tercihlerinizi buradan yönetebilirsiniz.</p>
                     </div>
-                </div>
-                <!-- ── Kullanıcı Oyun Yolları ──────────────────────────────── -->
-                <div class="settings-section" style="margin-top: 25px;">
-                    <h3 data-i18n="settings.userGamesTitle">Kullanıcı Oyun Yolları</h3>
-                    <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 15px;" data-i18n="settings.userGamesDesc">
-                        Otomatik mod kurulumu için oyunlarınızın ana klasörünü ve EXE yolunu tanımlayın. Bu kayıtlar her
-                        zaman otomatik tarama sonuçlarından önce gelir.
-                    </p>
-
-                    <!-- User games table -->
-                    <div class="card"
-                        style="padding: 15px; margin-bottom: 20px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px;">
-                        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;"
-                            id="user-games-table">
-                            <thead>
-                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: var(--accent-color);">
-                                    <th style="padding: 12px;" data-i18n="settings.colGameName">Oyun Adı</th>
-                                    <th style="padding: 12px;" data-i18n="settings.colGameRoot">Ana Klasör (game_root)</th>
-                                    <th style="padding: 12px;" data-i18n="settings.colExePath">EXE Yolu</th>
-                                    <th style="padding: 12px; text-align: right;" data-i18n="settings.colAction">İşlem</th>
-                                </tr>
-                            </thead>
-                            <tbody id="user-games-list">
-                                <!-- Dynamic entries injected by JS -->
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Add new user game form -->
-                    <div class="card"
-                        style="padding: 20px; background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px;">
-                        <h4 style="margin-top:0; color: var(--accent-color); margin-bottom: 15px; font-size: 15px;" data-i18n="settings.newGameTitle">✦
-                            Yeni Oyun Tanımla</h4>
-                        <div
-                            style="display: grid; grid-template-columns: 1fr 1.5fr auto; gap: 15px; align-items: flex-end; margin-bottom: 12px;">
-                            <div style="display: flex; flex-direction: column; gap: 6px;">
-                                <label style="font-size: 12px; color: var(--text-secondary);" data-i18n="settings.labelGameName">Oyun Adı</label>
-                                <input type="text" id="ug-game-name" placeholder="Örn: Cyberpunk 2077"
-                                    class="opti-select"
-                                    style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 10px; border-radius: 6px; width: 100%; box-sizing: border-box; outline: none; transition: border-color 0.2s;">
-                            </div>
-                            <div style="display: flex; flex-direction: column; gap: 6px;">
-                                <label style="font-size: 12px; color: var(--text-secondary);" data-i18n="settings.labelGameRoot">Ana Klasör
-                                    (game_root)</label>
-                                <div style="display: flex; gap: 8px;">
-                                    <input type="text" id="ug-game-root" placeholder="Örn: D:\Games\Cyberpunk 2077"
-                                        class="opti-select" readonly
-                                        style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 10px; border-radius: 6px; flex: 1; box-sizing: border-box; outline: none;">
-                                    <button id="ug-browse-root-btn" class="install-btn" data-i18n="settings.browseFolder"
-                                        style="width: auto; padding: 10px 14px; font-size: 13px; border-radius: 6px; white-space: nowrap;">📁
-                                        Seç</button>
-                                </div>
-                            </div>
-                            <div></div>
-                        </div>
-                        <div style="display: grid; grid-template-columns: 1fr auto; gap: 15px; align-items: flex-end;">
-                            <div style="display: flex; flex-direction: column; gap: 6px;">
-                                <label style="font-size: 12px; color: var(--text-secondary);">
-                                    <span data-i18n="settings.labelExePath">EXE Yolu</span>
-                                    <span id="ug-exe-hint" data-i18n="settings.autoFilled"
-                                        style="margin-left: 8px; font-size: 11px; color: var(--accent-color); display: none;">✨
-                                        Otomatik dolduruldu</span>
-                                </label>
-                                <div style="display: flex; gap: 8px;">
-                                    <input type="text" id="ug-exe-path"
-                                        placeholder="Örn: D:\Games\Cyberpunk 2077\bin\x64\Cyberpunk2077.exe"
-                                        class="opti-select"
-                                        style="flex: 1; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 10px; border-radius: 6px; box-sizing: border-box; outline: none; transition: border-color 0.2s;">
-                                    <button id="ug-browse-exe-btn" class="install-btn" data-i18n="settings.browseExe"
-                                        style="width: auto; padding: 10px 14px; font-size: 13px; border-radius: 6px; white-space: nowrap;">📂
-                                        Seç</button>
-                                </div>
-                            </div>
-                            <button id="ug-add-btn" class="install-btn" data-i18n="settings.saveBtn"
-                                style="width: auto; padding: 10px 24px; font-size: 14px; font-weight: 600; border-radius: 6px; height: 42px; box-sizing: border-box; cursor: pointer; transition: background 0.2s;">Kaydet</button>
-                        </div>
+                    <div class="settings-sub-nav">
+                        <button class="settings-sub-nav-item active" data-settings-sub-target="settings-app" data-i18n="settings.appTab">Uygulama Ayarları</button>
+                        <button class="settings-sub-nav-item" data-settings-sub-target="settings-game" data-i18n="settings.gameTab">Oyun Ayarları</button>
                     </div>
                 </div>
 
-                <!-- ── Desteklenen Oyunlar (Geliştirici Tanımlı, Salt Okunur) ── -->
-                <div class="settings-section" style="margin-top: 25px;">
-                    <div
-                        style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                        <div>
-                            <h3 style="margin: 0;" data-i18n="settings.devGamesTitle">Uygulama Tarafından Desteklenen Oyunlar</h3>
-                            <p style="font-size: 13px; color: var(--text-secondary); margin: 4px 0 0;" data-i18n="settings.devGamesDesc">
-                                Bu oyunlar için otomatik EXE yolu tespiti yapılabilmektedir. Salt okunurdur,
-                                düzenlenemez.
-                            </p>
-                        </div>
-                        <button id="toggle-dev-games-btn" class="install-btn" data-i18n="settings.showList"
-                            style="width: auto; padding: 8px 16px; font-size: 13px; background-color: var(--text-secondary);">Listeyi
-                            Göster</button>
+                <hr class="compress-divider" style="margin-top: 5px; margin-bottom: 20px;">
+
+                <!-- Sub-Tab 1: Uygulama Ayarları -->
+                <div class="settings-sub-tab-content active" id="settings-app">
+                    <div class="settings-section">
+                        <h3 data-i18n="settings.languageTitle">Dil / Language</h3>
+                        <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 12px;">Uygulama dilini seçin. / Select application language.</p>
+                        
+                        <select id="lang-select" class="lang-select-btn" title="Switch Language" style="height: 42px; padding: 0 16px; font-size: 14px; min-width: 150px;">
+                            <option value="tr" style="background: var(--card-bg); color: var(--text-primary);">TR</option>
+                            <option value="en" style="background: var(--card-bg); color: var(--text-primary);">EN</option>
+                        </select>
                     </div>
-                    <div id="dev-games-container" style="display: none;">
+                    
+                    <div class="settings-section" style="margin-top: 25px;">
+                        <h3 data-i18n="header.changeTheme">Temayı Değiştir</h3>
+                        <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 12px;">Uygulama temasını karanlık veya aydınlık mod olarak değiştirin. / Change theme.</p>
+                        
+                        <button id="theme-toggle" class="theme-toggle-btn" data-i18n-title="header.changeTheme" title="Temayı Değiştir" style="width: auto; padding: 10px 24px; display: inline-flex; align-items: center; gap: 8px;">
+                            <span id="theme-icon">🌙</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sub-Tab 2: Oyun Ayarları -->
+                <div class="settings-sub-tab-content" id="settings-game" style="display: none;">
+                    <div class="settings-section">
+                        <h3 data-i18n="settings.blacklistTitle">Kara Liste</h3>
+                        <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 10px;"
+                            data-i18n="settings.blacklistDesc">
+                            Listeden kaldırdığınız oyunlar burada görünür.
+                        </p>
+                        <button id="toggle-blacklist-btn" class="install-btn" data-i18n="settings.showBlacklist"
+                            style="width: auto; padding: 8px 16px; font-size: 14px;">Kara Listeyi Göster</button>
+
+                        <div id="blacklist-container" class="blacklist-container">
+                            <!-- Blacklist items will be injected here -->
+                        </div>
+                    </div>
+                    <!-- ── Kullanıcı Oyun Yolları ──────────────────────────────── -->
+                    <div class="settings-section" style="margin-top: 25px;">
+                        <h3 data-i18n="settings.userGamesTitle">Kullanıcı Oyun Yolları</h3>
+                        <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 15px;"
+                            data-i18n="settings.userGamesDesc">
+                            Otomatik mod kurulumu için oyunlarınızın ana klasörünü ve EXE yolunu tanımlayın. Bu kayıtlar her
+                            zaman otomatik tarama sonuçlarından önce gelir.
+                        </p>
+
+                        <!-- User games table -->
                         <div class="card"
-                            style="padding: 15px; background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px;">
-                            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+                            style="padding: 15px; margin-bottom: 20px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px;">
+                            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;"
+                                id="user-games-table">
                                 <thead>
-                                    <tr
-                                        style="border-bottom: 1px solid rgba(255,255,255,0.08); color: var(--accent-color);">
-                                        <th style="padding: 10px;" data-i18n="settings.colGameKey">Oyun (Key)</th>
-                                        <th style="padding: 10px;" data-i18n="settings.colExeRelative">Göreceli EXE Yolu</th>
-                                        <th style="padding: 10px; text-align: center; width: 100px;" data-i18n="settings.colCompat">Uyumluluk</th>
+                                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: var(--accent-color);">
+                                        <th style="padding: 12px;" data-i18n="settings.colGameName">Oyun Adı</th>
+                                        <th style="padding: 12px;" data-i18n="settings.colGameRoot">Ana Klasör (game_root)
+                                        </th>
+                                        <th style="padding: 12px;" data-i18n="settings.colExePath">EXE Yolu</th>
+                                        <th style="padding: 12px; text-align: right;" data-i18n="settings.colAction">İşlem
+                                        </th>
                                     </tr>
                                 </thead>
-                                <tbody id="dev-games-list">
+                                <tbody id="user-games-list">
                                     <!-- Dynamic entries injected by JS -->
                                 </tbody>
                             </table>
+                        </div>
+
+                        <!-- Add new user game form -->
+                        <div class="card"
+                            style="display: none; padding: 20px; background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px;">
+                            <h4 style="margin-top:0; color: var(--accent-color); margin-bottom: 15px; font-size: 15px;"
+                                data-i18n="settings.newGameTitle">✦
+                                Yeni Oyun Tanımla</h4>
+                            <div
+                                style="display: grid; grid-template-columns: 1fr 1.5fr auto; gap: 15px; align-items: flex-end; margin-bottom: 12px;">
+                                <div style="display: flex; flex-direction: column; gap: 6px;">
+                                    <label style="font-size: 12px; color: var(--text-secondary);"
+                                        data-i18n="settings.labelGameName">Oyun Adı</label>
+                                    <input type="text" id="ug-game-name" placeholder="Örn: Cyberpunk 2077"
+                                        class="opti-select"
+                                        style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 10px; border-radius: 6px; width: 100%; box-sizing: border-box; outline: none; transition: border-color 0.2s;">
+                                </div>
+                                <div style="display: flex; flex-direction: column; gap: 6px;">
+                                    <label style="font-size: 12px; color: var(--text-secondary);"
+                                        data-i18n="settings.labelGameRoot">Ana Klasör
+                                        (game_root)</label>
+                                    <div style="display: flex; gap: 8px;">
+                                        <input type="text" id="ug-game-root" placeholder="Örn: D:\Games\Cyberpunk 2077"
+                                            class="opti-select" readonly
+                                            style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 10px; border-radius: 6px; flex: 1; box-sizing: border-box; outline: none;">
+                                        <button id="ug-browse-root-btn" class="install-btn"
+                                            data-i18n="settings.browseFolder"
+                                            style="width: auto; padding: 10px 14px; font-size: 13px; border-radius: 6px; white-space: nowrap;">📁
+                                            Seç</button>
+                                    </div>
+                                </div>
+                                <div></div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr auto; gap: 15px; align-items: flex-end;">
+                                <div style="display: flex; flex-direction: column; gap: 6px;">
+                                    <label style="font-size: 12px; color: var(--text-secondary);">
+                                        <span data-i18n="settings.labelExePath">EXE Yolu</span>
+                                        <span id="ug-exe-hint" data-i18n="settings.autoFilled"
+                                            style="margin-left: 8px; font-size: 11px; color: var(--accent-color); display: none;">✨
+                                            Otomatik dolduruldu</span>
+                                    </label>
+                                    <div style="display: flex; gap: 8px;">
+                                        <input type="text" id="ug-exe-path"
+                                            placeholder="Örn: D:\Games\Cyberpunk 2077\bin\x64\Cyberpunk2077.exe"
+                                            class="opti-select"
+                                            style="flex: 1; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 10px; border-radius: 6px; box-sizing: border-box; outline: none; transition: border-color 0.2s;">
+                                        <button id="ug-browse-exe-btn" class="install-btn" data-i18n="settings.browseExe"
+                                            style="width: auto; padding: 10px 14px; font-size: 13px; border-radius: 6px; white-space: nowrap;">📂
+                                            Seç</button>
+                                    </div>
+                                </div>
+                                <button id="ug-add-btn" class="install-btn" data-i18n="settings.saveBtn"
+                                    style="width: auto; padding: 10px 24px; font-size: 14px; font-weight: 600; border-radius: 6px; height: 42px; box-sizing: border-box; cursor: pointer; transition: background 0.2s;">Kaydet</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ── Desteklenen Oyunlar (Geliştirici Tanımlı, Salt Okunur) ── -->
+                    <div class="settings-section" style="margin-top: 25px;">
+                        <div
+                            style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                            <div>
+                                <h3 style="margin: 0;" data-i18n="settings.devGamesTitle">Uygulama Tarafından Desteklenen
+                                    Oyunlar</h3>
+                                <p style="font-size: 13px; color: var(--text-secondary); margin: 4px 0 0;"
+                                    data-i18n="settings.devGamesDesc">
+                                    Bu oyunlar için otomatik EXE yolu tespiti yapılabilmektedir. Salt okunurdur,
+                                    düzenlenemez.
+                                </p>
+                            </div>
+                            <button id="toggle-dev-games-btn" class="install-btn" data-i18n="settings.showList"
+                                style="width: auto; padding: 8px 16px; font-size: 13px; background-color: var(--text-secondary);">Listeyi
+                                Göster</button>
+                        </div>
+                        <div id="dev-games-container" style="display: none;">
+                            <div class="card"
+                                style="padding: 15px; background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px;">
+                                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+                                    <thead>
+                                        <tr
+                                            style="border-bottom: 1px solid rgba(255,255,255,0.08); color: var(--accent-color);">
+                                            <th style="padding: 10px;" data-i18n="settings.colGameKey">Oyun (Key)</th>
+                                            <th style="padding: 10px;" data-i18n="settings.colExeRelative">Göreceli EXE Yolu
+                                            </th>
+                                            <th style="padding: 10px; text-align: center; width: 100px;"
+                                                data-i18n="settings.colCompat">Uyumluluk</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dev-games-list">
+                                        <!-- Dynamic entries injected by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -620,9 +702,42 @@
                 <h2 data-i18n="videos.title">Videolar</h2>
                 <p data-i18n="videos.subtitle">YouTube kanalımdan son yayınlanan videolar.</p>
                 <div id="videos-loading" class="videos-loading" data-i18n="videos.loading">Videolar yükleniyor...</div>
-                <div id="videos-error" class="videos-error" style="display: none;" data-i18n="videos.error">Videolar yüklenirken bir hata oluştu.
+                <div id="videos-error" class="videos-error" style="display: none;" data-i18n="videos.error">Videolar
+                    yüklenirken bir hata oluştu.
                     Lütfen bağlantınızı kontrol edin.</div>
                 <div class="videos-grid" id="videos-container"></div>
+            </div>
+
+            <!-- Free Games Tab -->
+            <div class="tab-content" id="free-games" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h2 data-i18n="freeGames.title">Ücretsiz Oyunlar</h2>
+                    <button id="refresh-free-games-btn" class="install-btn"
+                        style="width: auto; padding: 10px 20px; background-color: var(--text-secondary);"
+                        data-i18n="freeGames.refreshBtn">Fırsatları Yenile</button>
+                </div>
+                <p data-i18n="freeGames.subtitle">GamerPower tarafından listelenen ve şu an ücretsiz olan güncel oyunlar
+                    ile fırsatlar.</p>
+
+                <div id="free-games-loading" style="text-align: center; padding: 40px; color: var(--text-secondary);"
+                    data-i18n="freeGames.loading">
+                    Ücretsiz oyunlar yükleniyor...
+                </div>
+                <div id="free-games-error" style="display: none; text-align: center; padding: 40px; color: #ef4444;"
+                    data-i18n="freeGames.error">
+                    Ücretsiz oyunlar yüklenirken bir hata oluştu.
+                </div>
+
+                <div class="free-games-grid" id="free-games-container"></div>
+
+                <!-- Pagination Container -->
+                <div class="free-games-pagination" id="free-games-pagination"></div>
+
+                <!-- Attribution Footer -->
+                <div class="gamerpower-attribution">
+                    <a href="#" class="attribution-link external-link" data-url="https://www.gamerpower.com"
+                        data-i18n="freeGames.attribution">GamerPower.com tarafından sağlanmaktadır</a>
+                </div>
             </div>
         </main>
     </div>
@@ -652,7 +767,8 @@
 
             <!-- Game name -->
             <div style="margin-top: 16px; display: flex; flex-direction: column; gap: 6px;">
-                <label style="font-size: 12px; color: var(--text-secondary);" data-i18n="manualAdd.labelGameName">Oyun Adı</label>
+                <label style="font-size: 12px; color: var(--text-secondary);" data-i18n="manualAdd.labelGameName">Oyun
+                    Adı</label>
                 <input type="text" id="manual-game-name-input" class="opti-select"
                     style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 12px; box-sizing: border-box;"
                     placeholder="Örn: Cyberpunk 2077">
@@ -667,7 +783,8 @@
                         dolduruldu — düzenleyebilirsiniz</span>
                 </label>
                 <div style="display: flex; gap: 8px;">
-                    <input type="text" id="manual-exe-path-input" class="opti-select" data-i18n-placeholder="manualAdd.exePlaceholder"
+                    <input type="text" id="manual-exe-path-input" class="opti-select"
+                        data-i18n-placeholder="manualAdd.exePlaceholder"
                         style="flex: 1; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 12px; box-sizing: border-box;"
                         placeholder="EXE yolu (opsiyonel — boş bırakılırsa ana klasör kullanılır)">
                     <button id="manual-exe-browse-btn" class="install-btn" data-i18n="manualAdd.browseFolderBtn"
@@ -676,7 +793,8 @@
                 </div>
             </div>
 
-            <p style="font-size: 12px; color: var(--text-secondary); margin-top: 10px; line-height: 1.5;" data-i18n="manualAdd.note">
+            <p style="font-size: 12px; color: var(--text-secondary); margin-top: 10px; line-height: 1.5;"
+                data-i18n="manualAdd.note">
                 Desteklenen oyunlarda EXE yolu otomatik hesaplanır. İsterseniz düzenleyebilirsiniz.
             </p>
 
@@ -693,7 +811,8 @@
         <div class="modal-content" style="max-width: 500px;">
             <span class="close-modal" data-target="confirm-modal">&times;</span>
             <h3 style="margin-top: 0; color: var(--accent-color);" data-i18n="confirmModal.title">Emin misiniz?</h3>
-            <p style="font-size: 14px; line-height: 1.6; color: var(--text-secondary); margin-top: 15px;" data-i18n="confirmModal.body">
+            <p style="font-size: 14px; line-height: 1.6; color: var(--text-secondary); margin-top: 15px;"
+                data-i18n="confirmModal.body">
                 Bu oyun veya program listeden kaldırılacak ve oyuna ait veriler V-Manager'ın veri tabanından
                 silinecektir. İsterseniz kara listeye ekleyebilir ve daha sonraki tarama işlemlerinde gözükmemesini
                 sağlayabilirsiniz. Değişiklliği geri almak için ise kara listeyi ayarlarda görüntülebilirsiniz.
@@ -713,14 +832,17 @@
     <div id="scan-settings-modal" class="modal">
         <div class="modal-content" style="max-width: 460px;">
             <span class="close-modal" data-target="scan-settings-modal">&times;</span>
-            <h3 style="margin-top: 0; color: var(--accent-color); font-size: 18px;" data-i18n="scan.modalTitle">✦ Tarama Ayarları</h3>
+            <h3 style="margin-top: 0; color: var(--accent-color); font-size: 18px;" data-i18n="scan.modalTitle">✦ Tarama
+                Ayarları</h3>
 
             <!-- Section 1: coversOnly -->
             <div class="scan-modal-section">
                 <div class="scan-item-row" style="padding: 0;">
                     <div>
-                        <div class="scan-item-name" data-i18n="scan.coversOnlyLabel">Yalnızca eksik kapakları yenile</div>
-                        <div class="scan-item-label" data-i18n="scan.coversOnlyDesc">Oyun taraması yapılmaz, sadece kapaksız oyunların kapağı indirilir
+                        <div class="scan-item-name" data-i18n="scan.coversOnlyLabel">Yalnızca eksik kapakları yenile
+                        </div>
+                        <div class="scan-item-label" data-i18n="scan.coversOnlyDesc">Oyun taraması yapılmaz, sadece
+                            kapaksız oyunların kapağı indirilir
                         </div>
                     </div>
                     <label class="scan-toggle-label" id="covers-only-toggle-label"
@@ -805,7 +927,8 @@
             <!-- Footer -->
             <div class="scan-modal-footer">
                 <button id="scan-settings-close-btn" class="scan-close-btn" data-i18n="scan.closeBtn">Kapat</button>
-                <button id="scan-settings-start-btn" class="scan-start-btn" data-i18n="scan.startBtn">Taramayı Başlat</button>
+                <button id="scan-settings-start-btn" class="scan-start-btn" data-i18n="scan.startBtn">Taramayı
+                    Başlat</button>
             </div>
         </div>
     </div>
@@ -814,7 +937,8 @@
     <div id="scan-progress-modal" class="modal">
         <div class="modal-content" style="max-width: 500px; transition: max-width 0.3s ease;">
             <span class="close-modal" data-target="scan-progress-modal">&times;</span>
-            <h3 id="scan-progress-title" style="margin-top: 0; color: var(--accent-color);" data-i18n="games.scanTitle">Oyunlar Taranıyor</h3>
+            <h3 id="scan-progress-title" style="margin-top: 0; color: var(--accent-color);" data-i18n="games.scanTitle">
+                Oyunlar Taranıyor</h3>
 
             <div id="scan-progress-running-area" style="margin-top: 20px;">
                 <div
@@ -828,14 +952,16 @@
                     <span id="scan-progress-status" data-i18n="games.preparingLabel">Hazırlanıyor...</span>
                     <span id="scan-progress-percent">0%</span>
                 </div>
-                <p style="font-size: 12px; color: var(--text-secondary); margin-top: 20px; line-height: 1.4;" data-i18n="games.scanBackgroundNote">
+                <p style="font-size: 12px; color: var(--text-secondary); margin-top: 20px; line-height: 1.4;"
+                    data-i18n="games.scanBackgroundNote">
                     Bu pencereyi kapatabilirsiniz, tarama arka planda devam edecektir.
                 </p>
             </div>
 
             <!-- Custom Folders Scan Results (Hidden during scan, shown on completion if custom folders exist) -->
             <div id="scan-custom-results-area" style="display: none; margin-top: 20px;">
-                <p style="font-size: 13px; line-height: 1.6; color: var(--text-secondary); margin-bottom: 15px;" data-i18n="scan.customResultsDesc">
+                <p style="font-size: 13px; line-height: 1.6; color: var(--text-secondary); margin-bottom: 15px;"
+                    data-i18n="scan.customResultsDesc">
                     Aşağıda seçtiğiniz klasörün içerisindeki klasörler listelendi. Eğer bunlar oyuna ait değilse tikini
                     kapatarak kaydedebilir ve tiki açık olanların oyun listenize eklenmesini sağlayabilirsiniz. Burada
                     yaptığınız her şey kaydolur, bir dahaki taramada sizden bu tekrar istenir fakat seçimleriniz
@@ -872,7 +998,8 @@
                 <!-- Right Side: Info & Controls -->
                 <div class="dlss-modal-right">
                     <h2 class="dlss-modal-title" data-i18n="dlss.modalTitle">DLSS Enabler</h2>
-                    <p class="dlss-modal-desc" data-i18n="dlss.modalDesc">DLSS Enabler, birçok ekran kartına Multi Frame Generation özelliğini
+                    <p class="dlss-modal-desc" data-i18n="dlss.modalDesc">DLSS Enabler, birçok ekran kartına Multi Frame
+                        Generation özelliğini
                         getiren bir moddur.</p>
 
                     <hr class="dlss-divider">
@@ -883,7 +1010,8 @@
                             <option value="">Yükleniyor...</option>
                         </select>
 
-                        <h4 class="dlss-options-title" style="margin-top: 10px;" data-i18n="dlss.dllLabel">Kurulum DLL Adı</h4>
+                        <h4 class="dlss-options-title" style="margin-top: 10px;" data-i18n="dlss.dllLabel">Kurulum DLL
+                            Adı</h4>
                         <select id="dlss-dll-name" class="opti-select" style="width: 100%;">
                             <option value="version.dll">version.dll (Varsayılan)</option>
                             <option value="dxgi.dll">dxgi.dll</option>
@@ -892,7 +1020,8 @@
                             <option value="psapi.dll">psapi.dll</option>
                             <option value="winhttp.dll">winhttp.dll</option>
                         </select>
-                        <p style="font-size: 11px; color: var(--text-secondary); margin-top: 6px; line-height: 1.4;" data-i18n="dlss.dllNote">
+                        <p style="font-size: 11px; color: var(--text-secondary); margin-top: 6px; line-height: 1.4;"
+                            data-i18n="dlss.dllNote">
                             Klasörde zaten DLSS Enabler varsa bu seçim görmezden gelinir, mevcut isim korunur.
                         </p>
                     </div>
@@ -901,7 +1030,8 @@
                         <button id="dlss-auto-install-btn" class="install-btn" data-i18n="dlss.autoInstallBtn"
                             style="background-color: var(--accent-color); color: white; width: auto; padding: 10px 24px;">Otomatik
                             Kur</button>
-                        <button id="dlss-install-btn" class="install-btn dlss-install-action" data-i18n="dlss.manualInstallBtn"
+                        <button id="dlss-install-btn" class="install-btn dlss-install-action"
+                            data-i18n="dlss.manualInstallBtn"
                             style="background-color: var(--text-secondary); width: auto; padding: 10px 24px;">Manuel
                             Kur</button>
                     </div>
@@ -927,7 +1057,8 @@
                 <!-- Right Side: Options -->
                 <div class="dlss-modal-right">
                     <h2 class="dlss-modal-title" data-i18n="opti.modalTitle">OptiScaler Kurulumu</h2>
-                    <p class="dlss-modal-desc" data-i18n="opti.modalDesc">OptiScaler, FSR/XeSS/DLSS gibi upscaling teknolojilerini hemen her oyunda
+                    <p class="dlss-modal-desc" data-i18n="opti.modalDesc">OptiScaler, FSR/XeSS/DLSS gibi upscaling
+                        teknolojilerini hemen her oyunda
                         kullanabilmeni sağlar.</p>
 
                     <hr class="dlss-divider">
@@ -942,7 +1073,8 @@
                                 <div
                                     style="display: flex; align-items: center; justify-content: space-between; height: 28px; margin-bottom: 8px;">
                                     <label
-                                        style="font-size: 13px; color: var(--text-secondary); font-weight: 600; margin: 0;" data-i18n="opti.versionLabel">Sürüm</label>
+                                        style="font-size: 13px; color: var(--text-secondary); font-weight: 600; margin: 0;"
+                                        data-i18n="opti.versionLabel">Sürüm</label>
                                 </div>
                                 <div id="opti-versions-loading" data-i18n="opti.loadingVersions"
                                     style="font-size: 13px; color: var(--text-secondary); padding: 10px 0;">Sürümler
@@ -956,7 +1088,8 @@
                                 <div
                                     style="display: flex; align-items: center; justify-content: space-between; height: 28px; margin-bottom: 8px;">
                                     <label
-                                        style="font-size: 13px; color: var(--text-secondary); font-weight: 600; margin: 0;" data-i18n="opti.injectionLabel">Enjeksiyon
+                                        style="font-size: 13px; color: var(--text-secondary); font-weight: 600; margin: 0;"
+                                        data-i18n="opti.injectionLabel">Enjeksiyon
                                         Tipi</label>
                                 </div>
                                 <select id="opti-injection" class="opti-select" style="width: 100%;">
@@ -979,11 +1112,13 @@
                                     style="display: flex; align-items: center; justify-content: space-between; height: 28px; margin-bottom: 8px;">
                                     <div style="display: flex; align-items: center; gap: 6px;">
                                         <label
-                                            style="font-size: 13px; color: var(--text-secondary); font-weight: 600; margin: 0;" data-i18n="opti.fsr4Label">FSR4
+                                            style="font-size: 13px; color: var(--text-secondary); font-weight: 600; margin: 0;"
+                                            data-i18n="opti.fsr4Label">FSR4
                                             INT8</label>
                                         <span
                                             style="cursor: help; color: var(--text-secondary); font-size: 11px; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; background: rgba(255,255,255,0.08);"
-                                            title="FSR4 upscaling dosyalarını ve enjeksiyon modülünü yükleyerek oyunda FSR 4 desteği sağlar." data-i18n-title="opti.fsr4Help">?</span>
+                                            title="FSR4 upscaling dosyalarını ve enjeksiyon modülünü yükleyerek oyunda FSR 4 desteği sağlar."
+                                            data-i18n-title="opti.fsr4Help">?</span>
                                     </div>
                                     <label class="scan-toggle-label" style="margin: 0;">
                                         <input type="checkbox" id="opti-install-fsr4">
@@ -1003,10 +1138,12 @@
                                     style="display: flex; align-items: center; justify-content: space-between; height: 28px; margin-bottom: 8px;">
                                     <div style="display: flex; align-items: center; gap: 6px;">
                                         <label
-                                            style="font-size: 13px; color: var(--text-secondary); font-weight: 600; margin: 0;" data-i18n="opti.patcherLabel">OptiPatcher</label>
+                                            style="font-size: 13px; color: var(--text-secondary); font-weight: 600; margin: 0;"
+                                            data-i18n="opti.patcherLabel">OptiPatcher</label>
                                         <span
                                             style="cursor: help; color: var(--text-secondary); font-size: 11px; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; background: rgba(255,255,255,0.08);"
-                                            title="OptiScaler için ek asi eklentilerini otomatik yükler ve ini dosyasını yapılandırır. Uyumluluğu artırır." data-i18n-title="opti.patcherHelp">?</span>
+                                            title="OptiScaler için ek asi eklentilerini otomatik yükler ve ini dosyasını yapılandırır. Uyumluluğu artırır."
+                                            data-i18n-title="opti.patcherHelp">?</span>
                                     </div>
                                     <label class="scan-toggle-label" style="margin: 0;">
                                         <input type="checkbox" id="opti-install-patcher">
@@ -1028,7 +1165,8 @@
                         <button id="opti-auto-install-btn" class="install-btn" data-i18n="opti.autoInstallBtn"
                             style="background-color: var(--accent-color); color: white; width: auto; padding: 10px 24px;">Otomatik
                             Kur</button>
-                        <button id="opti-install-btn" class="install-btn dlss-install-action" data-i18n="opti.manualInstallBtn"
+                        <button id="opti-install-btn" class="install-btn dlss-install-action"
+                            data-i18n="opti.manualInstallBtn"
                             style="background-color: var(--text-secondary); width: auto; padding: 10px 24px;">Manuel
                             Kur</button>
                     </div>
@@ -1041,8 +1179,10 @@
     <div id="dlss-confirm-modal" class="modal">
         <div class="modal-content">
             <span class="close-modal" data-target="dlss-confirm-modal">&times;</span>
-            <h3 style="margin-top: 0; color: var(--accent-color);" data-i18n="dlss.confirmTitle">✦ DLSS Enabler Kurulumu</h3>
-            <p style="font-size: 14px; line-height: 1.6; color: var(--text-secondary); margin-top: 15px;" data-i18n="dlss.confirmBody">
+            <h3 style="margin-top: 0; color: var(--accent-color);" data-i18n="dlss.confirmTitle">✦ DLSS Enabler Kurulumu
+            </h3>
+            <p style="font-size: 14px; line-height: 1.6; color: var(--text-secondary); margin-top: 15px;"
+                data-i18n="dlss.confirmBody">
                 DLSS Enabler oyununuza kurulmak üzere, onaylıyor musunuz?
             </p>
             <div class="confirm-btn-group">
@@ -1057,7 +1197,8 @@
     <div id="dlss-versions-modal" class="modal">
         <div class="modal-content" style="max-width: 500px;">
             <span class="close-modal" data-target="dlss-versions-modal">&times;</span>
-            <h3 style="margin-top: 0; color: var(--accent-color);" data-i18n="dlss.versionsTitle">✦ DLSS Enabler Sürümleri</h3>
+            <h3 style="margin-top: 0; color: var(--accent-color);" data-i18n="dlss.versionsTitle">✦ DLSS Enabler
+                Sürümleri</h3>
             <p data-i18n="dlss.versionsDesc" data-i18n-html
                 style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; margin-top: 10px; line-height: 1.5;">
                 Yüklü sürümler <code
@@ -1072,7 +1213,8 @@
 
             <!-- Sağ altta buton -->
             <div style="display: flex; justify-content: flex-end; margin-top: 24px;">
-                <button id="dlss-open-upload-btn" class="install-btn" data-i18n="dlss.updateChangeBtn" style="width: auto; padding: 10px 24px;">
+                <button id="dlss-open-upload-btn" class="install-btn" data-i18n="dlss.updateChangeBtn"
+                    style="width: auto; padding: 10px 24px;">
                     Güncelle/Değiştir
                 </button>
             </div>
@@ -1096,9 +1238,11 @@
                 transition: border-color 0.2s, background 0.2s;
             ">
                 <div style="font-size: 28px; margin-bottom: 10px;">📦</div>
-                <p style="margin: 0 0 6px; font-size: 14px; color: var(--text-primary);" data-i18n="dlss.dragDropText">ZIP dosyasını buraya sürükleyin
+                <p style="margin: 0 0 6px; font-size: 14px; color: var(--text-primary);" data-i18n="dlss.dragDropText">
+                    ZIP dosyasını buraya sürükleyin
                 </p>
-                <span style="font-size: 12px; color: var(--text-secondary);" data-i18n="dlss.zipOnlyText">Yalnızca .zip uzantılı dosyalar kabul
+                <span style="font-size: 12px; color: var(--text-secondary);" data-i18n="dlss.zipOnlyText">Yalnızca .zip
+                    uzantılı dosyalar kabul
                     edilir</span>
             </div>
 
@@ -1112,7 +1256,8 @@
             <div id="dlss-upload-info"
                 style="display: none; margin-top: 16px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 14px; display: flex; flex-direction: column; gap: 10px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px;">
-                    <span style="color: var(--text-secondary);" data-i18n="dlss.uploadVersionLabel">Sürüm Versiyonu</span>
+                    <span style="color: var(--text-secondary);" data-i18n="dlss.uploadVersionLabel">Sürüm
+                        Versiyonu</span>
                     <span id="dlss-upload-version-display"
                         style="font-weight: bold; color: var(--accent-color);">—</span>
                     <input id="dlss-upload-version-input" type="text" placeholder="Örn: 4.7.2"
@@ -1144,7 +1289,8 @@
     <div id="optiscaler-versions-modal" class="modal">
         <div class="modal-content">
             <span class="close-modal" data-target="optiscaler-versions-modal">&times;</span>
-            <h3 style="margin-top: 0; color: var(--accent-color);" data-i18n="opti.versionsTitle">✦ OptiScaler Sürümleri</h3>
+            <h3 style="margin-top: 0; color: var(--accent-color);" data-i18n="opti.versionsTitle">✦ OptiScaler Sürümleri
+            </h3>
             <p data-i18n="opti.versionsDesc"
                 style="font-size: 14px; line-height: 1.6; color: var(--text-secondary); margin-top: 15px; margin-bottom: 20px;">
                 GitHub üzerinden çekilen en güncel OptiScaler sürümleri aşağıda listelenmiştir. Seçtiğiniz sürümü
@@ -1157,7 +1303,8 @@
             </div>
 
             <div id="optiscaler-versions-container" style="display: none;">
-                <label style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; display: block;" data-i18n="opti.selectVersionLabel">Bir
+                <label style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; display: block;"
+                    data-i18n="opti.selectVersionLabel">Bir
                     Sürüm Seçin:</label>
                 <select id="optiscaler-version-select" class="dlss-select-box"
                     style="width: 100%; margin-bottom: 25px; padding: 12px; border-radius: 8px; font-size: 14px;"></select>
@@ -1174,7 +1321,8 @@
     <div id="optipatcher-versions-modal" class="modal">
         <div class="modal-content">
             <span class="close-modal" data-target="optipatcher-versions-modal">&times;</span>
-            <h3 style="margin-top: 0; color: var(--accent-color);" data-i18n="opti.patcherTitle">✦ OptiPatcher Sürümleri</h3>
+            <h3 style="margin-top: 0; color: var(--accent-color);" data-i18n="opti.patcherTitle">✦ OptiPatcher Sürümleri
+            </h3>
             <p data-i18n="opti.patcherDesc"
                 style="font-size: 14px; line-height: 1.6; color: var(--text-secondary); margin-top: 15px; margin-bottom: 20px;">
                 GitHub üzerinden çekilen en güncel OptiPatcher sürümleri aşağıda listelenmiştir. Seçtiğiniz sürümü
@@ -1187,7 +1335,8 @@
             </div>
 
             <div id="optipatcher-versions-container" style="display: none;">
-                <label style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; display: block;" data-i18n="opti.patcherSelectLabel">Bir
+                <label style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; display: block;"
+                    data-i18n="opti.patcherSelectLabel">Bir
                     Sürüm Seçin:</label>
                 <select id="optipatcher-version-select" class="dlss-select-box"
                     style="width: 100%; margin-bottom: 25px; padding: 12px; border-radius: 8px; font-size: 14px;"></select>
@@ -1204,19 +1353,22 @@
     <div id="fsr4-versions-modal" class="modal">
         <div class="modal-content">
             <span class="close-modal" data-target="fsr4-versions-modal">&times;</span>
-            <h3 style="margin-top: 0; color: var(--accent-color);" data-i18n="opti.fsr4Title">✦ FSR4 Files Sürümleri</h3>
+            <h3 style="margin-top: 0; color: var(--accent-color);" data-i18n="opti.fsr4Title">✦ FSR4 Files Sürümleri
+            </h3>
             <p data-i18n="opti.fsr4Desc"
                 style="font-size: 14px; line-height: 1.6; color: var(--text-secondary); margin-top: 15px; margin-bottom: 20px;">
                 Sunucu üzerinden çekilen FSR4 Files sürümleri aşağıda listelenmiştir. Seçtiğiniz sürümü
                 indirebilirsiniz.
             </p>
 
-            <div id="fsr4-versions-loading" data-i18n="opti.standaloneLoading" style="text-align: center; padding: 20px; color: var(--text-secondary);">
+            <div id="fsr4-versions-loading" data-i18n="opti.standaloneLoading"
+                style="text-align: center; padding: 20px; color: var(--text-secondary);">
                 Sürümler aranıyor, lütfen bekleyin...
             </div>
 
             <div id="fsr4-versions-container" style="display: none;">
-                <label style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; display: block;" data-i18n="opti.fsr4SelectLabel">Bir
+                <label style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; display: block;"
+                    data-i18n="opti.fsr4SelectLabel">Bir
                     Sürüm Seçin:</label>
                 <select id="fsr4-version-select" class="dlss-select-box"
                     style="width: 100%; margin-bottom: 25px; padding: 12px; border-radius: 8px; font-size: 14px;"></select>
@@ -1233,7 +1385,8 @@
     <div id="streamline-versions-modal" class="modal">
         <div class="modal-content">
             <span class="close-modal" data-target="streamline-versions-modal">&times;</span>
-            <h3 style="margin-top: 0; color: var(--accent-color);" data-i18n="streamline.versionsTitle">✦ Streamline Sürümleri</h3>
+            <h3 style="margin-top: 0; color: var(--accent-color);" data-i18n="streamline.versionsTitle">✦ Streamline
+                Sürümleri</h3>
             <p data-i18n="streamline.versionsDesc"
                 style="font-size: 14px; line-height: 1.6; color: var(--text-secondary); margin-top: 15px; margin-bottom: 20px;">
                 GitHub üzerinden çekilen en güncel 10 Streamline sürümü aşağıda listelenmiştir. Seçtiğiniz sürümü
@@ -1246,7 +1399,8 @@
             </div>
 
             <div id="streamline-versions-container" style="display: none;">
-                <label style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; display: block;" data-i18n="streamline.selectVersionLabel">Bir
+                <label style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; display: block;"
+                    data-i18n="streamline.selectVersionLabel">Bir
                     Sürüm Seçin:</label>
                 <select id="streamline-version-select" class="dlss-select-box"
                     style="width: 100%; margin-bottom: 25px; padding: 12px; border-radius: 8px; font-size: 14px;"></select>
@@ -1287,7 +1441,8 @@
                     </div>
 
                     <div class="dlss-modal-footer" style="margin-top: 30px;">
-                        <button id="sl-auto-install-btn" class="install-btn dlss-install-action" data-i18n="streamline.autoInstallBtn"
+                        <button id="sl-auto-install-btn" class="install-btn dlss-install-action"
+                            data-i18n="streamline.autoInstallBtn"
                             style="background-color: #22c55e; width: 100%;">Otomatik Kur</button>
                     </div>
                 </div>
@@ -1339,7 +1494,8 @@
 
                         <div style="display: flex; gap: 10px; align-items: flex-end; margin-bottom: 20px;">
                             <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
-                                <label style="font-size: 11px; color: var(--text-secondary); font-weight: bold;" data-i18n="update.changeVersion">Sürüm
+                                <label style="font-size: 11px; color: var(--text-secondary); font-weight: bold;"
+                                    data-i18n="update.changeVersion">Sürüm
                                     Değiştir:</label>
                                 <select id="update-dlss-version-select" class="dlss-select-box"
                                     style="padding: 8px; font-size: 13px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: var(--text-primary);"></select>
@@ -1371,7 +1527,8 @@
 
                         <div style="display: flex; gap: 10px; align-items: flex-end; margin-bottom: 20px;">
                             <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
-                                <label style="font-size: 11px; color: var(--text-secondary); font-weight: bold;" data-i18n="update.changeVersionNoBackup">Sürüm
+                                <label style="font-size: 11px; color: var(--text-secondary); font-weight: bold;"
+                                    data-i18n="update.changeVersionNoBackup">Sürüm
                                     Değiştir (Yedekleme Olmadan):</label>
                                 <select id="update-sl-version-select" class="dlss-select-box"
                                     style="padding: 8px; font-size: 13px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: var(--text-primary);"></select>
@@ -1444,7 +1601,8 @@
                 <!-- Right Side: Settings -->
                 <div class="dlss-modal-right" style="display: flex; flex-direction: column;">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h2 class="dlss-modal-title" style="margin: 0;" data-i18n="modSettings.title">Mod Ayarları (INI Editörü)</h2>
+                        <h2 class="dlss-modal-title" style="margin: 0;" data-i18n="modSettings.title">Mod Ayarları (INI
+                            Editörü)</h2>
                     </div>
 
                     <div id="settings-warning-banner" data-i18n="modSettings.warning" data-i18n-html
@@ -1479,7 +1637,8 @@
     <div id="info-modal" class="modal">
         <div class="modal-content" style="position: relative;">
             <span class="close-modal" data-target="info-modal">&times;</span>
-            <h3 id="info-modal-title" style="margin-top: 0; color: var(--accent-color);" data-i18n="update.infoTitle">Bilgi</h3>
+            <h3 id="info-modal-title" style="margin-top: 0; color: var(--accent-color);" data-i18n="update.infoTitle">
+                Bilgi</h3>
             <p id="info-modal-message"
                 style="font-size: 14px; line-height: 1.6; color: var(--text-secondary); margin-top: 15px; white-space: pre-line;">
             </p>

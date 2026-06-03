@@ -288,6 +288,21 @@ export function initSettingsListeners() {
         });
     }
 
+    // ── Sub-Tab Navigation for Settings ──────────────────────────────────────
+    const settingsSubNavItems = document.querySelectorAll('.settings-sub-nav-item');
+    const settingsSubTabContents = document.querySelectorAll('.settings-sub-tab-content');
+
+    settingsSubNavItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const targetId = item.getAttribute('data-settings-sub-target');
+            settingsSubNavItems.forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+            settingsSubTabContents.forEach(content => {
+                content.style.display = content.id === targetId ? 'block' : 'none';
+            });
+        });
+    });
+
     // ── Refresh table whenever user navigates to settings tab ────────────────
     document.addEventListener('tab-activated', (e) => {
         if (e.detail && e.detail.tabId === 'settings-tab') {
