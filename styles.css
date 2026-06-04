@@ -63,6 +63,7 @@ body {
     position: sticky;
     top: 0;
     z-index: 100;
+    will-change: transform;
     transition: background-color var(--transition-speed), border-color var(--transition-speed);
 }
 
@@ -118,6 +119,7 @@ body {
     overflow: hidden;
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
+    will-change: transform;
 }
 
 .nav-list li {
@@ -217,20 +219,8 @@ body {
     justify-content: center;
     border-radius: 50%;
     box-shadow: 0 0 6px #0ea5e9;
-    animation: badgePulse 2s infinite ease-in-out;
     pointer-events: none;
     z-index: 10;
-}
-
-@keyframes badgePulse {
-    0%, 100% {
-        transform: scale(1);
-        box-shadow: 0 0 4px #0ea5e9;
-    }
-    50% {
-        transform: scale(1.15);
-        box-shadow: 0 0 10px #0ea5e9, 0 0 14px #0ea5e9;
-    }
 }
 
 .btn-icon {
@@ -544,6 +534,7 @@ body {
     opacity: 0;
     transition: opacity 0.25s ease;
     z-index: 3;
+    will-change: opacity;
 }
 
 .game-actions-wrapper {
@@ -755,6 +746,7 @@ body {
     align-items: center;
     gap: 6px;
     backdrop-filter: blur(4px);
+    will-change: transform;
 }
 
 .dlss-tag::before {
@@ -1029,6 +1021,7 @@ body {
     backdrop-filter: blur(5px);
     align-items: center;
     justify-content: center;
+    will-change: transform;
 }
 
 .modal.active {
@@ -1694,6 +1687,7 @@ body {
     animation: spin 1s linear infinite;
     float: right;
     margin-top: 4px;
+    will-change: transform;
 }
 
 @keyframes spin {
@@ -1897,6 +1891,7 @@ body {
     line-height: 1.4;
     transition: opacity 0.15s ease;
     backdrop-filter: blur(4px);
+    will-change: opacity;
 }
 
 
@@ -2502,6 +2497,7 @@ body:not([data-theme="dark"]) .game-search-input:focus {
     font-weight: 700;
     backdrop-filter: blur(4px);
     border: 1px solid rgba(239, 68, 68, 0.3);
+    will-change: transform;
 }
 
 .free-game-info {
@@ -2695,6 +2691,7 @@ body:not([data-theme="dark"]) .game-search-input:focus {
     margin-top: 10px;
     backdrop-filter: blur(10px);
     transition: all 0.3s ease;
+    will-change: transform;
 }
 
 .developer-profile-card:hover {

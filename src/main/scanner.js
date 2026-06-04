@@ -163,6 +163,7 @@ async function detectUpscalers(gamePath) {
 
     const ignoreFolders = ['data', 'shader', 'resource', 'asset', 'sound', 'audio', 'video', 'movie', 'ui', 'localization', 'language', '_redist', '__commonredist', 'docs'];
     const priorityFolders = ['bin', 'binaries', 'x64', 'win64', 'dx12', 'plugins'];
+    const MAX_DEPTH = 12; // Sonsuz taramayı önlemek için derinlik sınırı
 
     const queue = [{ path: rootPath, depth: 0 }];
     const visited = new Set();
@@ -229,10 +230,8 @@ async function detectUpscalers(gamePath) {
                         }
                     }
                 } else if (file.isDirectory()) {
-                    // We still keep a small ignore list for obviously irrelevant folders to maintain performance,
-                    // but depth limit is removed.
                     const shouldIgnore = ignoreFolders.some(f => nameLow === f);
-                    if (!shouldIgnore) {
+                    if (!shouldIgnore && current.depth < MAX_DEPTH) {
                         subDirs.push({ path: path.join(current.path, file.name), depth: current.depth + 1, priority: priorityFolders.includes(nameLow) });
                     }
                 }

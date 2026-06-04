@@ -583,7 +583,6 @@ function registerIpcHandlers() {
         const window = BrowserWindow.fromWebContents(event.sender);
         const savedState = config.getCustomSubfoldersState();
         const existingGames = config.getExistingGamesState();
-        const userGames = config.getUserGames();
 
         // 1. Save all states first (remember checkboxes for unchecked items too)
         for (const item of subfolders) {
@@ -621,7 +620,6 @@ function registerIpcHandlers() {
                     }
                     const updatedGamesList = existingGames.filter(g => g !== existingGame);
                     config.setExistingGamesState(updatedGamesList);
-                    config.saveGamesState();
                 }
 
                 const devGames = config.getDeveloperGames();
@@ -630,8 +628,6 @@ function registerIpcHandlers() {
                     const relPath = devGames[normKey].exe_relative_path.replace(/\//g, '\\');
                     exePath = path.join(gameRoot, relPath);
                 }
-
-                // user-games.json registration removed per user request (not needed for custom subfolders)
 
                 try {
                     await scanner.processAndStreamGame({
@@ -649,6 +645,8 @@ function registerIpcHandlers() {
                 const percent = Math.round((processedCount / totalItems) * 100);
                 event.sender.send('scan-progress', percent);
             }
+            // Tüm oyunlar işlendikten sonra son bir kayıt (her oyun için ayrı kayıt yerine daha verimli)
+            config.saveGamesState();
         }
 
         return config.getExistingGamesState();
