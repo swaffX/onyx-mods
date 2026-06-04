@@ -461,10 +461,12 @@ async function processAndStreamGame(game, event, scanSettings) {
         }
         existingGame.isFavorite = isFavorite;
 
-        config.saveGamesState();
-
         if (currentScanFoundGames) {
+            // H-15: Inside a scan — skip per-game save; runScan saves once at the end
             getGameKeys(finalizedName, existingGame.exePath).forEach(k => currentScanFoundGames.add(k));
+        } else {
+            // Called outside scan (e.g. manual add) — save immediately
+            config.saveGamesState();
         }
 
         console.log(`[SCANNER] ${finalizedName} updated and merged with existing mod metadata.`);
@@ -497,11 +499,14 @@ async function processAndStreamGame(game, event, scanSettings) {
         };
 
         existingGamesState.push(finalGame);
-        config.markNeedsDedup(); // FIX 5b: Signal that dedup is needed before next save
-        config.saveGamesState();
+        config.markNeedsDedup(); // Signal that dedup is needed before next save
 
         if (currentScanFoundGames) {
+            // H-15: Inside a scan — skip per-game save; runScan saves once at the end
             getGameKeys(finalizedName, finalGame.exePath).forEach(k => currentScanFoundGames.add(k));
+        } else {
+            // Called outside scan (e.g. manual add) — save immediately
+            config.saveGamesState();
         }
 
         console.log(`[SCANNER] ${game.name} saved and streaming to UI`);

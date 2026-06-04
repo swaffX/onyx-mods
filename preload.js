@@ -10,7 +10,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     addManualGame: () => ipcRenderer.invoke('add-manual-game'),
     saveManualGame: (data) => ipcRenderer.invoke('save-manual-game', data),
     toggleFavorite: (gameName) => ipcRenderer.invoke('toggle-favorite', gameName),
-    openExternal: (url) => shell.openExternal(url),
+    // M-28: openExternal removed — use openExternalLink IPC channel for security
     
     // Logging
     logToMain: (msg) => ipcRenderer.send('log-to-main', msg),
@@ -86,6 +86,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
     runCompression: (data) => ipcRenderer.invoke('run-compression', data),
     runUncompression: (data) => ipcRenderer.invoke('run-uncompression', data),
     onCompressionProgress: (callback) => ipcRenderer.on('compression-progress', (_event, data) => callback(data)),
+    // C-02: Cleanup function for compression progress listeners to prevent memory leaks
+    removeCompressionProgressListeners: () => ipcRenderer.removeAllListeners('compression-progress'),
 
     // Compression DB
     getCompressionDb: () => ipcRenderer.invoke('get-compression-db'),

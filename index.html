@@ -34,6 +34,7 @@
                         <li><button class="nav-item" data-target="updates"
                                 data-i18n="nav.updates">Güncellemeler</button></li>
                         <li><button class="nav-item" data-target="videos" data-i18n="nav.videos">Videolar</button></li>
+                        <li><button class="nav-item" data-target="tools" data-i18n="nav.tools">Araçlar</button></li>
                     </ul>
                 </nav>
 
@@ -529,6 +530,7 @@
                     <div class="settings-sub-nav">
                         <button class="settings-sub-nav-item active" data-settings-sub-target="settings-app" data-i18n="settings.appTab">Uygulama Ayarları</button>
                         <button class="settings-sub-nav-item" data-settings-sub-target="settings-game" data-i18n="settings.gameTab">Oyun Ayarları</button>
+                        <button class="settings-sub-nav-item" data-settings-sub-target="settings-dev" data-i18n="settings.devTab">Geliştirici</button>
                     </div>
                 </div>
 
@@ -548,7 +550,7 @@
                     
                     <div class="settings-section" style="margin-top: 25px;">
                         <h3 data-i18n="header.changeTheme">Temayı Değiştir</h3>
-                        <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 12px;">Uygulama temasını karanlık veya aydınlık mod olarak değiştirin. / Change theme.</p>
+                        <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 12px;" data-i18n="settings.themeSubtext">Uygulama temasını karanlık veya aydınlık mod olarak değiştirin. / Change theme.</p>
                         
                         <button id="theme-toggle" class="theme-toggle-btn" data-i18n-title="header.changeTheme" title="Temayı Değiştir" style="width: auto; padding: 10px 24px; display: inline-flex; align-items: center; gap: 8px;">
                             <span id="theme-icon">🌙</span>
@@ -691,6 +693,30 @@
                                         <!-- Dynamic entries injected by JS -->
                                     </tbody>
                                 </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+                <!-- Sub-Tab 3: Geliştirici -->
+                <div class="settings-sub-tab-content" id="settings-dev" style="display: none;">
+                    <div class="developer-profile-card">
+                        <img src="https://yt3.googleusercontent.com/4kMx__Gae623XQ10lETvpfSisHc8ict_bj2f5xfilvoRwdOIFsmx8Zu0As3lS3wiCLqNR_m02qg=s1920-c-k-c0x00ffffff-no-rj" class="developer-avatar" alt="Berkay">
+                        <div class="developer-info">
+                            <h3 data-i18n="settings.devIntro">Selam! Ben Berkay.</h3>
+                            <p data-i18n="settings.devText1">Bu programı, oyuncuların DLSS, FSR ve Optiscaler gibi yeni nesil grafik ve performans modlarını karmaşık klasör yapılarıyla uğraşmadan, tek tıkla ve güvenle yönetebilmesi için tamamen açık kaynaklı olarak geliştirdim.</p>
+                            <p data-i18n="settings.devText2">Bir içerik üreticisi olarak, teknoloji ve oyun optimizasyonları üzerine yaptığım tüm çalışmaları YouTube kanalımda rehber videolarıyla destekliyorum. Yazılıma ve oyun dünyasına olan tutkumla geliştirdiğim V-Manager'ı tamamen ücretsiz ve reklamsız tutmaya kararlıyım. Eğer proje işine yaradıysa, kanala abone olarak bana en büyük desteği verebilirsin!</p>
+                            
+                            <div class="developer-links">
+                                <a href="#" class="external-link dev-link-btn github-btn" data-url="https://github.com/vuenxx">
+                                    <span class="icon">🌐</span> GitHub
+                                </a>
+                                <a href="#" class="external-link dev-link-btn youtube-btn" data-url="https://www.youtube.com/@vuenxxmx">
+                                    <span class="icon">📺</span> YouTube
+                                </a>
+                                <a href="#" class="external-link dev-link-btn discord-btn" data-url="https://discord.com/invite/SnRpn3ADNF">
+                                    <span class="icon">💬</span> Discord
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -737,6 +763,44 @@
                 <div class="gamerpower-attribution">
                     <a href="#" class="attribution-link external-link" data-url="https://www.gamerpower.com"
                         data-i18n="freeGames.attribution">GamerPower.com tarafından sağlanmaktadır</a>
+                </div>
+            </div>
+
+            <!-- Tools Tab -->
+            <div class="tab-content" id="tools" style="display: none;">
+                <h2 data-i18n="tools.title">Araçlar</h2>
+                <p data-i18n="tools.subtitle">Dosyalarınızı yönetmek ve diskinizi optimize etmek için önerilen yararlı araçlar.</p>
+                
+                <div class="packages-grid">
+                    <!-- Tool 1: TreeSize Free -->
+                    <div class="package-card">
+                        <div class="package-header">
+                            <h3 style="display: flex; align-items: center; gap: 8px;">
+                                <span>📊</span> <span data-i18n="tools.treesizeTitle">TreeSize Free</span>
+                            </h3>
+                        </div>
+                        <div class="package-features">
+                            <p data-i18n="tools.treesizeDesc">Disk alanınızı görselleştirin. Hangi klasörlerin en çok yer kapladığını saniyeler içinde bulun ve gereksiz dosyaları temizleyerek yer açın.</p>
+                        </div>
+                        <div class="package-actions">
+                            <button class="install-btn external-link" data-url="https://www.jam-software.com/treesize_free" data-i18n="tools.downloadBtn" style="text-align: center; text-decoration: none;">İndir / Resmi Site ➔</button>
+                        </div>
+                    </div>
+
+                    <!-- Tool 2: Everything Search -->
+                    <div class="package-card">
+                        <div class="package-header">
+                            <h3 style="display: flex; align-items: center; gap: 8px;">
+                                <span>🔍</span> <span data-i18n="tools.everythingTitle">Everything Search</span>
+                            </h3>
+                        </div>
+                        <div class="package-features">
+                            <p data-i18n="tools.everythingDesc">Bilgisayarınızdaki dosya ve klasörleri anında bulun. Ultra hızlı arama motoru ile zaman kazanın, dosyalarınızı yönetin.</p>
+                        </div>
+                        <div class="package-actions">
+                            <button class="install-btn external-link" data-url="https://www.voidtools.com/" data-i18n="tools.downloadBtn" style="text-align: center; text-decoration: none;">İndir / Resmi Site ➔</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>

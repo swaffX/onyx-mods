@@ -2,6 +2,9 @@ const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 
+// Whitelist of valid compression algorithms (M-01: algorithm validation)
+const VALID_ALGORITHMS = ['XPRESS4K', 'XPRESS8K', 'XPRESS16K', 'LZX'];
+
 /**
  * Native Windows Compression Wrapper
  * Interfaces with compact.exe to provide transparent file-system compression
@@ -21,18 +24,25 @@ class WindowsCompressor {
     async compress(folderPath, algorithm = 'XPRESS4K', options = {}, onProgress = null) {
         return new Promise((resolve, reject) => {
             if (!fs.existsSync(folderPath)) {
-                return reject(new Error('Klasör bulunamadı: ' + folderPath));
+                return reject(new Error('ERR_FOLDER_NOT_FOUND'));
             }
 
-            // Map UI algorithm names to compact.exe flags
-            const algoFlag = `/EXE:${algorithm.toUpperCase()}`;
-            
+            // M-01: Validate algorithm against whitelist to prevent command injection
+            const algoUpper = String(algorithm).toUpperCase();
+            if (!VALID_ALGORITHMS.includes(algoUpper)) {
+                return reject(new Error('ERR_INVALID_ALGORITHM'));
+            }
+
+            const algoFlag = `/EXE:${algoUpper}`;
+
             // Basic flags: /C (compress), /S (recurse), /A (hidden/system files), /I (ignore errors), /EXE (WOF)
             const args = ['/C', '/S', '/A', '/I', algoFlag, '*'];
 
-            const proc = spawn('compact.exe', args, {
+            // H-01: Use chcp 65001 to force UTF-8 output from compact.exe
+            // M-02: Use cmd.exe with shell:false for safe argument passing
+            const proc = spawn('cmd.exe', ['/c', 'chcp 65001 >nul && compact.exe', ...args], {
                 cwd: folderPath,
-                shell: true
+                shell: false
             });
 
             this.activeProcesses.set(folderPath, proc);
@@ -41,18 +51,22 @@ class WindowsCompressor {
             let errorOutput = '';
 
             proc.stdout.on('data', (data) => {
-                const chunk = data.toString();
+                const chunk = data.toString('utf8');
                 output += chunk;
-                
+
                 if (onProgress) {
-                    // Try to parse percentage or file info from compact.exe output
-                    // "123 / 456 files [OK]" etc.
                     this._parseProgress(chunk, onProgress);
                 }
             });
 
             proc.stderr.on('data', (data) => {
-                errorOutput += data.toString();
+                errorOutput += data.toString('utf8');
+            });
+
+            // C-03: Handle spawn errors so the Promise never hangs
+            proc.on('error', (err) => {
+                this.activeProcesses.delete(folderPath);
+                reject(new Error('ERR_SPAWN_FAILED: ' + err.message));
             });
 
             proc.on('close', (code) => {
@@ -64,7 +78,8 @@ class WindowsCompressor {
                         code: code
                     });
                 } else {
-                    reject(new Error(`Sıkıştırma hatası (Kod: ${code}): ${errorOutput}`));
+                    // H-11: Use error codes instead of hardcoded Turkish messages
+                    reject(new Error(`ERR_COMPRESS_FAILED:${code}`));
                 }
             });
         });
@@ -73,28 +88,22 @@ class WindowsCompressor {
     /**
      * Uncompresses a folder
      */
+    // L-01: Fix new Promise(async) anti-pattern — use async function directly
     async uncompress(folderPath, onProgress = null) {
-        return new Promise(async (resolve, reject) => {
-            if (!fs.existsSync(folderPath)) {
-                return reject(new Error('Klasör bulunamadı: ' + folderPath));
-            }
+        if (!fs.existsSync(folderPath)) {
+            throw new Error('ERR_FOLDER_NOT_FOUND');
+        }
 
-            try {
-                // We need to run two passes to be thorough:
-                // 1. Uncompress WOF (EXE) compressed files
-                // 2. Uncompress standard NTFS compressed files
+        // We need to run two passes to be thorough:
+        // 1. Uncompress WOF (EXE) compressed files
+        // 2. Uncompress standard NTFS compressed files
+        if (onProgress) onProgress('WOF sıkıştırması geri alınıyor...');
+        await this._runCompact(folderPath, ['/U', '/S', '/A', '/I', '/EXE', '*'], onProgress);
 
-                if (onProgress) onProgress('WOF sıkıştırması geri alınıyor...');
-                await this._runCompact(folderPath, ['/U', '/S', '/A', '/I', '/EXE', '*'], onProgress);
+        if (onProgress) onProgress('NTFS sıkıştırması geri alınıyor...');
+        const finalResult = await this._runCompact(folderPath, ['/U', '/S', '/A', '/I', '*'], onProgress);
 
-                if (onProgress) onProgress('NTFS sıkıştırması geri alınıyor...');
-                const finalResult = await this._runCompact(folderPath, ['/U', '/S', '/A', '/I', '*'], onProgress);
-
-                resolve(finalResult);
-            } catch (e) {
-                reject(e);
-            }
-        });
+        return finalResult;
     }
 
     /**
@@ -102,9 +111,10 @@ class WindowsCompressor {
      */
     async _runCompact(folderPath, args, onProgress) {
         return new Promise((resolve, reject) => {
-            const proc = spawn('compact.exe', args, {
+            // H-01: Force UTF-8 via chcp 65001; M-02: shell:false with cmd.exe
+            const proc = spawn('cmd.exe', ['/c', 'chcp 65001 >nul && compact.exe', ...args], {
                 cwd: folderPath,
-                shell: true
+                shell: false
             });
 
             this.activeProcesses.set(folderPath, proc);
@@ -113,13 +123,19 @@ class WindowsCompressor {
             let errorOutput = '';
 
             proc.stdout.on('data', (data) => {
-                const chunk = data.toString();
+                const chunk = data.toString('utf8');
                 output += chunk;
                 if (onProgress) this._parseProgress(chunk, onProgress);
             });
 
             proc.stderr.on('data', (data) => {
-                errorOutput += data.toString();
+                errorOutput += data.toString('utf8');
+            });
+
+            // C-03: Handle spawn errors
+            proc.on('error', (err) => {
+                this.activeProcesses.delete(folderPath);
+                reject(new Error('ERR_SPAWN_FAILED: ' + err.message));
             });
 
             proc.on('close', (code) => {
@@ -127,7 +143,8 @@ class WindowsCompressor {
                 if (code === 0 || code === 1) {
                     resolve({ success: true, log: output, code: code });
                 } else {
-                    reject(new Error(`Compact hatası (Kod: ${code}): ${errorOutput}`));
+                    // H-11: Error codes
+                    reject(new Error(`ERR_COMPACT_FAILED:${code}`));
                 }
             });
         });
@@ -135,10 +152,8 @@ class WindowsCompressor {
 
 
     _parseProgress(text, callback) {
-        // Simple heuristic for compact.exe output
-        // It usually prints file names and then a summary.
-        // We can emit the last few lines to UI
-        const lines = text.split('\n').filter(l => l.trim().length > 0);
+        // H-02: Support both \r and \n line endings from compact.exe
+        const lines = text.split(/\r?\n|\r/).filter(l => l.trim().length > 0);
         if (lines.length > 0) {
             callback(lines[lines.length - 1].trim());
         }
@@ -147,7 +162,7 @@ class WindowsCompressor {
     cancel(folderPath) {
         const proc = this.activeProcesses.get(folderPath);
         if (proc) {
-            proc.kill();
+            proc.kill('SIGKILL');
             return true;
         }
         return false;
@@ -159,31 +174,32 @@ class WindowsCompressor {
      * @returns {Promise<Object>}
      */
     async getCompressionState(folderPath) {
-        return new Promise((resolve) => {
+        // M-05: Also reject on errors instead of silently returning defaults
+        return new Promise((resolve, reject) => {
             if (!fs.existsSync(folderPath)) return resolve({ isCompressed: false, ratio: '1.0' });
 
-            // Run compact /S to see current state recursively
-            // We use /A and /I to be thorough but fast
-            const proc = spawn('compact.exe', ['/S', '/A', '/I'], {
+            // H-01: Force UTF-8 via chcp 65001; M-02: shell:false with cmd.exe
+            const proc = spawn('cmd.exe', ['/c', 'chcp 65001 >nul && compact.exe /S /A /I'], {
                 cwd: folderPath,
-                shell: true
+                shell: false
             });
 
             let output = '';
-            proc.stdout.on('data', (data) => output += data.toString());
-            
+            proc.stdout.on('data', (data) => output += data.toString('utf8'));
+
+            // C-03: Handle spawn errors in getCompressionState too
+            proc.on('error', (err) => {
+                reject(new Error('ERR_SPAWN_FAILED: ' + err.message));
+            });
+
             // We only care about the last 500 characters for the summary
             proc.on('close', () => {
                 const summary = output.slice(-1000); // Get end of output
-                
-                // Regex to find "XXXX files within YYYY directories are compressed."
-                // Since this is localized, we look for numbers followed by "files within" or similar
-                // But better: Look for the ratio line which is more standard: "123 : 456 = 1.2 to 1"
-                
+
                 // Match pattern: [Number] : [Number] = [Number] to/unto 1
                 // We use [\d.,\s]+ to account for thousands separators (dot or comma or space)
                 const ratioMatch = summary.match(/([\d.,\s]+)\s?:\s?([\d.,\s]+)\s?=\s?([\d.,]+)\s?(?:to|\/|unto|:)\s?1/i);
-                
+
                 let isCompressed = false;
                 let ratioValue = 1.0;
 

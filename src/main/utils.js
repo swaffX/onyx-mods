@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { exec } = require('child_process');
+const { exec, spawn } = require('child_process');
 
 const crypto = require('crypto');
 
@@ -67,27 +67,33 @@ function downloadImage(url, destPath) {
     });
 }
 
+// C-07: Use spawn+shell:false to prevent command injection via user-controlled paths
 function isGameRunning(exePath) {
     return new Promise((resolve) => {
         const exeName = path.basename(exePath);
-        exec(`tasklist /FI "IMAGENAME eq ${exeName}" /NH`, (err, stdout) => {
-            if (err) return resolve(false);
-            resolve(stdout.toLowerCase().includes(exeName.toLowerCase()));
+        // tasklist accepts /FI as a separate argument — safe from injection
+        const proc = spawn('tasklist.exe', ['/FI', `IMAGENAME eq ${exeName}`, '/NH'], {
+            shell: false
         });
+        let stdout = '';
+        proc.stdout.on('data', d => stdout += d.toString());
+        proc.on('error', () => resolve(false));
+        proc.on('close', () => resolve(stdout.toLowerCase().includes(exeName.toLowerCase())));
     });
 }
 
+// C-07: Use spawn with array args to avoid path-based command injection
 function getFileDescription(filePath) {
     return new Promise((resolve) => {
-        const escaped = filePath.replace(/'/g, "''");
-        exec(
-            `powershell -NoProfile -Command "(Get-ItemProperty '${escaped}').VersionInfo.FileDescription"`,     
-            { timeout: 5000 },
-            (err, stdout) => {
-                if (err) return resolve('');
-                resolve((stdout || '').trim());
-            }
-        );
+        const script = `(Get-ItemProperty '${filePath.replace(/'/g, "''")}').VersionInfo.FileDescription`;
+        const proc = spawn('powershell.exe', ['-NoProfile', '-Command', script], {
+            shell: false,
+            timeout: 5000
+        });
+        let stdout = '';
+        proc.stdout.on('data', d => stdout += d.toString());
+        proc.on('error', () => resolve(''));
+        proc.on('close', () => resolve(stdout.trim()));
     });
 }
 
@@ -105,17 +111,18 @@ function compareVersions(v1, v2) {
     return 0;
 }
 
+// C-07: Use spawn with array args for getFileVersion as well
 function getFileVersion(filePath) {
     return new Promise((resolve) => {
-        const escaped = filePath.replace(/'/g, "''");
-        exec(
-            `powershell -NoProfile -Command "(Get-ItemProperty '${escaped}').VersionInfo.FileVersion"`,
-            { timeout: 5000 },
-            (err, stdout) => {
-                if (err) return resolve('');
-                resolve((stdout || '').trim());
-            }
-        );
+        const script = `(Get-ItemProperty '${filePath.replace(/'/g, "''")}').VersionInfo.FileVersion`;
+        const proc = spawn('powershell.exe', ['-NoProfile', '-Command', script], {
+            shell: false,
+            timeout: 5000
+        });
+        let stdout = '';
+        proc.stdout.on('data', d => stdout += d.toString());
+        proc.on('error', () => resolve(''));
+        proc.on('close', () => resolve(stdout.trim()));
     });
 }
 

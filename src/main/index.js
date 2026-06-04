@@ -21,7 +21,10 @@ if (!gotTheLock) {
         config.cleanOldModsFolder();
         config.loadExistingGames();
         config.loadBlacklist();
+
+        // C-06: Guard against duplicate IPC handler registration (e.g. macOS 'activate' re-triggers)
         ipc.registerIpcHandlers();
+
         windowManager.createWindow();
         initAutoUpdater();
 

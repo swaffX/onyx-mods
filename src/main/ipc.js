@@ -20,8 +20,12 @@ const iniEditor = require('./mods/iniEditor');
 const updater = require('./updater');
 
 let isScanning = false;
+// C-06: Prevent duplicate IPC handler registration
+let ipcRegistered = false;
 
 function registerIpcHandlers() {
+    if (ipcRegistered) return;
+    ipcRegistered = true;
     ipcMain.on('log-to-main', (event, msg) => {
         console.log(`[RENDERER] ${msg}`);
     });
@@ -46,7 +50,10 @@ function registerIpcHandlers() {
             console.error('Scan error', e);
         } finally {
             isScanning = false;
-            event.sender.send('scan-complete');
+            // M-18: Guard against sending to a destroyed window
+            if (!event.sender.isDestroyed()) {
+                event.sender.send('scan-complete');
+            }
         }
     });
 
@@ -358,14 +365,14 @@ function registerIpcHandlers() {
     });
 
     ipcMain.handle('get-folder-game-info', async (event, folderPath) => {
+        // Compression DB disabled per user request — only return Steam identity info
         const steamInfo = await steamScanner.getAppIdForFolder(folderPath);
         if (steamInfo && steamInfo.appId) {
-            const dbEntry = await compressionDb.findEntry(steamInfo.appId);
             return {
                 isGame: true,
                 steamId: steamInfo.appId,
                 name: steamInfo.name,
-                dbEntry: dbEntry
+                dbEntry: null
             };
         }
         return { isGame: false };
@@ -374,13 +381,19 @@ function registerIpcHandlers() {
     // Compression Core
     ipcMain.handle('run-compression', async (event, { folderPath, algorithm }) => {
         return await compressor.compress(folderPath, algorithm, {}, (progress) => {
-            event.sender.send('compression-progress', { folderPath, progress });
+            // M-18: Guard against sending to destroyed window
+            if (!event.sender.isDestroyed()) {
+                event.sender.send('compression-progress', { folderPath, progress });
+            }
         });
     });
 
     ipcMain.handle('run-uncompression', async (event, { folderPath }) => {
         return await compressor.uncompress(folderPath, (progress) => {
-            event.sender.send('compression-progress', { folderPath, progress });
+            // M-18: Guard against sending to destroyed window
+            if (!event.sender.isDestroyed()) {
+                event.sender.send('compression-progress', { folderPath, progress });
+            }
         });
     });
 
@@ -639,9 +652,13 @@ function registerIpcHandlers() {
         return config.getExistingGamesState();
     });
 
-    // Secure Link Opener via IPC
+    // C-05: Secure Link Opener via IPC — only allow http/https URLs
     ipcMain.on('open-external-link', (event, url) => {
-        shell.openExternal(url);
+        if (typeof url === 'string' && (url.startsWith('https://') || url.startsWith('http://'))) {
+            shell.openExternal(url);
+        } else {
+            console.warn('[IPC] open-external-link: blocked non-http URL:', url);
+        }
     });
 
     // ── Auto-Updater IPCs ──────────────────────────────────────────────────────

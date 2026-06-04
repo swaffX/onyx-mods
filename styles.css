@@ -2683,3 +2683,116 @@ body:not([data-theme="dark"]) .game-search-input:focus {
     color: #000000;
     font-weight: 700;
 }
+
+/* Developer Profile Card Settings */
+.developer-profile-card {
+    display: flex;
+    gap: 30px;
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 16px;
+    padding: 30px;
+    margin-top: 10px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.developer-profile-card:hover {
+    border-color: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.02);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.developer-avatar {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    border: 3px solid var(--accent-color);
+    box-shadow: 0 0 20px rgba(68, 214, 44, 0.2);
+    object-fit: cover;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+
+.developer-profile-card:hover .developer-avatar {
+    transform: scale(1.05) rotate(2deg);
+}
+
+.developer-info {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.developer-info h3 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--accent-color);
+    letter-spacing: -0.5px;
+}
+
+.developer-info p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+}
+
+.developer-links {
+    display: flex;
+    gap: 12px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.dev-link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transition: all 0.2s ease;
+}
+
+.dev-link-btn:hover {
+    background: var(--text-primary);
+    color: var(--bg-color);
+    border-color: var(--text-primary);
+    transform: translateY(-2px);
+}
+
+.dev-link-btn.github-btn:hover {
+    background: #24292e;
+    color: #ffffff;
+    border-color: #24292e;
+}
+
+.dev-link-btn.youtube-btn:hover {
+    background: #ff0000;
+    color: #ffffff;
+    border-color: #ff0000;
+}
+
+.dev-link-btn.discord-btn:hover {
+    background: #5865f2;
+    color: #ffffff;
+    border-color: #5865f2;
+}
+
+@media (max-width: 768px) {
+    .developer-profile-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    .developer-links {
+        justify-content: center;
+    }
+}

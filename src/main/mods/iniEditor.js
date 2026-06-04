@@ -173,8 +173,11 @@ function readIni(filePath) {
     }
 
     try {
-        const content = fs.readFileSync(filePath, 'utf8').replace(/^\uFEFF/, '');
-        console.log(`[INI EDITOR] readIni: successfully read content length: ${content.length}`);
+        const rawContent = fs.readFileSync(filePath, 'utf8');
+        // M-11: Detect and strip BOM for parsing, but track its presence
+        const hasBom = rawContent.startsWith('\uFEFF');
+        const content = hasBom ? rawContent.slice(1) : rawContent;
+        console.log(`[INI EDITOR] readIni: successfully read content length: ${content.length}, hasBom: ${hasBom}`);
         // CRLF veya LF tespiti
         const lineEnding = content.includes('\r\n') ? '\r\n' : '\n';
         const lines = content.split(/\r?\n/);
@@ -204,20 +207,23 @@ function readIni(filePath) {
                 const eqIndex = line.indexOf('=');
                 if (eqIndex !== -1) {
                     const key = line.substring(0, eqIndex).trim();
-                    let val = line.substring(eqIndex + 1).trim();
+                    const val = line.substring(eqIndex + 1).trim();
                     
-                    // Basit dönüşümler
-                    if (val.toLowerCase() === 'true') val = true;
-                    else if (val.toLowerCase() === 'false') val = false;
-                    else if (!isNaN(Number(val)) && val !== '') val = Number(val);
+                    // M-10: Keep values as strings — numeric coercion removed.
+                    // true/false booleans are kept as-is for toggle support.
+                    let parsed;
+                    if (val.toLowerCase() === 'true') parsed = true;
+                    else if (val.toLowerCase() === 'false') parsed = false;
+                    else parsed = val; // Always string — no Number() coercion
                     
-                    data[currentSection][key] = val;
+                    data[currentSection][key] = parsed;
                 }
             }
         }
         
         console.log(`[INI EDITOR] readIni: parse success. Sections parsed:`, Object.keys(data));
-        return { exists: true, data };
+        // M-11: Pass hasBom back so writeIni can restore it
+        return { exists: true, data, hasBom };
     } catch (e) {
         console.error(`[INI EDITOR] readIni: ERROR while reading/parsing:`, e.message);
         return { exists: false, error: e.message };
@@ -231,9 +237,14 @@ function readIni(filePath) {
 function writeIni(filePath, newData) {
     let content = '';
     let lineEnding = '\r\n'; // Windows için varsayılan
+    // M-11: Track whether the original file had a BOM so we can restore it
+    let hasBom = false;
     
     if (fs.existsSync(filePath)) {
         content = fs.readFileSync(filePath, 'utf8');
+        // M-11: Detect BOM presence before stripping
+        hasBom = content.startsWith('\uFEFF');
+        if (hasBom) content = content.slice(1);
         lineEnding = content.includes('\r\n') ? '\r\n' : '\n';
     } else {
         // Dosya hiç yoksa, temiz bir şekilde newData'dan oluşturalım
@@ -245,7 +256,8 @@ function writeIni(filePath, newData) {
             }
             newContent += lineEnding;
         }
-        fs.writeFileSync(filePath, newContent, 'utf8');
+        // M-11: New files get a BOM for PowerShell/Windows compatibility
+        fs.writeFileSync(filePath, '\uFEFF' + newContent, 'utf8');
         return true;
     }
     
@@ -323,7 +335,9 @@ function writeIni(filePath, newData) {
         }
     }
     
-    fs.writeFileSync(filePath, outputLines.join(lineEnding), 'utf8');
+    // M-11: Re-apply BOM if the original file had one
+    const finalContent = (hasBom ? '\uFEFF' : '') + outputLines.join(lineEnding);
+    fs.writeFileSync(filePath, finalContent, 'utf8');
     return true;
 }
 

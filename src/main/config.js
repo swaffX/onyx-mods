@@ -47,6 +47,16 @@ function cleanOldModsFolder() {
     }
 }
 
+/**
+ * M-16: Atomic write — writes to a temp file then renames.
+ * Prevents data loss if the process crashes during a write.
+ */
+function atomicWriteFile(filePath, content) {
+    const tmpPath = filePath + '.tmp';
+    fs.writeFileSync(tmpPath, content, 'utf-8');
+    fs.renameSync(tmpPath, filePath);
+}
+
 
 // Global state
 let existingGamesState = [];
@@ -105,7 +115,8 @@ function getUserGames() {
 function saveUserGames(data) {
     try {
         const file = getUserGamesFile();
-        fs.writeFileSync(file, JSON.stringify(data, null, 2), 'utf-8');
+        // M-16: Atomic write to prevent data loss on crash
+        atomicWriteFile(file, JSON.stringify(data, null, 2));
         console.log('[CONFIG] user-games.json saved.');
     } catch (e) {
         console.error('[CONFIG] Could not write user-games.json:', e.message);
@@ -286,18 +297,29 @@ function loadExistingGames() {
     const file = getGamesFile();
     if (fs.existsSync(file)) {
         try {
-            const rawGames = JSON.parse(fs.readFileSync(file, 'utf-8'));
+            // M-17: Handle corrupt JSON gracefully — backup and reset instead of crash
+            const rawData = fs.readFileSync(file, 'utf-8');
+            const rawGames = JSON.parse(rawData);
             if (Array.isArray(rawGames)) {
                 existingGamesState = rawGames;
                 // Re-populate favoriteNames from loaded games
                 favoriteNames = existingGamesState.filter(g => g.isFavorite).map(g => g.name);
-                needsDedup = true; // FIX 5b: Mark as needing dedup after load
+                needsDedup = true; // Mark as needing dedup after load
                 deduplicateState();
                 saveGamesState(); // Save the cleaned state back
             } else {
                 existingGamesState = [];
             }
         } catch (e) {
+            // M-17: JSON parse failure — back up corrupt file and start fresh
+            console.error('[CONFIG] games.json is corrupt, backing up and resetting:', e.message);
+            try {
+                const backupFile = file + '.corrupt.' + Date.now() + '.bak';
+                fs.copyFileSync(file, backupFile);
+                console.warn('[CONFIG] Corrupt games.json backed up to:', backupFile);
+            } catch (backupErr) {
+                console.warn('[CONFIG] Could not backup corrupt file:', backupErr.message);
+            }
             existingGamesState = [];
         }
     }
@@ -381,20 +403,22 @@ function deduplicateState() {
 
 function saveGamesState() {
     console.log(`[CONFIG] Saving game state (${existingGamesState.length} games)...`);
-    // FIX 5b: Only run deduplicateState when the state has actually changed (dirty flag)
+    // Only run deduplicateState when the state has actually changed (dirty flag)
     if (needsDedup) {
         deduplicateState();
         needsDedup = false;
     }
     const file = getGamesFile();
-    fs.writeFileSync(file, JSON.stringify(existingGamesState, null, 2));
+    // M-16: Atomic write to prevent data loss on crash
+    atomicWriteFile(file, JSON.stringify(existingGamesState, null, 2));
     console.log(`[CONFIG] Game state written to ${file}`);
 }
 
 function saveBlacklist() {
     console.log(`[CONFIG] Saving blacklist (${blacklistState.length} games)...`);
     const file = getBlacklistFile();
-    fs.writeFileSync(file, JSON.stringify(blacklistState, null, 2));
+    // M-16: Atomic write
+    atomicWriteFile(file, JSON.stringify(blacklistState, null, 2));
 }
 
 function getCustomFolders() {
@@ -412,7 +436,8 @@ function getCustomFolders() {
 function saveCustomFolders(folders) {
     try {
         const file = getCustomFoldersFile();
-        fs.writeFileSync(file, JSON.stringify(folders, null, 2), 'utf-8');
+        // M-16: Atomic write
+        atomicWriteFile(file, JSON.stringify(folders, null, 2));
         console.log('[CONFIG] custom-folders.json saved.');
     } catch (e) {
         console.error('[CONFIG] Could not write custom-folders.json:', e.message);
@@ -435,7 +460,8 @@ function getCustomSubfoldersState() {
 function saveCustomSubfoldersState(state) {
     try {
         const file = getCustomSubfoldersStateFile();
-        fs.writeFileSync(file, JSON.stringify(state, null, 2), 'utf-8');
+        // M-16: Atomic write
+        atomicWriteFile(file, JSON.stringify(state, null, 2));
         console.log('[CONFIG] custom-subfolders-state.json saved.');
     } catch (e) {
         console.error('[CONFIG] Could not write custom-subfolders-state.json:', e.message);

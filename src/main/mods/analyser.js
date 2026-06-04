@@ -177,10 +177,15 @@ if ($script:totalPhysical -gt 0 -and $script:totalPhysical -lt $script:totalLogi
                     if (stdout) {
                         const jsonMatch = stdout.match(/\{[\s\S]*\}/);
                         if (jsonMatch) {
-                            const data = JSON.parse(jsonMatch[0]);
-                            console.log(`[Analyser] Found ${data.fileCount} files. Compressed: ${data.compressedCount}`);
-                            resolve(data);
-                            return;
+                            // M-21: Wrap JSON.parse in try/catch to prevent uncaught exceptions
+                            try {
+                                const data = JSON.parse(jsonMatch[0]);
+                                console.log(`[Analyser] Found ${data.fileCount} files. Compressed: ${data.compressedCount}`);
+                                resolve(data);
+                                return;
+                            } catch (parseErr) {
+                                console.error('[Analyser] JSON parse failed:', parseErr.message);
+                            }
                         }
                     }
                     console.error('[Analyser] Empty or invalid output:', stdout, stderr);
@@ -194,7 +199,16 @@ if ($script:totalPhysical -gt 0 -and $script:totalPhysical -lt $script:totalLogi
     }
 
     _getDefaultState() {
-        return { isCompressed: false, ratio: '1.0', uncompressedBytes: 0, compressedBytes: 0, fileCount: 0 };
+        // M-22: Include all fields that the UI/compressor.js might reference
+        return {
+            isCompressed: false,
+            ratio: '1.0',
+            uncompressedBytes: 0,
+            compressedBytes: 0,
+            fileCount: 0,
+            compressedCount: 0,
+            algorithm: 'None'
+        };
     }
 }
 

@@ -8,7 +8,11 @@ export function initNavigation() {
             e.preventDefault();
             const url = link.getAttribute('data-url');
             if (url && window.electronAPI) {
-                window.electronAPI.openExternal(url);
+                if (window.electronAPI.openExternalLink) {
+                    window.electronAPI.openExternalLink(url);
+                } else if (window.electronAPI.openExternal) {
+                    window.electronAPI.openExternal(url);
+                }
             }
         });
     });

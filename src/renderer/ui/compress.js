@@ -1,8 +1,18 @@
 import { t } from '../i18n/i18n.js';
+
+// H-04: Module-level state instead of window.* globals to prevent pollution
+let compCount = 0;
+let compTotal = 0;
+
 let addedFolders = [];
 let selectedFolderIndex = -1;
-let compressionDbData = [];
 let isProcessing = false;
+
+// C-01: Locale-aware percent formatter
+function formatPercent(value) {
+    const lang = document.documentElement.lang || 'en';
+    return lang === 'tr' ? `%${value}` : `${value}%`;
+}
 
 function toggleProcessing(processing) {
     isProcessing = processing;
@@ -28,6 +38,9 @@ function toggleProcessing(processing) {
 }
 
 export async function initCompress() {
+    // C-02: Remove any accumulated progress listeners before adding new ones
+    window.electronAPI.removeCompressionProgressListeners();
+
     // 1. Core Elements
     const selectFolderBtn = document.getElementById('select-folder-btn');
     const compressSelectedBtn = document.getElementById('compress-selected-btn');
@@ -41,21 +54,26 @@ export async function initCompress() {
         const progressBar = document.getElementById('compression-bar');
         
         if (progressText && data.progress) {
-            // compact.exe output parser:
-            if (data.progress.includes(' [OK]') || data.progress.includes(' [SKIPPED]')) {
-                if (!window._compCount) window._compCount = 0;
-                window._compCount++;
+            // compact.exe output parser — detect [OK] or [SKIPPED] per file
+            if (data.progress.includes('[OK]') || data.progress.includes('[SKIPPED]')) {
+                compCount++;
                 
-                if (window._compTotal > 0) {
-                    const percent = Math.min(99, Math.round((window._compCount / window._compTotal) * 100));
-                    progressText.textContent = `%${percent}`;
+                // M-06: Guard against compTotal being 0
+                if (compTotal > 0) {
+                    const percent = Math.min(99, Math.round((compCount / compTotal) * 100));
+                    // C-01: Use locale-aware percent format
+                    progressText.textContent = formatPercent(percent);
                     progressBar.style.width = `${percent}%`;
-                    statusText.textContent = `${window._compCount} / ${window._compTotal} ${t('compress.filesProcessed')}`;
+                    // H-10: Use textContent to avoid XSS
+                    if (statusText) statusText.textContent = `${compCount} / ${compTotal} ${t('compress.filesProcessed')}`;
                 }
-            } else if (data.progress.includes('files within') || data.progress.includes('directories are compressed')) {
-                progressText.textContent = '%100';
+            } else if (
+                // H-06: Locale-independent completion detection: if compCount reaches compTotal
+                compTotal > 0 && compCount >= compTotal
+            ) {
+                progressText.textContent = formatPercent(100);
                 progressBar.style.width = '100%';
-                statusText.textContent = t('compress.completed');
+                if (statusText) statusText.textContent = t('compress.completed');
             }
         }
     });
@@ -73,7 +91,6 @@ export async function initCompress() {
             subTabContents.forEach(content => {
                 content.style.display = content.id === targetId ? 'block' : 'none';
             });
-            if (targetId === 'compress-db') loadCompressionDb();
         });
     });
 
@@ -104,8 +121,10 @@ export async function initCompress() {
         compressSelectedBtn.addEventListener('click', async () => {
             if (selectedFolderIndex === -1 || isProcessing) return;
             const folder = addedFolders[selectedFolderIndex];
-            window._compCount = 0;
-            window._compTotal = parseInt(String(folder.fileCount).replace(/[^0-9]/g, '')) || 0;
+
+            // H-04: Use module-level state variables
+            compCount = 0;
+            compTotal = parseInt(String(folder.fileCount).replace(/[^0-9]/g, '')) || 0;
             
             toggleProcessing(true);
             
@@ -113,18 +132,15 @@ export async function initCompress() {
             const progressContainer = document.getElementById('realtime-progress-container');
             const methodSection = document.getElementById('compression-method-section');
             const methodContainer = document.getElementById('detected-method-container');
-            const barGroups = document.querySelectorAll('.stat-bar-group');
-            const savedText = document.getElementById('compression-saved-percent') ? document.getElementById('compression-saved-percent').parentElement : null;
-            
+
             statsSection.style.display = 'flex';
             progressContainer.style.display = 'block';
             methodSection.style.display = 'none';
-            methodContainer.style.display = 'none';
-            barGroups.forEach(bg => bg.style.display = 'none');
-            if (savedText) savedText.style.display = 'none';
+            if (methodContainer) methodContainer.style.display = 'none';
 
             document.getElementById('compression-bar').style.width = '0%';
-            document.getElementById('realtime-progress-text').textContent = '0%';
+            // C-01: Locale-aware
+            document.getElementById('realtime-progress-text').textContent = formatPercent(0);
 
             try {
                 const result = await window.electronAPI.runCompression({
@@ -132,19 +148,21 @@ export async function initCompress() {
                     algorithm: folder.method
                 });
                 if (result.success) {
+                    // H-06: Force 100% on success
+                    document.getElementById('compression-bar').style.width = '100%';
+                    document.getElementById('realtime-progress-text').textContent = formatPercent(100);
+                    const statusText = document.getElementById('realtime-status-text');
+                    if (statusText) statusText.textContent = t('compress.completed');
                     alert(t('compress.compressDone'));
                 }
             } catch (e) {
-                alert(t('compress.genericError') + e.message);
+                // H-11: Translate error codes from main process
+                const msg = translateErrorCode(e.message);
+                alert(t('compress.genericError') + msg);
             } finally {
                 toggleProcessing(false);
-                const progressContainer = document.getElementById('realtime-progress-container');
-                const barGroups = document.querySelectorAll('.stat-bar-group');
-                const savedText = document.getElementById('compression-saved-percent') ? document.getElementById('compression-saved-percent').parentElement : null;
-                
-                if (progressContainer) progressContainer.style.display = 'none';
-                barGroups.forEach(bg => bg.style.display = 'flex');
-                if (savedText) savedText.style.display = 'block';
+                const progressContainerFinal = document.getElementById('realtime-progress-container');
+                if (progressContainerFinal) progressContainerFinal.style.display = 'none';
                 
                 await refreshFolderState(folder);
             }
@@ -155,40 +173,46 @@ export async function initCompress() {
         uncompressSelectedBtn.addEventListener('click', async () => {
             if (selectedFolderIndex === -1 || isProcessing) return;
             const folder = addedFolders[selectedFolderIndex];
-            window._compCount = 0;
-            window._compTotal = parseInt(String(folder.fileCount).replace(/[^0-9]/g, '')) || 0;
+
+            // Uncompress: no percent display needed (user request)
+            // Set compTotal=0 so the progress listener won't update the bar
+            compCount = 0;
+            compTotal = 0;
             
             toggleProcessing(true);
             
             const statsSection = document.getElementById('compression-stats-section');
             const progressContainer = document.getElementById('realtime-progress-container');
             const methodSection = document.getElementById('compression-method-section');
-            const barGroups = document.querySelectorAll('.stat-bar-group');
-            const savedText = document.getElementById('compression-saved-percent') ? document.getElementById('compression-saved-percent').parentElement : null;
-            
+            const progressBar = document.getElementById('compression-bar');
+            const progressText = document.getElementById('realtime-progress-text');
+            const statusText = document.getElementById('realtime-status-text');
+
             statsSection.style.display = 'flex';
             progressContainer.style.display = 'block';
             methodSection.style.display = 'none';
-            barGroups.forEach(bg => bg.style.display = 'none');
-            if (savedText) savedText.style.display = 'none';
-            document.getElementById('compression-bar').style.width = '100%';
+
+            // Hide the percent text and bar, just show processing status
+            if (progressBar) progressBar.style.display = 'none';
+            if (progressText) progressText.style.display = 'none';
+            if (statusText) statusText.textContent = t('compress.processing');
 
             try {
                 const result = await window.electronAPI.runUncompression({ folderPath: folder.path });
                 if (result.success) {
+                    if (statusText) statusText.textContent = t('compress.completed');
                     alert(t('compress.uncompressDone'));
                 }
             } catch (e) {
-                alert(t('compress.genericError') + e.message);
+                const msg = translateErrorCode(e.message);
+                alert(t('compress.genericError') + msg);
             } finally {
                 toggleProcessing(false);
-                const progressContainer = document.getElementById('realtime-progress-container');
-                const barGroups = document.querySelectorAll('.stat-bar-group');
-                const savedText = document.getElementById('compression-saved-percent') ? document.getElementById('compression-saved-percent').parentElement : null;
-                
-                if (progressContainer) progressContainer.style.display = 'none';
-                barGroups.forEach(bg => bg.style.display = 'flex');
-                if (savedText) savedText.style.display = 'block';
+                // Restore bar/text visibility for next compress operation
+                if (progressBar) progressBar.style.display = '';
+                if (progressText) progressText.style.display = '';
+                const progressContainerFinal = document.getElementById('realtime-progress-container');
+                if (progressContainerFinal) progressContainerFinal.style.display = 'none';
                 
                 await refreshFolderState(folder);
             }
@@ -206,16 +230,20 @@ export async function initCompress() {
             }
         });
     });
+}
 
-    // 6. DB Search
-    const dbSearchInput = document.getElementById('db-search-input');
-    if (dbSearchInput) {
-        dbSearchInput.addEventListener('input', () => renderCompressionDb(dbSearchInput.value));
-    }
+// H-11: Translate error codes from main process to localized messages
+function translateErrorCode(errorMsg) {
+    if (errorMsg.includes('ERR_FOLDER_NOT_FOUND')) return t('compress.errFolderNotFound');
+    if (errorMsg.includes('ERR_INVALID_ALGORITHM')) return t('compress.errInvalidAlgorithm');
+    if (errorMsg.includes('ERR_SPAWN_FAILED')) return t('compress.errSpawnFailed');
+    if (errorMsg.includes('ERR_COMPRESS_FAILED')) return errorMsg.replace('ERR_COMPRESS_FAILED:', t('compress.errCompressFailed') + ' (code: ');
+    if (errorMsg.includes('ERR_COMPACT_FAILED')) return errorMsg.replace('ERR_COMPACT_FAILED:', t('compress.errCompressFailed') + ' (code: ');
+    return errorMsg;
 }
 
 async function addFolderToList(path) {
-    const name = path.split(/[\\/]/).pop() || path;
+    const name = path.split(/[\\\/]/).pop() || path;
     const newFolder = {
         name: name,
         path: path,
@@ -241,10 +269,7 @@ async function refreshFolderState(folder) {
     updateDetailsView(folder);
 
     try {
-        const [stats, gameInfo] = await Promise.all([
-            window.electronAPI.analyzeFolder(folder.path),
-            window.electronAPI.getFolderGameInfo(folder.path)
-        ]);
+        const stats = await window.electronAPI.analyzeFolder(folder.path);
 
         folder.size = formatBytes(stats.uncompressedBytes);
         folder.rawUncompressedBytes = stats.uncompressedBytes;
@@ -252,7 +277,6 @@ async function refreshFolderState(folder) {
         folder.fileCount = stats.fileCount.toLocaleString();
         folder.isCompressed = stats.isCompressed;
         folder.compressionRatio = stats.ratio;
-        folder.gameInfo = gameInfo;
         folder.isAnalyzing = false;
 
         if (selectedFolderIndex === addedFolders.indexOf(folder)) {
@@ -284,15 +308,28 @@ function renderFolderList() {
         item.className = `folder-item ${index === selectedFolderIndex ? 'active' : ''}`;
         item.setAttribute('data-index', index);
         
-        let status = '';
-        if (folder.isAnalyzing) status = '<span class="loading-spinner-small"></span>';
-        else if (folder.isCompressed) status = '<span style="color:var(--accent-color); float:right;">✓</span>';
-        
-        item.innerHTML = `
-            ${status}
-            <span class="folder-item-name">${folder.name}</span>
-            <span class="folder-item-path">${folder.path}</span>
-        `;
+        // H-10: Use textContent for user-controlled values (XSS prevention)
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'folder-item-name';
+        nameSpan.textContent = folder.name;
+
+        const pathSpan = document.createElement('span');
+        pathSpan.className = 'folder-item-path';
+        pathSpan.textContent = folder.path;
+
+        if (folder.isAnalyzing) {
+            const spinner = document.createElement('span');
+            spinner.className = 'loading-spinner-small';
+            item.appendChild(spinner);
+        } else if (folder.isCompressed) {
+            const checkmark = document.createElement('span');
+            checkmark.style.cssText = 'color:var(--accent-color); float:right;';
+            checkmark.textContent = '✓';
+            item.appendChild(checkmark);
+        }
+
+        item.appendChild(nameSpan);
+        item.appendChild(pathSpan);
         listContainer.appendChild(item);
     });
 }
@@ -306,6 +343,7 @@ function selectFolder(index) {
 }
 
 function updateDetailsView(folder) {
+    // H-10: textContent for all user data
     document.getElementById('detail-folder-name').textContent = folder.name;
     document.getElementById('detail-folder-path').textContent = folder.path;
     document.getElementById('detail-folder-size').textContent = folder.isAnalyzing ? t('compress.analyzing') : folder.size;
@@ -321,10 +359,11 @@ function updateDetailsView(folder) {
     } else {
         compressBtn.disabled = false;
         if (folder.isCompressed) {
+            // M-19: Fixed double parentheses: "Re-Compress (Ratio: (1.5:1)" → "Re-Compress (1.5:1)"
             compressBtn.textContent = `${t('compress.reCompress')} (${folder.compressionRatio}:1)`;
             uncompressBtn.style.display = 'block';
 
-            // Update Statistics Bar
+            // Update Statistics Bar — show method but NOT size savings (per user requirement)
             const methodContainer = document.getElementById('detected-method-container');
             const methodNameEl = document.getElementById('detected-method-name');
             if (methodContainer && methodNameEl && folder.gameInfo && folder.gameInfo.algorithm) {
@@ -340,14 +379,11 @@ function updateDetailsView(folder) {
                 statsSection.style.display = 'flex';
                 methodSection.style.display = 'none';
 
+                // Show compression ratio bar (not size saving %) — only show ratio
                 const ratioValue = parseFloat(folder.compressionRatio) || 1.0;
                 const currentPercent = Math.round((1 / ratioValue) * 100);
-                const savedPercent = 100 - currentPercent;
 
-                document.getElementById('detail-folder-size-raw').textContent = folder.size;
-                document.getElementById('detail-folder-compressed-size').textContent = folder.compressedSize;
                 document.getElementById('compression-bar').style.width = currentPercent + '%';
-                document.getElementById('compression-saved-percent').textContent = '%' + savedPercent;
             }
         } else {
             compressBtn.textContent = t('compress.compressBtn');
@@ -366,113 +402,16 @@ function updateDetailsView(folder) {
 
 function updateMethodUI(selectedMethod, folder = null) {
     const methodBoxes = document.querySelectorAll('.method-box');
-    
-    let dbEntry = null;
-    if (folder && folder.gameInfo && folder.gameInfo.dbEntry) {
-        dbEntry = folder.gameInfo.dbEntry;
-    }
 
     methodBoxes.forEach(box => {
         const method = box.getAttribute('data-method');
         box.classList.toggle('active', method === selectedMethod);
         
         const infoEl = box.querySelector('.method-info');
-        if (dbEntry) {
-            let result = null;
-            if (method === 'XPRESS4K') result = dbEntry.Result_X4K;
-            else if (method === 'XPRESS8K') result = dbEntry.Result_X8K;
-            else if (method === 'XPRESS16K') result = dbEntry.Result_X16K;
-            else if (method === 'LZX') result = dbEntry.Result_LZX;
-
-            if (result && result.BeforeBytes > 0) {
-                const ratio = (result.AfterBytes / result.BeforeBytes * 100).toFixed(1);
-                const savedPercent = (100 - parseFloat(ratio)).toFixed(1);
-                
-                const currentUncompressedBytes = folder ? (folder.rawUncompressedBytes || 0) : 0;
-                const estCompressedBytes = currentUncompressedBytes * (parseFloat(ratio) / 100);
-                
-                const beforeStr = formatBytes(currentUncompressedBytes, 1);
-                const afterStr = formatBytes(estCompressedBytes, 1);
-
-                infoEl.innerHTML = `%${savedPercent} ${t('compress.expectedSaving')}<br><span style="font-size:10px; opacity:0.8;">${beforeStr} ➔ ${afterStr}</span>`;
-            } else {
-                infoEl.textContent = t('compress.noData');
-            }
-        } else {
-            // Default labels
-            if (method === 'XPRESS4K') infoEl.textContent = t('compress.x4kInfo');
-            else if (method === 'XPRESS8K') infoEl.textContent = t('compress.x8kInfo');
-            else if (method === 'XPRESS16K') infoEl.textContent = t('compress.x16kInfo');
-            else if (method === 'LZX') infoEl.textContent = t('compress.lzxInfo');
-        }
+        // Default info labels only — DB result size data removed per user requirement
+        if (method === 'XPRESS4K') infoEl.textContent = t('compress.x4kInfo');
+        else if (method === 'XPRESS8K') infoEl.textContent = t('compress.x8kInfo');
+        else if (method === 'XPRESS16K') infoEl.textContent = t('compress.x16kInfo');
+        else if (method === 'LZX') infoEl.textContent = t('compress.lzxInfo');
     });
 }
-
-async function loadCompressionDb() {
-    const container = document.getElementById('db-cards-container');
-    if (compressionDbData.length === 0) {
-        container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-secondary);">${t('compress.dbLoading')}</div>`;
-        compressionDbData = await window.electronAPI.getCompressionDb();
-    }
-    renderCompressionDb();
-}
-
-function renderCompressionDb(query = '') {
-    const container = document.getElementById('db-cards-container');
-    if (!container) return;
-    container.innerHTML = '';
-    
-    const filtered = compressionDbData.filter(entry => 
-        entry.GameName.toLowerCase().includes(query.toLowerCase())
-    ).slice(0, 100);
-
-    if (filtered.length === 0) {
-        container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-secondary);">${t('compress.dbNoGame')}</div>`;
-        return;
-    }
-
-    filtered.forEach(entry => {
-        const card = document.createElement('div');
-        card.className = 'db-game-card';
-        
-        card.innerHTML = `
-            <div class="db-game-title">
-                <span>${entry.GameName}</span>
-                <span class="db-steam-id">ID: ${entry.SteamID || 'N/A'}</span>
-            </div>
-            <div class="db-results-grid">
-                ${renderDbResultItem('X4K', entry.Result_X4K)}
-                ${renderDbResultItem('X8K', entry.Result_X8K)}
-                ${renderDbResultItem('X16K', entry.Result_X16K)}
-                ${renderDbResultItem('LZX', entry.Result_LZX)}
-            </div>
-        `;
-        container.appendChild(card);
-    });
-}
-
-function renderDbResultItem(label, result) {
-    if (!result || !result.BeforeBytes || result.BeforeBytes === 0) {
-        return `
-            <div class="db-result-item" style="opacity: 0.5;">
-                <div class="db-result-label">${label}</div>
-                <div class="db-result-value">-</div>
-            </div>
-        `;
-    }
-
-    const ratio = (result.AfterBytes / result.BeforeBytes * 100).toFixed(1);
-    const savedPercent = (100 - parseFloat(ratio)).toFixed(1);
-    const savedGB = ((result.BeforeBytes - result.AfterBytes) / (1024 * 1024 * 1024)).toFixed(1);
-
-    return `
-        <div class="db-result-item">
-            <div class="db-result-label">${label}</div>
-            <div class="db-result-value">
-                <span class="db-result-percent">%${savedPercent}</span>
-                <span class="db-result-saved">-${savedGB}GB</span>
-            </div>
-        </div>
-    `;
-}
-
