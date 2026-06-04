@@ -2,30 +2,39 @@ const fs = require('fs');
 const path = require('path');
 const { app } = require('electron');
 const extract = require('extract-zip');
+const { execFile } = require('child_process');
+const { path7za } = require('7zip-bin');
 
 const config = require('../config');
 
-async function getFsr4Releases() {
-    try {
-        const response = await fetch('http://190.92.151.212/fsr4files/', {
-            headers: { 'User-Agent': 'vuenxxFG' }
+let releasesCache = null;
+let cacheTime = 0;
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+async function extractArchive(archivePath, targetDir) {
+    const lower = archivePath.toLowerCase();
+    if (lower.endsWith('.7z')) {
+        return new Promise((resolve, reject) => {
+            execFile(path7za, ['x', archivePath, `-o${targetDir}`, '-y'], (err, stdout, stderr) => {
+                if (err) {
+                    console.error('7za extract error:', err, stderr);
+                    return reject(new Error(`7z extraction failed: ${err.message || stderr}`));
+                }
+                resolve();
+            });
         });
-        if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
-        const html = await response.text();
+    } else {
+        await extract(archivePath, { dir: targetDir });
+    }
+}
 
-        const releases = [];
-        // Regex to match .zip files in the directory listing
-        const regex = /href="([^"]+\.zip)"/gi;
-        let match;
-        
-        while ((match = regex.exec(html)) !== null) {
-            const filenameEncoded = match[1];
-            const filename = decodeURIComponent(filenameEncoded);
-            const name = filename.replace(/\.zip$/i, '');
-            
-            const targetDir = path.join(config.modsPath, 'fsr4files', name);
+async function getFsr4Releases() {
+    const now = Date.now();
+    if (releasesCache && (now - cacheTime < CACHE_TTL)) {
+        console.log("[FSR4] Returning cached releases.");
+        return releasesCache.map(r => {
+            const targetDir = path.join(config.modsPath, 'fsr4files', r.name);
             let installed = false;
-
             if (fs.existsSync(targetDir)) {
                 try {
                     const files = fs.readdirSync(targetDir);
@@ -34,26 +43,92 @@ async function getFsr4Releases() {
                     }
                 } catch (e) {}
             }
+            return { ...r, installed };
+        });
+    }
 
-            releases.push({
+    try {
+        const response = await fetch('https://api.github.com/repos/vuenxx/extra_policebosstr/releases', {
+            headers: { 'User-Agent': 'vuenxxFG' }
+        });
+
+        if (response.status === 403) {
+            const rateLimitReset = response.headers.get('X-RateLimit-Reset');
+            let errorMsg = "GitHub API limitine ulaşıldı. Lütfen daha sonra tekrar deneyin.";
+            if (rateLimitReset) {
+                const resetDate = new Date(parseInt(rateLimitReset) * 1000);
+                errorMsg += ` (Sıfırlanma zamanı: ${resetDate.toLocaleTimeString()})`;
+            }
+            throw new Error(errorMsg);
+        }
+
+        if (!response.ok) throw new Error(`GitHub API HTTP error: ${response.status}`);
+        const releases = await response.json();
+
+        if (!Array.isArray(releases)) {
+            throw new Error("Invalid response format from GitHub API.");
+        }
+
+        const mappedReleases = [];
+        for (const r of releases) {
+            const asset = r.assets && r.assets.find(a => {
+                const nameLow = a.name.toLowerCase();
+                return nameLow.startsWith('fsr') && (nameLow.endsWith('.zip') || nameLow.endsWith('.7z'));
+            });
+            if (!asset) continue;
+
+            const tag = r.tag_name;
+            const name = r.name || r.tag_name;
+
+            mappedReleases.push({
                 name: name,
-                tag: name,
-                downloadUrl: `http://190.92.151.212/fsr4files/${filenameEncoded}`,
-                installed: installed
+                tag: tag,
+                downloadUrl: asset.browser_download_url
             });
         }
 
-        // Return latest releases (reversed if they are listed chronologically, or sorted)
-        // Usually nginx lists alphabetically, so we return them directly
-        return releases;
+        releasesCache = mappedReleases;
+        cacheTime = now;
+
+        return mappedReleases.map(r => {
+            const targetDir = path.join(config.modsPath, 'fsr4files', r.name);
+            let installed = false;
+            if (fs.existsSync(targetDir)) {
+                try {
+                    const files = fs.readdirSync(targetDir);
+                    if (files.length > 0) {
+                        installed = true;
+                    }
+                } catch (e) {}
+            }
+            return { ...r, installed };
+        });
     } catch (e) {
         console.error("Failed to fetch FSR4 releases:", e);
+        if (releasesCache) {
+            console.log("[FSR4] Fetch failed, returning stale cache as fallback.");
+            return releasesCache.map(r => {
+                const targetDir = path.join(config.modsPath, 'fsr4files', r.name);
+                let installed = false;
+                if (fs.existsSync(targetDir)) {
+                    try {
+                        const files = fs.readdirSync(targetDir);
+                        if (files.length > 0) {
+                            installed = true;
+                        }
+                    } catch (err) {}
+                }
+                return { ...r, installed };
+            });
+        }
         return { error: e.message };
     }
 }
 
 async function downloadFsr4Release(event, { name, downloadUrl }) {
-    const tempZipPath = path.join(app.getPath('temp'), `fsr4_${name.replace(/[^a-z0-9.-]/gi, '_')}.zip`);
+    const is7z = downloadUrl.toLowerCase().endsWith('.7z');
+    const ext = is7z ? '.7z' : '.zip';
+    const tempZipPath = path.join(app.getPath('temp'), `fsr4_${name.replace(/[^a-z0-9.-]/gi, '_')}${ext}`);
     const targetDir = path.join(config.modsPath, 'fsr4files', name);
 
     try {
@@ -81,24 +156,21 @@ async function downloadFsr4Release(event, { name, downloadUrl }) {
         const buffer = Buffer.concat(chunks.map(c => Buffer.from(c)));
         fs.writeFileSync(tempZipPath, buffer);
 
-        // Ensure target directory exists and is clean
         if (fs.existsSync(targetDir)) {
             try {
-                // If it already exists, let's clear its contents or just write over it
-                // To avoid folder removal permission issues, we can just extract over it.
-            } catch(e) {}
-        } else {
-            fs.mkdirSync(targetDir, { recursive: true });
+                fs.rmSync(targetDir, { recursive: true, force: true });
+            } catch (e) {
+                console.error("Failed to clean targetDir:", e);
+            }
         }
+        fs.mkdirSync(targetDir, { recursive: true });
 
         if (event && event.sender && !event.sender.isDestroyed()) {
             event.sender.send('fsr4-download-progress', { percent: 100, stage: 'extracting' });
         }
 
-        // Extract using extract-zip
-        await extract(tempZipPath, { dir: targetDir });
+        await extractArchive(tempZipPath, targetDir);
 
-        // Clean up temporary archive file
         try {
             fs.unlinkSync(tempZipPath);
         } catch (e) {
@@ -109,11 +181,6 @@ async function downloadFsr4Release(event, { name, downloadUrl }) {
     } catch (e) {
         console.error("FSR4 download error:", e);
         
-        // Check if the temp file exists. If it exists and we crashed during extraction,
-        // it means the downloaded archive was corrupted or incomplete.
-        const isCorrupt = fs.existsSync(tempZipPath);
-        
-        // Clean up temp file on error
         try {
             if (fs.existsSync(tempZipPath)) {
                 fs.unlinkSync(tempZipPath);
@@ -122,12 +189,15 @@ async function downloadFsr4Release(event, { name, downloadUrl }) {
             console.error("Failed to clean up temp zip on error:", unlinkErr);
         }
 
-        let errorMessage = e.message;
-        if (isCorrupt) {
-            errorMessage = "Dosya bozuk veya eksik indi, lütfen tekrar deneyin.";
+        try {
+            if (fs.existsSync(targetDir)) {
+                fs.rmSync(targetDir, { recursive: true, force: true });
+            }
+        } catch (rmErr) {
+            console.error("Failed to clean up target directory on error:", rmErr);
         }
 
-        return { success: false, error: errorMessage };
+        return { success: false, error: e.message };
     }
 }
 

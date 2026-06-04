@@ -35,6 +35,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
     // DLSS Sürüm Yöneticisi
     dlssParseZip: (data) => ipcRenderer.invoke('dlss-parse-zip', data),
     dlssInstallFromZip: (data) => ipcRenderer.invoke('dlss-install-from-zip', data),
+    getDlssEnablerReleases: () => ipcRenderer.invoke('get-dlss-enabler-releases'),
+    downloadDlssEnablerRelease: (data) => ipcRenderer.invoke('download-dlss-enabler-release', data),
+    onDlssEnablerDownloadProgress: (callback) => ipcRenderer.on('dlss-enabler-download-progress', (_event, data) => callback(data)),
+    removeDlssEnablerProgressListeners: () => ipcRenderer.removeAllListeners('dlss-enabler-download-progress'),
 
     // ── Dual-layer Game Path System IPCs ────────────────────────────────────
     getUserGames: () => ipcRenderer.invoke('get-user-games'),
@@ -88,9 +92,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
     onCompressionProgress: (callback) => ipcRenderer.on('compression-progress', (_event, data) => callback(data)),
     // C-02: Cleanup function for compression progress listeners to prevent memory leaks
     removeCompressionProgressListeners: () => ipcRenderer.removeAllListeners('compression-progress'),
-
-    // Compression DB
-    getCompressionDb: () => ipcRenderer.invoke('get-compression-db'),
 
     // YouTube RSS and External Link opening
     fetchYoutubeVideos: () => ipcRenderer.invoke('fetch-youtube-videos'),

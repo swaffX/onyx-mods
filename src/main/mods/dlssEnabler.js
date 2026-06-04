@@ -1,10 +1,34 @@
 const fs = require('fs');
 const path = require('path');
-const { dialog, BrowserWindow } = require('electron');
+const { dialog, BrowserWindow, app } = require('electron');
+const extract = require('extract-zip');
+const { execFile } = require('child_process');
+const { path7za } = require('7zip-bin');
 
 const config = require('../config');
 const utils = require('../utils');
 const scanner = require('../scanner');
+
+let releasesCache = null;
+let cacheTime = 0;
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+async function extractArchive(archivePath, targetDir) {
+    const lower = archivePath.toLowerCase();
+    if (lower.endsWith('.7z')) {
+        return new Promise((resolve, reject) => {
+            execFile(path7za, ['x', archivePath, `-o${targetDir}`, '-y'], (err, stdout, stderr) => {
+                if (err) {
+                    console.error('7za extract error:', err, stderr);
+                    return reject(new Error(`7z extraction failed: ${err.message || stderr}`));
+                }
+                resolve();
+            });
+        });
+    } else {
+        await extract(archivePath, { dir: targetDir });
+    }
+}
 
 function isSameGame(existingGame, newExePath) {
     if (!existingGame.exePath || !newExePath) return false;
@@ -181,16 +205,34 @@ async function copyDlssFiles(sourceDir, targetDir, effectiveDllName) {
     return { success: true };
 }
 
-async function executeDlssInstall(game, exePath, version, dllName) {
+async function executeDlssInstall(event, game, exePath, version, dllName, downloadUrl) {
     const targetDir = path.dirname(exePath);
-    const sourceDir = path.join(config.modsPath, 'dlssenabler', version);
+    const versionDir = path.join(config.modsPath, 'dlssenabler', version);
 
     console.log(`[DLSS ENABLER] Manuel kurulum başlatıldı. Oyun: ${game ? game.name : 'Bilinmiyor'}, Hedef: ${targetDir}, Sürüm: ${version}, İstenen DLL: ${dllName || 'version.dll'}`);
 
-    if (!fs.existsSync(sourceDir)) {
-        console.error(`[DLSS ENABLER] Hata: Kaynak klasör bulunamadı: ${sourceDir}`);
-        throw new Error(`Mod kaynak klasörü bulunamadı: ${version}`);
+    let alreadyDownloaded = false;
+    if (fs.existsSync(versionDir)) {
+        try {
+            const dirFiles = fs.readdirSync(versionDir).map(f => f.toLowerCase());
+            if (dirFiles.includes('version.dll')) {
+                alreadyDownloaded = true;
+            }
+        } catch (e) {}
     }
+
+    if (!alreadyDownloaded) {
+        if (!downloadUrl) {
+            return { success: false, error: 'Bu sürüm henüz indirilmemiş ve indirme linki bulunamadı.' };
+        }
+        console.log(`[DLSS ENABLER] Sürüm henüz indirilmemiş, indiriliyor: ${version}`);
+        const dlResult = await downloadDlssEnablerRelease(event, { name: version, downloadUrl });
+        if (!dlResult.success) {
+            return { success: false, error: dlResult.error || 'İndirme başarısız.' };
+        }
+    }
+
+    const sourceDir = versionDir;
 
     // Mevcut DLSS Enabler DLL'ini canlı tara
     const { found: existingDll, conflicts } = await findExistingDlssEnablerDll(targetDir);
@@ -327,7 +369,7 @@ async function executeDlssInstall(game, exePath, version, dllName) {
 
     return { success: true, savedToUserGames, games: config.getExistingGamesState() };
 }
-async function autoInstallDlss(game, version, dllName) {
+async function autoInstallDlss(event, game, version, dllName, downloadUrl) {
     console.log(`[DLSS ENABLER] Otomatik kurulum başlatıldı. Oyun: ${game.name}, Sürüm: ${version}, İstenen DLL: ${dllName || 'version.dll'}`);
 
     // --- Resolve target paths via the dual-layer system ---
@@ -352,10 +394,29 @@ async function autoInstallDlss(game, version, dllName) {
     const targetExeDir = path.dirname(exePathResolved);
     console.log(`[DLSS ENABLER] Hedef EXE klasörü: ${targetExeDir} (kaynak: ${paths.source})`);
 
-    const sourceDir = path.join(config.modsPath, 'dlssenabler', version);
-    if (!fs.existsSync(sourceDir)) {
-        return { success: false, error: `Mod kaynak klasörü bulunamadı: ${version}` };
+    const versionDir = path.join(config.modsPath, 'dlssenabler', version);
+    let alreadyDownloaded = false;
+    if (fs.existsSync(versionDir)) {
+        try {
+            const dirFiles = fs.readdirSync(versionDir).map(f => f.toLowerCase());
+            if (dirFiles.includes('version.dll')) {
+                alreadyDownloaded = true;
+            }
+        } catch (e) {}
     }
+
+    if (!alreadyDownloaded) {
+        if (!downloadUrl) {
+            return { success: false, error: 'Bu sürüm henüz indirilmemiş ve indirme linki bulunamadı.' };
+        }
+        console.log(`[DLSS ENABLER] Sürüm henüz indirilmemiş, indiriliyor: ${version}`);
+        const dlResult = await downloadDlssEnablerRelease(event, { name: version, downloadUrl });
+        if (!dlResult.success) {
+            return { success: false, error: dlResult.error || 'İndirme başarısız.' };
+        }
+    }
+
+    const sourceDir = versionDir;
 
     // Mevcut DLSS Enabler DLL'ini canlı tara
     const { found: existingDll, conflicts } = await findExistingDlssEnablerDll(targetExeDir);
@@ -504,6 +565,173 @@ async function installDlssFromZip(filePath, version) {
     }
 }
 
+async function getDlssEnablerReleases() {
+    const now = Date.now();
+    if (releasesCache && (now - cacheTime < CACHE_TTL)) {
+        console.log("[DLSS ENABLER] Returning cached releases.");
+        return releasesCache.map(r => {
+            const targetDir = path.join(config.modsPath, 'dlssenabler', r.name);
+            let installed = false;
+            if (fs.existsSync(targetDir)) {
+                try {
+                    const files = fs.readdirSync(targetDir);
+                    if (files.length > 0) {
+                        installed = true;
+                    }
+                } catch (e) {}
+            }
+            return { ...r, installed };
+        });
+    }
+
+    try {
+        const response = await fetch('https://api.github.com/repos/vuenxx/extra_goldteam34/releases', {
+            headers: { 'User-Agent': 'vuenxxFG' }
+        });
+
+        if (response.status === 403) {
+            const rateLimitReset = response.headers.get('X-RateLimit-Reset');
+            let errorMsg = "GitHub API limitine ulaşıldı. Lütfen daha sonra tekrar deneyin.";
+            if (rateLimitReset) {
+                const resetDate = new Date(parseInt(rateLimitReset) * 1000);
+                errorMsg += ` (Sıfırlanma zamanı: ${resetDate.toLocaleTimeString()})`;
+            }
+            throw new Error(errorMsg);
+        }
+
+        if (!response.ok) throw new Error(`GitHub API HTTP error: ${response.status}`);
+        const releases = await response.json();
+
+        if (!Array.isArray(releases)) {
+            throw new Error("Invalid response format from GitHub API.");
+        }
+
+        const mappedReleases = [];
+        for (const r of releases) {
+            const asset = r.assets && r.assets.find(a => {
+                const nameLow = a.name.toLowerCase();
+                return nameLow.endsWith('.zip') || nameLow.endsWith('.7z');
+            });
+            if (!asset) continue;
+
+            const tag = r.tag_name;
+            const name = r.name || r.tag_name;
+
+            mappedReleases.push({
+                name: name,
+                tag: tag,
+                downloadUrl: asset.browser_download_url
+            });
+        }
+
+        releasesCache = mappedReleases;
+        cacheTime = now;
+
+        return mappedReleases.map(r => {
+            const targetDir = path.join(config.modsPath, 'dlssenabler', r.name);
+            let installed = false;
+            if (fs.existsSync(targetDir)) {
+                try {
+                    const files = fs.readdirSync(targetDir);
+                    if (files.length > 0) {
+                        installed = true;
+                    }
+                } catch (e) {}
+            }
+            return { ...r, installed };
+        });
+    } catch (e) {
+        console.error("Failed to fetch DLSS Enabler releases:", e);
+        if (releasesCache) {
+            console.log("[DLSS ENABLER] Fetch failed, returning stale cache as fallback.");
+            return releasesCache.map(r => {
+                const targetDir = path.join(config.modsPath, 'dlssenabler', r.name);
+                let installed = false;
+                if (fs.existsSync(targetDir)) {
+                    try {
+                        const files = fs.readdirSync(targetDir);
+                        if (files.length > 0) {
+                            installed = true;
+                        }
+                    } catch (err) {}
+                }
+                return { ...r, installed };
+            });
+        }
+        return { error: e.message };
+    }
+}
+
+async function downloadDlssEnablerRelease(event, { name, downloadUrl }) {
+    if (!downloadUrl) throw new Error("İndirme linki bulunamadı.");
+
+    const targetDir = path.join(config.modsPath, 'dlssenabler', name);
+
+    const is7z = downloadUrl.toLowerCase().endsWith('.7z');
+    const ext = is7z ? '.7z' : '.zip';
+    const tempZipPath = path.join(app.getPath('temp'), `dlssenabler_${name.replace(/[^a-z0-9.-]/gi, '_')}${ext}`);
+
+    try {
+        const response = await fetch(downloadUrl);
+        if (!response.ok) throw new Error(`Download failed: ${response.status}`);
+
+        const contentLength = +response.headers.get('Content-Length') || 0;
+        const reader = response.body.getReader();
+        let receivedLength = 0;
+        let chunks = [];
+
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            chunks.push(value);
+            receivedLength += value.length;
+            if (contentLength && event && event.sender && !event.sender.isDestroyed()) {
+                const percent = Math.round((receivedLength / contentLength) * 100);
+                event.sender.send('dlss-enabler-download-progress', { percent });
+            }
+        }
+
+        const buffer = Buffer.concat(chunks.map(c => Buffer.from(c)));
+        fs.writeFileSync(tempZipPath, buffer);
+
+        if (fs.existsSync(targetDir)) {
+            try {
+                fs.rmSync(targetDir, { recursive: true, force: true });
+            } catch (e) {
+                console.error("Failed to clean targetDir:", e);
+            }
+        }
+        fs.mkdirSync(targetDir, { recursive: true });
+
+        if (event && event.sender && !event.sender.isDestroyed()) {
+            event.sender.send('dlss-enabler-download-progress', { percent: 100, stage: 'extracting' });
+        }
+
+        await extractArchive(tempZipPath, targetDir);
+
+        try {
+            fs.unlinkSync(tempZipPath);
+        } catch (e) {
+            console.error("Failed to clean up temp zip:", e);
+        }
+
+        return { success: true, targetDir };
+    } catch (e) {
+        console.error("DLSS Enabler download error:", e);
+        try {
+            if (fs.existsSync(tempZipPath)) {
+                fs.unlinkSync(tempZipPath);
+            }
+        } catch (unlinkErr) {}
+        try {
+            if (fs.existsSync(targetDir)) {
+                fs.rmSync(targetDir, { recursive: true, force: true });
+            }
+        } catch (rmErr) {}
+        return { success: false, error: e.message };
+    }
+}
+
 module.exports = {
     isSameGame,
     getDlssVersions,
@@ -512,5 +740,7 @@ module.exports = {
     executeDlssInstall,
     autoInstallDlss,
     parseZipForDlss,
-    installDlssFromZip
+    installDlssFromZip,
+    getDlssEnablerReleases,
+    downloadDlssEnablerRelease
 };

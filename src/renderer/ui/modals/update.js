@@ -5,6 +5,8 @@ import { renderGames, updateHomeStats } from '../games.js';
 import { runStreamlineInstall } from './streamline.js';
 import { t } from '../../i18n/i18n.js';
 
+let currentDlssUpdateReleases = [];
+
 const manageGameCover = document.getElementById('update-game-cover');
 const manageGamePlaceholder = document.getElementById('update-game-placeholder');
 const manageGameName = document.getElementById('update-game-name');
@@ -51,17 +53,20 @@ export async function openUpdateModal(game) {
         // Populate versions in change dropdown
         manageDlssVersionSelect.innerHTML = `<option value="" disabled selected>${t('update.loadingVersions')}</option>`;
         try {
-            const versions = await window.electronAPI.getDlssVersions();
+            const releases = await window.electronAPI.getDlssEnablerReleases();
             manageDlssVersionSelect.innerHTML = '';
-            versions.forEach(v => {
-                const opt = document.createElement('option');
-                opt.value = v;
-                opt.textContent = v;
-                if (v === game.dlssEnablerVersion) {
-                    opt.selected = true;
-                }
-                manageDlssVersionSelect.appendChild(opt);
-            });
+            if (releases && releases.length > 0) {
+                currentDlssUpdateReleases = releases;
+                releases.forEach(r => {
+                    const opt = document.createElement('option');
+                    opt.value = r.name;
+                    opt.textContent = `${r.name} ${r.installed ? t('opti.downloaded') : t('opti.toDownload')}`;
+                    if (r.name === game.dlssEnablerVersion) {
+                        opt.selected = true;
+                    }
+                    manageDlssVersionSelect.appendChild(opt);
+                });
+            }
         } catch(e) {}
     } else {
         manageDlssSection.style.display = 'none';
@@ -129,20 +134,48 @@ export function initUpdateListeners() {
             showInfoModal(t('update.changeDlssTitle'), t('update.changeDlssMsg'));
             
             try {
+                const release = currentDlssUpdateReleases.find(r => r.name === version);
+                const downloadUrl = release ? release.downloadUrl : null;
+
+                // Wire progress updates in case the version needs to be downloaded first
+                const infoModalProgress = document.getElementById('info-modal-progress');
+                if (infoModalProgress) {
+                    infoModalProgress.style.display = 'block';
+                    infoModalProgress.textContent = '%0';
+                }
+                
+                if (window.electronAPI.removeDlssEnablerProgressListeners) {
+                    window.electronAPI.removeDlssEnablerProgressListeners();
+                }
+                window.electronAPI.onDlssEnablerDownloadProgress((data) => {
+                    if (infoModalProgress) {
+                        if (data.stage === 'extracting') {
+                            infoModalProgress.textContent = t('opti.extractingShort');
+                        } else {
+                            infoModalProgress.textContent = `%${data.percent}`;
+                        }
+                    }
+                });
+
                 let result;
                 if (state.currentSelectedGame.source === 'manual') {
                     result = await window.electronAPI.executeDlssInstall({
                         game: state.currentSelectedGame,
                         exePath: state.currentSelectedGame.exePath,
-                        version: version
+                        version: version,
+                        downloadUrl
                     });
                 } else {
                     result = await window.electronAPI.autoInstallDlss({
                         game: state.currentSelectedGame,
-                        version: version
+                        version: version,
+                        downloadUrl
                     });
                 }
                 
+                if (infoModalProgress) {
+                    infoModalProgress.style.display = 'none';
+                }
                 closeModal('info-modal');
                 if (result.success) {
                     showInfoModal(t('update.successTitle'), `🎉 ${t('update.changeDlssSuccess')} ${version}!`);
@@ -154,6 +187,10 @@ export function initUpdateListeners() {
                     showInfoModal(t('update.errorTitle'), t('update.changeDlssError') + result.error, true);
                 }
             } catch (e) {
+                const infoModalProgress = document.getElementById('info-modal-progress');
+                if (infoModalProgress) {
+                    infoModalProgress.style.display = 'none';
+                }
                 closeModal('info-modal');
                 showInfoModal(t('update.errorTitle'), t('update.changeDlssUnexpected') + e.message, true);
             }

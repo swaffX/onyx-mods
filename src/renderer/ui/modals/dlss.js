@@ -15,6 +15,8 @@ const dlssConfirmModal = document.getElementById('dlss-confirm-modal');
 const dlssConfirmYesBtn = document.getElementById('dlss-confirm-yes-btn');
 const dlssConfirmNoBtn = document.getElementById('dlss-confirm-no-btn');
 
+let currentDlssReleases = [];
+
 export async function openDlssModal() {
     if (!state.currentSelectedGame) return;
 
@@ -37,13 +39,15 @@ export async function openDlssModal() {
 
     // Fetch and populate DLSS versions
     try {
-        const versions = await window.electronAPI.getDlssVersions();
+        const releases = await window.electronAPI.getDlssEnablerReleases();
         dlssVersionSelect.innerHTML = '';
-        if (versions && versions.length > 0) {
-            versions.forEach(v => {
+        if (releases && releases.length > 0) {
+            currentDlssReleases = releases;
+            releases.forEach((r, index) => {
                 const opt = document.createElement('option');
-                opt.value = v;
-                opt.textContent = v;
+                opt.value = r.name;
+                opt.textContent = `${r.name} ${r.installed ? t('opti.downloaded') : t('opti.toDownload')}`;
+                if (index === 0) opt.selected = true;
                 dlssVersionSelect.appendChild(opt);
             });
         } else {
@@ -62,24 +66,54 @@ export async function openDlssModal() {
 export async function runUnifiedInstall(exePath, dlssVersion, dllName) {
     showInfoModal(t('dlss.installTitle'), t('dlss.installing'));
     try {
+        const release = currentDlssReleases.find(r => r.name === dlssVersion);
+        const downloadUrl = release ? release.downloadUrl : null;
+
+        // Wire progress updates in case the version needs to be downloaded first
+        const infoModalProgress = document.getElementById('info-modal-progress');
+        if (infoModalProgress) {
+            infoModalProgress.style.display = 'block';
+            infoModalProgress.textContent = '%0';
+        }
+        
+        if (window.electronAPI.removeDlssEnablerProgressListeners) {
+            window.electronAPI.removeDlssEnablerProgressListeners();
+        }
+        
+        window.electronAPI.onDlssEnablerDownloadProgress((data) => {
+            if (infoModalProgress) {
+                if (data.stage === 'extracting') {
+                    infoModalProgress.textContent = t('opti.extractingShort');
+                } else {
+                    infoModalProgress.textContent = `%${data.percent}`;
+                }
+            }
+        });
+
         // Install DLSS Enabler
         let dlssResult;
         if (exePath === "AUTO") {
             dlssResult = await window.electronAPI.autoInstallDlss({
                 game: state.currentSelectedGame,
                 version: dlssVersion,
-                dllName: dllName || 'version.dll'
+                dllName: dllName || 'version.dll',
+                downloadUrl
             });
         } else {
             dlssResult = await window.electronAPI.executeDlssInstall({
                 game: state.currentSelectedGame,
                 exePath: exePath,
                 version: dlssVersion,
-                dllName: dllName || 'version.dll'
+                dllName: dllName || 'version.dll',
+                downloadUrl
             });
         }
         
+        if (infoModalProgress) {
+            infoModalProgress.style.display = 'none';
+        }
         closeModal('info-modal');
+        
         if (dlssResult.success) {
             let successMsg = `🎉 DLSS Enabler (${dlssVersion}) ${t('dlss.installSuccess')}`;
             if (dlssResult.savedToUserGames) {
@@ -94,6 +128,10 @@ export async function runUnifiedInstall(exePath, dlssVersion, dllName) {
             showInfoModal(t('dlss.errorTitle'), t('dlss.installError') + dlssResult.error, true);
         }
     } catch(e) {
+        const infoModalProgress = document.getElementById('info-modal-progress');
+        if (infoModalProgress) {
+            infoModalProgress.style.display = 'none';
+        }
         closeModal('info-modal');
         showInfoModal(t('dlss.errorTitle'), t('dlss.unexpectedError') + e.message, true);
     }

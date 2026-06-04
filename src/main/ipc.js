@@ -14,7 +14,6 @@ const streamline = require('./mods/streamline');
 const uninstaller = require('./mods/uninstaller');
 const compressor = require('./mods/compressor');
 const analyser = require('./mods/analyser');
-const compressionDb = require('./mods/compressionDb');
 const steamScanner = require('./mods/steamScanner');
 const iniEditor = require('./mods/iniEditor');
 const updater = require('./updater');
@@ -215,12 +214,12 @@ function registerIpcHandlers() {
         return await dlssEnabler.selectExe(event);
     });
 
-    ipcMain.handle('execute-dlss-install', async (event, { game, exePath, version, dllName }) => {
-        return await dlssEnabler.executeDlssInstall(game, exePath, version, dllName);
+    ipcMain.handle('execute-dlss-install', async (event, { game, exePath, version, dllName, downloadUrl }) => {
+        return await dlssEnabler.executeDlssInstall(event, game, exePath, version, dllName, downloadUrl);
     });
 
-    ipcMain.handle('auto-install-dlss', async (event, { game, version, dllName }) => {
-        return await dlssEnabler.autoInstallDlss(game, version, dllName);
+    ipcMain.handle('auto-install-dlss', async (event, { game, version, dllName, downloadUrl }) => {
+        return await dlssEnabler.autoInstallDlss(event, game, version, dllName, downloadUrl);
     });
 
     // DLSS Sürüm Yöneticisi
@@ -232,6 +231,14 @@ function registerIpcHandlers() {
     ipcMain.handle('dlss-install-from-zip', async (event, { filePath, version }) => {
         console.log(`[IPC] dlss-install-from-zip: sürüm="${version}" @ "${filePath}"`);
         return await dlssEnabler.installDlssFromZip(filePath, version);
+    });
+
+    ipcMain.handle('get-dlss-enabler-releases', async () => {
+        return await dlssEnabler.getDlssEnablerReleases();
+    });
+
+    ipcMain.handle('download-dlss-enabler-release', async (event, { name, downloadUrl }) => {
+        return await dlssEnabler.downloadDlssEnablerRelease(event, { name, downloadUrl });
     });
 
     // ── Dual-layer Game Path System IPCs ──────────────────────────────────────
@@ -395,11 +402,6 @@ function registerIpcHandlers() {
                 event.sender.send('compression-progress', { folderPath, progress });
             }
         });
-    });
-
-    // Compression DB
-    ipcMain.handle('get-compression-db', async () => {
-        return await compressionDb.getDb();
     });
 
 

@@ -101,6 +101,17 @@ async function uninstallMod({ gameName, exePath, mod }) {
             }
         }
 
+        // Remove OptiPatcher.asi from plugins folder if it exists
+        try {
+            const optiPatcherAsiPath = path.join(gameDir, 'plugins', 'OptiPatcher.asi');
+            if (fs.existsSync(optiPatcherAsiPath)) {
+                fs.unlinkSync(optiPatcherAsiPath);
+                deleted++;
+            }
+        } catch (e) {
+            skipped++;
+        }
+
         for (const dllName of injectionDllNames) {
             const matches = findFileInDir(gameDir, dllName);
             for (const dllPath of matches) {

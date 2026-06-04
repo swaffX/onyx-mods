@@ -1,4 +1,5 @@
 import { t } from '../i18n/i18n.js';
+import { showInfoModal } from './modals/info.js';
 
 // H-04: Module-level state instead of window.* globals to prevent pollution
 let compCount = 0;
@@ -51,7 +52,7 @@ export async function initCompress() {
     window.electronAPI.onCompressionProgress((data) => {
         const progressText = document.getElementById('realtime-progress-text');
         const statusText = document.getElementById('realtime-status-text');
-        const progressBar = document.getElementById('compression-bar');
+        const progressBar = document.getElementById('realtime-progress-bar');
         
         if (progressText && data.progress) {
             // compact.exe output parser — detect [OK] or [SKIPPED] per file
@@ -63,7 +64,7 @@ export async function initCompress() {
                     const percent = Math.min(99, Math.round((compCount / compTotal) * 100));
                     // C-01: Use locale-aware percent format
                     progressText.textContent = formatPercent(percent);
-                    progressBar.style.width = `${percent}%`;
+                    if (progressBar) progressBar.style.width = `${percent}%`;
                     // H-10: Use textContent to avoid XSS
                     if (statusText) statusText.textContent = `${compCount} / ${compTotal} ${t('compress.filesProcessed')}`;
                 }
@@ -72,27 +73,12 @@ export async function initCompress() {
                 compTotal > 0 && compCount >= compTotal
             ) {
                 progressText.textContent = formatPercent(100);
-                progressBar.style.width = '100%';
+                if (progressBar) progressBar.style.width = '100%';
                 if (statusText) statusText.textContent = t('compress.completed');
             }
         }
     });
 
-    // 2. Sub-Tab Navigation
-    const subNavItems = document.querySelectorAll('.sub-nav-item');
-    const subTabContents = document.querySelectorAll('.sub-tab-content');
-
-    subNavItems.forEach(item => {
-        item.addEventListener('click', () => {
-            if (isProcessing) return;
-            const targetId = item.getAttribute('data-sub-target');
-            subNavItems.forEach(i => i.classList.remove('active'));
-            item.classList.add('active');
-            subTabContents.forEach(content => {
-                content.style.display = content.id === targetId ? 'block' : 'none';
-            });
-        });
-    });
 
     // 3. Folder Selection
     if (selectFolderBtn) {
@@ -132,13 +118,16 @@ export async function initCompress() {
             const progressContainer = document.getElementById('realtime-progress-container');
             const methodSection = document.getElementById('compression-method-section');
             const methodContainer = document.getElementById('detected-method-container');
+            const actualStatsContainer = document.getElementById('compression-actual-stats');
 
             statsSection.style.display = 'flex';
             progressContainer.style.display = 'block';
             methodSection.style.display = 'none';
             if (methodContainer) methodContainer.style.display = 'none';
+            if (actualStatsContainer) actualStatsContainer.style.display = 'none';
 
-            document.getElementById('compression-bar').style.width = '0%';
+            const realtimeProgressBar = document.getElementById('realtime-progress-bar');
+            if (realtimeProgressBar) realtimeProgressBar.style.width = '0%';
             // C-01: Locale-aware
             document.getElementById('realtime-progress-text').textContent = formatPercent(0);
 
@@ -149,16 +138,16 @@ export async function initCompress() {
                 });
                 if (result.success) {
                     // H-06: Force 100% on success
-                    document.getElementById('compression-bar').style.width = '100%';
+                    if (realtimeProgressBar) realtimeProgressBar.style.width = '100%';
                     document.getElementById('realtime-progress-text').textContent = formatPercent(100);
                     const statusText = document.getElementById('realtime-status-text');
                     if (statusText) statusText.textContent = t('compress.completed');
-                    alert(t('compress.compressDone'));
+                    showInfoModal(t('opti.successTitle'), t('compress.compressDone'));
                 }
             } catch (e) {
                 // H-11: Translate error codes from main process
                 const msg = translateErrorCode(e.message);
-                alert(t('compress.genericError') + msg);
+                showInfoModal(t('opti.errorTitle'), t('compress.genericError') + msg, true);
             } finally {
                 toggleProcessing(false);
                 const progressContainerFinal = document.getElementById('realtime-progress-container');
@@ -184,16 +173,18 @@ export async function initCompress() {
             const statsSection = document.getElementById('compression-stats-section');
             const progressContainer = document.getElementById('realtime-progress-container');
             const methodSection = document.getElementById('compression-method-section');
-            const progressBar = document.getElementById('compression-bar');
+            const actualStatsContainer = document.getElementById('compression-actual-stats');
+            const realtimeProgressBarContainer = progressContainer ? progressContainer.querySelector('.comp-progress-container') : null;
             const progressText = document.getElementById('realtime-progress-text');
             const statusText = document.getElementById('realtime-status-text');
 
             statsSection.style.display = 'flex';
             progressContainer.style.display = 'block';
             methodSection.style.display = 'none';
+            if (actualStatsContainer) actualStatsContainer.style.display = 'none';
 
             // Hide the percent text and bar, just show processing status
-            if (progressBar) progressBar.style.display = 'none';
+            if (realtimeProgressBarContainer) realtimeProgressBarContainer.style.display = 'none';
             if (progressText) progressText.style.display = 'none';
             if (statusText) statusText.textContent = t('compress.processing');
 
@@ -201,15 +192,15 @@ export async function initCompress() {
                 const result = await window.electronAPI.runUncompression({ folderPath: folder.path });
                 if (result.success) {
                     if (statusText) statusText.textContent = t('compress.completed');
-                    alert(t('compress.uncompressDone'));
+                    showInfoModal(t('opti.successTitle'), t('compress.uncompressDone'));
                 }
             } catch (e) {
                 const msg = translateErrorCode(e.message);
-                alert(t('compress.genericError') + msg);
+                showInfoModal(t('opti.errorTitle'), t('compress.genericError') + msg, true);
             } finally {
                 toggleProcessing(false);
                 // Restore bar/text visibility for next compress operation
-                if (progressBar) progressBar.style.display = '';
+                if (realtimeProgressBarContainer) realtimeProgressBarContainer.style.display = '';
                 if (progressText) progressText.style.display = '';
                 const progressContainerFinal = document.getElementById('realtime-progress-container');
                 if (progressContainerFinal) progressContainerFinal.style.display = 'none';
@@ -274,6 +265,7 @@ async function refreshFolderState(folder) {
         folder.size = formatBytes(stats.uncompressedBytes);
         folder.rawUncompressedBytes = stats.uncompressedBytes;
         folder.compressedSize = formatBytes(stats.compressedBytes);
+        folder.rawCompressedBytes = stats.compressedBytes; // Populated correctly
         folder.fileCount = stats.fileCount.toLocaleString();
         folder.isCompressed = stats.isCompressed;
         folder.compressionRatio = stats.ratio;
@@ -287,6 +279,9 @@ async function refreshFolderState(folder) {
         console.error('Analysis error:', e);
         folder.isAnalyzing = false;
         folder.size = t('compress.error');
+        if (selectedFolderIndex === addedFolders.indexOf(folder)) {
+            updateDetailsView(folder);
+        }
     }
 }
 
@@ -356,6 +351,12 @@ function updateDetailsView(folder) {
         compressBtn.disabled = true;
         uncompressBtn.style.display = 'none';
         compressBtn.textContent = t('compress.analyzing2');
+        
+        // Hide stats section and actual stats during analysis
+        const statsSection = document.getElementById('compression-stats-section');
+        const methodSection = document.getElementById('compression-method-section');
+        if (statsSection) statsSection.style.display = 'none';
+        if (methodSection) methodSection.style.display = 'none';
     } else {
         compressBtn.disabled = false;
         if (folder.isCompressed) {
@@ -373,15 +374,43 @@ function updateDetailsView(folder) {
                 methodContainer.style.display = 'none';
             }
 
+            // Update Statistics
+            const rawSizeEl = document.getElementById('detail-folder-size-raw');
+            const compSizeEl = document.getElementById('detail-folder-compressed-size');
+            const savedPercentEl = document.getElementById('compression-saved-percent');
+
+            if (rawSizeEl) rawSizeEl.textContent = folder.size;
+            if (compSizeEl) compSizeEl.textContent = folder.compressedSize || folder.size;
+
+            let savedPercent = 0;
+            if (folder.rawUncompressedBytes && folder.rawCompressedBytes && folder.rawUncompressedBytes > 0) {
+                savedPercent = Math.max(0, Math.round(((folder.rawUncompressedBytes - folder.rawCompressedBytes) / folder.rawUncompressedBytes) * 100));
+            }
+
+            if (savedPercentEl) {
+                const lang = document.documentElement.lang || 'en';
+                const parentNode = savedPercentEl.parentNode;
+                if (parentNode) {
+                    if (lang === 'tr') {
+                        parentNode.innerHTML = `Diskte <span id="compression-saved-percent" style="color: var(--accent-color); font-weight: bold;">%${savedPercent}</span> oranında yer açıldı.`;
+                    } else {
+                        parentNode.innerHTML = `<span id="compression-saved-percent" style="color: var(--accent-color); font-weight: bold;">${savedPercent}%</span> of disk space saved.`;
+                    }
+                }
+            }
+
             const statsSection = document.getElementById('compression-stats-section');
             const methodSection = document.getElementById('compression-method-section');
+            const actualStatsContainer = document.getElementById('compression-actual-stats');
             if (statsSection && methodSection) {
                 statsSection.style.display = 'flex';
                 methodSection.style.display = 'none';
+                if (actualStatsContainer) actualStatsContainer.style.display = 'flex';
 
                 // Show compression ratio bar (not size saving %) — only show ratio
-                const ratioValue = parseFloat(folder.compressionRatio) || 1.0;
-                const currentPercent = Math.round((1 / ratioValue) * 100);
+                const currentPercent = folder.rawUncompressedBytes && folder.rawCompressedBytes && folder.rawUncompressedBytes > 0 
+                    ? Math.round((folder.rawCompressedBytes / folder.rawUncompressedBytes) * 100)
+                    : 100;
 
                 document.getElementById('compression-bar').style.width = currentPercent + '%';
             }
@@ -390,9 +419,11 @@ function updateDetailsView(folder) {
             uncompressBtn.style.display = 'none';
             const statsSection = document.getElementById('compression-stats-section');
             const methodSection = document.getElementById('compression-method-section');
+            const actualStatsContainer = document.getElementById('compression-actual-stats');
             if (statsSection && methodSection) {
                 statsSection.style.display = 'none';
                 methodSection.style.display = 'block';
+                if (actualStatsContainer) actualStatsContainer.style.display = 'none';
             }
         }
     }
