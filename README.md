@@ -8,7 +8,16 @@
   <img src="https://img.shields.io/badge/Platform-Windows-blue?style=for-the-badge&logo=windows" alt="Platform: Windows" />
   <img src="https://img.shields.io/badge/Framework-Electron-activegreen?style=for-the-badge&logo=electron" alt="Framework: Electron" />
   <img src="https://img.shields.io/badge/License-ISC-orange?style=for-the-badge" alt="License: ISC" />
-  <img src="https://img.shields.io/badge/Version-0.0.1-red?style=for-the-badge" alt="Version: 0.x.x" />
+  <img src="https://img.shields.io/badge/Status-Early%20Access%20%2F%20Erken%20Eri%C5%9Fim-purple?style=for-the-badge" alt="Status: Early Access" />
+</p>
+
+<p align="center">
+  <a href="https://www.youtube.com/@vuenxxmx">
+    <img src="https://img.shields.io/badge/YouTube-vuenxxmx-red?style=for-the-badge&logo=youtube" alt="YouTube" />
+  </a>
+  <a href="https://discord.com/invite/SnRpn3ADNF">
+    <img src="https://img.shields.io/badge/Discord-Sunucuya%20Katıl-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord" />
+  </a>
 </p>
 
 [🇹🇷 Türkçe](#-türkçe) | [🇬🇧 English](#-english)
