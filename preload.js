@@ -131,5 +131,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
         ipcRenderer.removeAllListeners('update-download-progress');
         ipcRenderer.removeAllListeners('update-downloaded');
         ipcRenderer.removeAllListeners('update-error');
-    }
+    },
+
+    // Window controls
+    windowMinimize: () => ipcRenderer.send('window-minimize'),
+    windowMaximize: () => ipcRenderer.send('window-maximize'),
+    windowClose:    () => ipcRenderer.send('window-close'),
+    onWindowMaximized:   (cb) => ipcRenderer.on('window-maximized',   () => cb(true)),
+    onWindowUnmaximized: (cb) => ipcRenderer.on('window-maximized',   (_e, v) => cb(v)),
 });

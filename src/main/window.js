@@ -8,12 +8,7 @@ function createWindow() {
         minWidth: 800,
         minHeight: 600,
         autoHideMenuBar: true,
-        titleBarStyle: 'hidden',
-        titleBarOverlay: {
-            color: '#0a0a0a',
-            symbolColor: '#3fd426',
-            height: 56
-        },
+        frame: false,
         icon: path.resolve(__dirname, '..', '..', 'program_logo.ico'),
         webPreferences: {
             nodeIntegration: false,

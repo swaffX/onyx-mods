@@ -25,6 +25,16 @@ let ipcRegistered = false;
 function registerIpcHandlers() {
     if (ipcRegistered) return;
     ipcRegistered = true;
+
+    // Window controls
+    ipcMain.on('window-minimize', () => BrowserWindow.getFocusedWindow()?.minimize());
+    ipcMain.on('window-maximize', () => {
+        const win = BrowserWindow.getFocusedWindow();
+        if (!win) return;
+        if (win.isMaximized()) { win.unmaximize(); } else { win.maximize(); }
+    });
+    ipcMain.on('window-close', () => BrowserWindow.getFocusedWindow()?.close());
+
     ipcMain.on('log-to-main', (event, msg) => {
         console.log(`[RENDERER] ${msg}`);
     });

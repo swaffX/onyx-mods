@@ -175,6 +175,37 @@ body {
     gap: 10px;
 }
 
+.window-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 8px;
+    -webkit-app-region: no-drag;
+}
+
+.wc-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.07);
+    color: var(--text-secondary);
+    transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+    flex-shrink: 0;
+}
+
+.wc-btn:hover {
+    transform: scale(1.1);
+}
+
+.wc-min:hover  { background: rgba(255, 189, 46, 0.25); color: #ffbd2e; }
+.wc-max:hover  { background: rgba(63, 212, 38, 0.25);  color: #3fd426; }
+.wc-close:hover { background: rgba(239, 68, 68, 0.3);  color: #ef4444; }
+
 /* Ücretsiz Oyunlar Button & Floating Badge */
 .free-games-btn-wrapper {
     position: relative;
