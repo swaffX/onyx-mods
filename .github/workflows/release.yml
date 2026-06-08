@@ -25,11 +25,11 @@ jobs:
         run: npm ci
 
       - name: Derle ve GitHub Releases'e yükle
-        # GH_TOKEN: electron-builder'ın release asset'lerini yüklemesi için gerekli.
-        # GITHUB_TOKEN GitHub Actions tarafından otomatik sağlanır;
-        # ekstra secret eklemeye gerek yok.
-        # Ön koşul: Repo → Settings → Actions → General →
-        #            Workflow permissions → "Read and write permissions" ✅
         run: npm run build
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Release'i yayınla (draft → published)
+        run: gh release edit "${{ github.ref_name }}" --draft=false
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
