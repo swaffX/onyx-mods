@@ -123,9 +123,9 @@ async function _loadReleaseHistory() {
                         </div>
                         ${date ? `<span class="release-date">${date}</span>` : ''}
                     </div>
-                    ${r.body ? `
+                    ${_cleanBody(r.body) ? `
                     <div class="release-notes-body">
-                        ${_markdownToHtml(r.body)}
+                        ${_markdownToHtml(_cleanBody(r.body))}
                     </div>` : `<p style="margin:8px 0 0; font-size:13px; color:var(--text-secondary);">${t('updates.noChangeNotes')}</p>`}
                 </div>`;
         }).join('');
@@ -255,6 +255,7 @@ function _updateProgressBar(percent, bytesPerSec) {
  */
 function _renderNotes(notes) {
     if (!notes) return `<p style="color:var(--text-secondary);">${t('updates.noNotes')}</p>`;
+    if (typeof notes === 'string') notes = _cleanBody(notes);
 
     // Dizi formatında gelebilir [{ version, note }]
     if (Array.isArray(notes)) {
@@ -274,6 +275,24 @@ function _renderNotes(notes) {
 
     // Markdown gelmiş — dönüştür
     return _markdownToHtml(String(notes));
+}
+
+/**
+ * Release body'sinden teknik meta satırları temizler.
+ * Co-Authored-By, Signed-off-by vb. kullanıcıya gösterilmez.
+ */
+function _cleanBody(body) {
+    if (!body) return '';
+    return body
+        .split('\n')
+        .filter(line => {
+            const l = line.trim().toLowerCase();
+            return !l.startsWith('co-authored-by:') &&
+                   !l.startsWith('signed-off-by:') &&
+                   !l.startsWith('co-authored by:');
+        })
+        .join('\n')
+        .trim();
 }
 
 /**
