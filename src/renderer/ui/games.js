@@ -33,12 +33,12 @@ export function createGameCard(game) {
     }
     if (game.hasOptiscaler) {
         const optiVerText = game.optiscalerVersion ? ` ${game.optiscalerVersion}` : '';
-        modTagsHtml += `<div class="dlss-tag" style="background: rgba(245,158,11,0.92); border: 1px solid rgba(245,158,11,0.5); box-shadow: 0 0 10px rgba(245,158,11,0.3); bottom: ${currentBottom}px;">OptiScaler${optiVerText}</div>`;
+        modTagsHtml += `<div class="dlss-tag" style="background: rgba(139,92,246,0.92); border: 1px solid rgba(139,92,246,0.4); box-shadow: 0 0 10px rgba(139,92,246,0.3); color: #e9d5ff; bottom: ${currentBottom}px;">OptiScaler${optiVerText}</div>`;
         currentBottom += 34;
     }
     if (game.hasStreamline) {
         const slVerText = game.streamlineVersion ? ` v${game.streamlineVersion}` : '';
-        modTagsHtml += `<div class="dlss-tag" style="background: rgba(147, 51, 234, 0.95); border: 1px solid rgba(147, 51, 234, 0.4); box-shadow: 0 0 10px rgba(147, 51, 234, 0.3); bottom: ${currentBottom}px;">Streamline${slVerText}</div>`;
+        modTagsHtml += `<div class="dlss-tag" style="background: rgba(14,165,233,0.92); border: 1px solid rgba(14,165,233,0.4); box-shadow: 0 0 10px rgba(14,165,233,0.3); color: #e0f2fe; bottom: ${currentBottom}px;">Streamline${slVerText}</div>`;
         currentBottom += 34;
     }
 
@@ -85,6 +85,12 @@ export function createGameCard(game) {
             </button>
             <div class="game-title">${game.name}</div>
             ${upscalerHtml}
+            ${(game.hasDlssEnabler || game.hasOptiscaler || game.hasStreamline) ? `
+            <div class="game-mod-chips">
+                ${game.hasDlssEnabler ? '<span class="mod-chip chip-dlss">DLSS</span>' : ''}
+                ${game.hasOptiscaler ? '<span class="mod-chip chip-opti">OptiScaler</span>' : ''}
+                ${game.hasStreamline ? '<span class="mod-chip chip-sl">Streamline</span>' : ''}
+            </div>` : ''}
             <div class="game-last-played" id="lp-${game.name.replace(/[^a-z0-9]/gi,'_')}"></div>
         </div>
     `;
@@ -275,9 +281,20 @@ export function renderGames(games) {
     const loadingVisible = loading && (loading.style.display !== 'none') && loading.style.display !== '';
     if (filteredGames.length === 0 && !loadingVisible) {
         if (query) {
-            container.innerHTML = `<p style="color: var(--text-secondary); text-align: center; grid-column: 1 / -1;">${t('games.noGamesSearch')}</p>`;
+            container.innerHTML = `
+                <div class="game-empty-state">
+                    <div class="es-icon">🔍</div>
+                    <div class="es-title">${t('games.noGamesSearch')}</div>
+                    <div class="es-desc">${t('games.noGamesSearchDesc') || 'Arama kriterinizle eşleşen oyun bulunamadı.'}</div>
+                </div>`;
         } else {
-            container.innerHTML = `<p style="color: var(--text-secondary); text-align: center; grid-column: 1 / -1;">${t('games.noGames')}</p>`;
+            container.innerHTML = `
+                <div class="game-empty-state">
+                    <div class="es-icon">🎮</div>
+                    <div class="es-title">${t('games.noGames')}</div>
+                    <div class="es-desc">${t('games.noGamesDesc') || 'Oyun kütüphanenizi tarayın veya manuel olarak oyun ekleyin.'}</div>
+                    <button class="es-btn" onclick="document.getElementById('refresh-games-btn').click()">${t('games.scanGames') || 'Oyunları Tara'}</button>
+                </div>`;
         }
         return;
     }
@@ -310,6 +327,21 @@ export function renderGames(games) {
     });
 }
 
+function countUp(el, value, suffix = '') {
+    if (!el) return;
+    const num = parseInt(value) || 0;
+    if (num === 0) { el.textContent = '0' + suffix; return; }
+    const duration = 500;
+    const startTime = performance.now();
+    function tick(now) {
+        const t = Math.min((now - startTime) / duration, 1);
+        const eased = 1 - Math.pow(1 - t, 3);
+        el.textContent = Math.round(eased * num) + suffix;
+        if (t < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+}
+
 export async function updateHomeStats() {
     if (!window.electronAPI) return;
     const games = await window.electronAPI.getGames();
@@ -318,17 +350,10 @@ export async function updateHomeStats() {
     const optiCount = games.filter(g => g.hasOptiscaler).length;
     const totalCount = dlssCount + optiCount;
 
-    const totalEl = document.getElementById('total-mods-count');
-    if (totalEl) totalEl.textContent = totalCount;
-
-    const dlssEl = document.getElementById('dlss-enabler-count');
-    if (dlssEl) dlssEl.textContent = dlssCount;
-
-    const optiEl = document.getElementById('optiscaler-count');
-    if (optiEl) optiEl.textContent = optiCount;
-
-    const gamesCountEl = document.getElementById('total-games-count');
-    if (gamesCountEl) gamesCountEl.textContent = games.length;
+    countUp(document.getElementById('total-mods-count'), totalCount);
+    countUp(document.getElementById('dlss-enabler-count'), dlssCount);
+    countUp(document.getElementById('optiscaler-count'), optiCount);
+    countUp(document.getElementById('total-games-count'), games.length);
 
     const lastScanEl = document.getElementById('last-scan-date');
     if (lastScanEl) {
@@ -991,6 +1016,15 @@ export function initGamesListeners() {
             
             const games = await window.electronAPI.getGames();
             renderGames(games);
+        });
+    });
+
+    // Stat card click → navigate to relevant tab
+    document.querySelectorAll('.stat-card[data-navigate]').forEach(card => {
+        card.addEventListener('click', () => {
+            const target = card.dataset.navigate;
+            const navBtn = document.querySelector(`.nav-item[data-target="${target}"]`);
+            if (navBtn) navBtn.click();
         });
     });
 

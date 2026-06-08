@@ -118,49 +118,49 @@
                 </div>
 
                 <div class="stats-container">
-                    <div class="stat-card total-mods">
+                    <div class="stat-card total-mods" data-navigate="modes" title="Modlara git">
                         <div class="stat-icon-wrapper">🛠️</div>
                         <div class="stat-info-group">
                             <div id="total-mods-count" class="stat-value">0</div>
                             <div class="stat-label" data-i18n="home.totalMods">Toplam Kurulu Mod</div>
                         </div>
                     </div>
-                    <div class="stat-card dlss-enabler-mods">
+                    <div class="stat-card dlss-enabler-mods" data-navigate="modes" title="Modlara git">
                         <div class="stat-icon-wrapper">✨</div>
                         <div class="stat-info-group">
                             <div id="dlss-enabler-count" class="stat-value">0</div>
                             <div class="stat-label">DLSS Enabler</div>
                         </div>
                     </div>
-                    <div class="stat-card optiscaler-mods">
+                    <div class="stat-card optiscaler-mods" data-navigate="modes" title="Modlara git">
                         <div class="stat-icon-wrapper">⚙️</div>
                         <div class="stat-info-group">
                             <div id="optiscaler-count" class="stat-value">0</div>
                             <div class="stat-label">OptiScaler</div>
                         </div>
                     </div>
-                    <div class="stat-card total-games">
+                    <div class="stat-card total-games" data-navigate="games" title="Oyunlara git">
                         <div class="stat-icon-wrapper">🎮</div>
                         <div class="stat-info-group">
                             <div id="total-games-count" class="stat-value">0</div>
                             <div class="stat-label" data-i18n="home.totalGames">Toplam Oyun</div>
                         </div>
                     </div>
-                    <div class="stat-card last-scan">
+                    <div class="stat-card last-scan" data-navigate="games" title="Oyunlara git">
                         <div class="stat-icon-wrapper">🔍</div>
                         <div class="stat-info-group">
                             <div id="last-scan-date" class="stat-value" style="font-size: 14px;">—</div>
                             <div class="stat-label" data-i18n="home.lastScan">Son Tarama</div>
                         </div>
                     </div>
-                    <div class="stat-card compress-count">
+                    <div class="stat-card compress-count" data-navigate="compress" title="Sıkıştırmaya git">
                         <div class="stat-icon-wrapper">💾</div>
                         <div class="stat-info-group">
                             <div id="total-compress-count" class="stat-value">0</div>
                             <div class="stat-label" data-i18n="home.totalCompress">Sıkıştırılan Klasör</div>
                         </div>
                     </div>
-                    <div class="stat-card avg-savings">
+                    <div class="stat-card avg-savings" data-navigate="compress" title="Sıkıştırmaya git">
                         <div class="stat-icon-wrapper">📉</div>
                         <div class="stat-info-group">
                             <div id="avg-space-saved" class="stat-value">—</div>
@@ -666,7 +666,10 @@
                     <h3 data-i18n="compress.historyTitle">Sıkıştırma Geçmişi</h3>
                 </div>
                 <div id="compression-history-list" class="compression-history-list">
-                    <p id="compression-history-empty" style="color: var(--text-secondary); font-size: 13px;" data-i18n="compress.historyEmpty">Henüz sıkıştırma yapılmadı.</p>
+                    <div id="compression-history-empty" class="comp-history-empty">
+                        <div class="es-icon">💾</div>
+                        <div class="es-title" data-i18n="compress.historyEmpty">Henüz sıkıştırma yapılmadı.</div>
+                    </div>
                 </div>
 
             </div>

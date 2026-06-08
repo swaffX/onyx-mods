@@ -63,13 +63,18 @@ export function switchTab(tabId) {
     tabContents.forEach(content => {
         if (content.id === tabId) {
             window.electronAPI.logToMain(`Navigation: Activating element with ID -> ${tabId}`);
-            content.style.display = 'block'; // Force visibility
+            content.style.display = 'block';
             content.classList.add('active');
+            // Trigger enter animation
+            content.classList.remove('tab-entering');
+            void content.offsetWidth; // force reflow
+            content.classList.add('tab-entering');
             // Notify interested modules that this tab is now active
             document.dispatchEvent(new CustomEvent('tab-activated', { detail: { tabId } }));
         } else {
-            content.style.display = 'none'; // Force hide
+            content.style.display = 'none';
             content.classList.remove('active');
+            content.classList.remove('tab-entering');
         }
     });
 }
