@@ -3110,6 +3110,13 @@ body:not([data-theme="dark"]) .game-search-input:focus {
     flex-shrink: 0;
 }
 
+.comp-hist-sizes {
+    flex-shrink: 0;
+    font-size: 12px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
 .comp-hist-saved {
     flex-shrink: 0;
     min-width: 40px;

@@ -75,9 +75,13 @@ function renderCompressionHistory() {
             const row = document.createElement('div');
             row.className = 'compression-history-row';
             const date = new Date(entry.ts).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' });
+            const sizeInfo = (entry.originalSize && entry.compressedSize)
+                ? `<span class="comp-hist-sizes">${entry.originalSize} → ${entry.compressedSize}</span>`
+                : '';
             row.innerHTML = `
                 <span class="comp-hist-name">${entry.name}</span>
                 <span class="comp-hist-algo utag utag-dlss">${entry.algorithm}</span>
+                ${sizeInfo}
                 <span class="comp-hist-saved" style="color: var(--accent-color); font-weight: 700;">${entry.spaceSaved}%</span>
                 <span class="comp-hist-date" style="color: var(--text-secondary); font-size: 12px;">${date}</span>
             `;
@@ -180,6 +184,8 @@ export async function initCompress() {
             // C-01: Locale-aware
             document.getElementById('realtime-progress-text').textContent = formatPercent(0);
 
+            let compressionSuccess = false;
+            const preUncompressedBytes = folder.rawUncompressedBytes;
             try {
                 const result = await window.electronAPI.runCompression({
                     folderPath: folder.path,
@@ -191,19 +197,7 @@ export async function initCompress() {
                     document.getElementById('realtime-progress-text').textContent = formatPercent(100);
                     const statusText = document.getElementById('realtime-status-text');
                     if (statusText) statusText.textContent = t('compress.completed');
-
-                    // Save compression history entry
-                    const spaceSaved = (folder.rawUncompressedBytes && folder.rawCompressedBytes && folder.rawUncompressedBytes > 0)
-                        ? Math.max(0, Math.round(((folder.rawUncompressedBytes - folder.rawCompressedBytes) / folder.rawUncompressedBytes) * 100))
-                        : 0;
-                    saveCompressionHistoryEntry({
-                        name: folder.name,
-                        algorithm: folder.method,
-                        spaceSaved,
-                        ts: Date.now()
-                    });
-                    renderCompressionHistory();
-
+                    compressionSuccess = true;
                     showInfoModal(t('opti.successTitle'), t('compress.compressDone'));
                 }
             } catch (e) {
@@ -214,8 +208,24 @@ export async function initCompress() {
                 toggleProcessing(false);
                 const progressContainerFinal = document.getElementById('realtime-progress-container');
                 if (progressContainerFinal) progressContainerFinal.style.display = 'none';
-                
+
+                // Refresh first so rawCompressedBytes reflects post-compression state
                 await refreshFolderState(folder);
+
+                if (compressionSuccess) {
+                    const spaceSaved = (preUncompressedBytes && folder.rawCompressedBytes && preUncompressedBytes > 0)
+                        ? Math.max(0, Math.round(((preUncompressedBytes - folder.rawCompressedBytes) / preUncompressedBytes) * 100))
+                        : 0;
+                    saveCompressionHistoryEntry({
+                        name: folder.name,
+                        algorithm: folder.method,
+                        spaceSaved,
+                        originalSize: formatBytes(preUncompressedBytes),
+                        compressedSize: folder.compressedSize || folder.size,
+                        ts: Date.now()
+                    });
+                    renderCompressionHistory();
+                }
             }
         });
     }
