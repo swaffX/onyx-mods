@@ -30,6 +30,11 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Release'i yayınla (draft → published)
-        run: gh release edit "${{ github.ref_name }}" --draft=false --generate-notes
+        shell: pwsh
+        run: |
+          $generated = gh api /repos/${{ github.repository }}/releases/generate-notes `
+            --method POST -f "tag_name=${{ github.ref_name }}" | ConvertFrom-Json
+          $generated.body | Out-File -FilePath notes.md -Encoding utf8
+          gh release edit "${{ github.ref_name }}" --draft=false --latest --notes-file notes.md
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
