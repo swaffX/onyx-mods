@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 5. Onboarding (first-run only)
     initOnboarding();
 
-    // 6. System info
+    // 6. System info + GPU compatibility
     if (window.electronAPI.getSystemInfo) {
         window.electronAPI.getSystemInfo().then(info => {
             const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
@@ -82,6 +82,39 @@ document.addEventListener('DOMContentLoaded', async () => {
             set('si-ram', `${info.ramGB} GB`);
             set('si-mb', info.motherboard);
             set('si-win', info.windowsVersion);
+
+            // GPU DLSS compatibility banner
+            const gpuBanner = document.getElementById('gpu-compat-banner');
+            if (!gpuBanner || !info.gpu || info.gpu === 'Bilinmiyor') return;
+            const g = info.gpu.toLowerCase();
+            let level = null; // 'none' | 'partial'
+            if (g.includes('nvidia') || g.includes('geforce') || g.includes('rtx') || g.includes('gtx')) {
+                if (g.includes('rtx')) {
+                    level = null; // full support, no warning
+                } else if (/gtx\s*16/.test(g)) {
+                    level = 'partial'; // GTX 16xx — DLSS 1.0 only
+                } else {
+                    level = 'none'; // GTX 10xx, older
+                }
+            } else if (g.includes('amd') || g.includes('radeon') || g.includes(' rx ') || / rx\d/.test(g)) {
+                level = 'none'; // AMD — no DLSS, XeSS/FSR only
+            } else if (g.includes('intel') || g.includes('arc') || g.includes('iris')) {
+                level = 'partial'; // Intel Arc — XeSS yes, DLSS no
+            }
+            if (!level) return;
+            const msgEl = document.getElementById('gpu-compat-msg');
+            if (msgEl) {
+                if (level === 'none') {
+                    if (g.includes('amd') || g.includes('radeon') || g.includes('rx')) {
+                        msgEl.textContent = `${info.gpu} — DLSS desteği yok. OptiScaler/FSR ile oyunlarınızı optimize edebilirsiniz.`;
+                    } else {
+                        msgEl.textContent = `${info.gpu} — DLSS desteği yok (RTX kart gerekli). DLSS Enabler çalışmayabilir.`;
+                    }
+                } else {
+                    msgEl.textContent = `${info.gpu} — Kısmi destek. DLSS 1.0 veya XeSS çalışabilir, Multi Frame Gen desteklenmez.`;
+                }
+            }
+            gpuBanner.style.display = 'flex';
         }).catch(() => {});
     }
 

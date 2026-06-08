@@ -3372,3 +3372,35 @@ body:not([data-theme="dark"]) .game-search-input:focus {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+/* GPU Compatibility Warning */
+.gpu-compat-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 16px;
+    padding: 13px 18px;
+    background: rgba(245, 158, 11, 0.07);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 12px;
+    animation: ob-fade-in 0.3s ease;
+}
+
+.gpu-compat-icon { font-size: 18px; flex-shrink: 0; }
+
+.gpu-compat-msg {
+    font-size: 13px;
+    color: #f5a623;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+/* Game last-played label */
+.game-last-played {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

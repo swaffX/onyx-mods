@@ -85,8 +85,29 @@ export function createGameCard(game) {
             </button>
             <div class="game-title">${game.name}</div>
             ${upscalerHtml}
+            <div class="game-last-played" id="lp-${game.name.replace(/[^a-z0-9]/gi,'_')}"></div>
         </div>
     `;
+
+    // Populate last-played
+    (function setLastPlayed() {
+        const key = 'onyx_lp_' + game.name;
+        const ts = localStorage.getItem(key);
+        const el = card.querySelector('.game-last-played');
+        if (!el) return;
+        if (!ts) { el.textContent = ''; return; }
+        const diff = Date.now() - parseInt(ts);
+        const mins = Math.floor(diff / 60000);
+        const hrs  = Math.floor(diff / 3600000);
+        const days = Math.floor(diff / 86400000);
+        let label;
+        if (mins < 2)       label = t('games.lpJustNow')  || 'Az önce oynandı';
+        else if (mins < 60) label = `${mins} ${t('games.lpMinsAgo') || 'dk önce'}`;
+        else if (hrs < 24)  label = `${hrs} ${t('games.lpHrsAgo')  || 'sa önce'}`;
+        else if (days === 1) label = t('games.lpYesterday') || 'Dün oynandı';
+        else                label = `${days} ${t('games.lpDaysAgo') || 'gün önce'}`;
+        el.textContent = '🕐 ' + label;
+    })();
 
     // Bind Launch Game button
     const launchBtn = card.querySelector('.game-launch-btn');
@@ -98,6 +119,10 @@ export function createGameCard(game) {
                     const result = await window.electronAPI.launchGame(game);
                     if (!result.success) {
                         showInfoModal(t('dlss.errorTitle'), result.error || 'Oyun başlatılamadı.', true);
+                    } else {
+                        localStorage.setItem('onyx_lp_' + game.name, Date.now().toString());
+                        const lpEl = card.querySelector('.game-last-played');
+                        if (lpEl) lpEl.textContent = '🕐 ' + (t('games.lpJustNow') || 'Az önce oynandı');
                     }
                 } catch (err) {
                     console.error("Game launch error:", err);
