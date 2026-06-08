@@ -18,6 +18,8 @@ import { initSettingsListeners as initModalSettingsListeners } from './ui/modals
 import { initDlssVersionListeners } from './ui/modals/dlssVersions.js';
 import { initUpdatesTab } from './ui/updates-tab.js';
 import { initFreeGames } from './ui/free-games.js';
+import { initShaderCache } from './ui/shader-cache.js';
+import { initDiskUsage } from './ui/disk-usage.js';
 import { initI18n, setLanguage, getCurrentLang, applyTranslations } from './i18n/i18n.js';
 
 
@@ -64,6 +66,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     initCompress();
     initUpdatesTab();
     initFreeGames();
+    initShaderCache();
+    initDiskUsage();
 
     // 4. Initial Load
     initGames();

@@ -302,6 +302,89 @@ export async function initCompress() {
             }
         });
     });
+
+    // 6. Bulk Compress
+    const bulkBtn = document.getElementById('bulk-compress-btn');
+    if (bulkBtn) {
+        bulkBtn.addEventListener('click', runBulkCompress);
+    }
+}
+
+async function runBulkCompress() {
+    if (isProcessing) return;
+
+    const bulkBtn = document.getElementById('bulk-compress-btn');
+    const bulkStatus = document.getElementById('bulk-compress-status');
+    const bulkProgress = document.getElementById('bulk-compress-progress');
+    const bulkBar = document.getElementById('bulk-compress-bar');
+    const bulkLog = document.getElementById('bulk-compress-log');
+
+    // Get active method from UI
+    const activeMethodBox = document.querySelector('.method-box.active');
+    const method = activeMethodBox ? activeMethodBox.getAttribute('data-method') : 'XPRESS4K';
+
+    let games;
+    try {
+        games = await window.electronAPI.getGames();
+    } catch (e) {
+        if (bulkStatus) bulkStatus.textContent = t('compress.bulkNoGames') || 'Oyun bulunamadı.';
+        return;
+    }
+
+    const roots = games
+        .map(g => g.gameRoot || (g.exePath ? g.exePath.replace(/\\[^\\]+$/, '') : null))
+        .filter(Boolean)
+        .filter((v, i, a) => a.indexOf(v) === i); // deduplicate
+
+    if (roots.length === 0) {
+        if (bulkStatus) bulkStatus.textContent = t('compress.bulkNoGames') || 'Oyun bulunamadı.';
+        return;
+    }
+
+    isProcessing = true;
+    if (bulkBtn) bulkBtn.disabled = true;
+    if (bulkProgress) bulkProgress.style.display = 'block';
+    if (bulkLog) bulkLog.innerHTML = '';
+
+    let doneCount = 0;
+    for (const folderPath of roots) {
+        const name = folderPath.split(/[\\\/]/).pop() || folderPath;
+        if (bulkStatus) bulkStatus.textContent = `${t('compress.bulkProgress') || 'Sıkıştırılıyor:'} ${name}`;
+        if (bulkLog) {
+            const line = document.createElement('div');
+            line.textContent = `⏳ ${name}`;
+            bulkLog.appendChild(line);
+            bulkLog.scrollTop = bulkLog.scrollHeight;
+        }
+
+        try {
+            await window.electronAPI.runCompression({ folderPath, algorithm: method });
+            doneCount++;
+            if (bulkLog) {
+                const lines = bulkLog.querySelectorAll('div');
+                if (lines.length > 0) lines[lines.length - 1].textContent = `✓ ${name}`;
+            }
+            saveCompressionHistoryEntry({
+                name,
+                algorithm: method,
+                date: new Date().toLocaleDateString(),
+                savedPercent: null
+            });
+        } catch (e) {
+            if (bulkLog) {
+                const lines = bulkLog.querySelectorAll('div');
+                if (lines.length > 0) lines[lines.length - 1].textContent = `✗ ${name}`;
+            }
+        }
+
+        const pct = Math.round((doneCount / roots.length) * 100);
+        if (bulkBar) bulkBar.style.width = `${pct}%`;
+    }
+
+    isProcessing = false;
+    if (bulkBtn) bulkBtn.disabled = false;
+    if (bulkStatus) bulkStatus.textContent = t('compress.bulkDone') || 'Tüm oyunlar sıkıştırıldı!';
+    renderCompressionHistory();
 }
 
 // H-11: Translate error codes from main process to localized messages

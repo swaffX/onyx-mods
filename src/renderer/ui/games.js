@@ -76,6 +76,8 @@ export function createGameCard(game) {
                     ${(game.hasDlssEnabler || game.hasStreamline || game.hasOptiscaler) ? `<button class="mod-manage-btn" data-game="${game.name}">${t('games.manageMod')}</button>` : ''}
                     ${(game.hasDlssEnabler || game.hasOptiscaler) ? `<button class="mod-settings-btn" data-game="${game.name}">${t('games.modSettings')}</button>` : ''}
                 </div>
+                    <button class="move-game-btn" data-game="${game.name}">${t('games.moveGame') || 'Taşı'}</button>
+                </div>
                 <button class="remove-game-btn" data-game="${game.name}">${t('games.removeGame')}</button>
             </div>
         </div>
@@ -92,8 +94,20 @@ export function createGameCard(game) {
                 ${game.hasStreamline ? '<span class="mod-chip chip-sl">Streamline</span>' : ''}
             </div>` : ''}
             <div class="game-last-played" id="lp-${game.name.replace(/[^a-z0-9]/gi,'_')}"></div>
+            <div class="game-play-time" id="pt-${game.name.replace(/[^a-z0-9]/gi,'_')}"></div>
         </div>
     `;
+
+    // Populate total play time
+    (function setPlayTime() {
+        const ptKey = 'onyx_playtime_' + game.name;
+        const totalSecs = parseInt(localStorage.getItem(ptKey)) || 0;
+        const ptEl = card.querySelector('.game-play-time');
+        if (!ptEl || totalSecs < 60) return;
+        const hrs = Math.floor(totalSecs / 3600);
+        const mins = Math.floor((totalSecs % 3600) / 60);
+        ptEl.textContent = hrs > 0 ? `⏱ ${hrs} sa ${mins} dk` : `⏱ ${mins} dk`;
+    })();
 
     // Populate last-played
     (function setLastPlayed() {
@@ -154,6 +168,15 @@ export function createGameCard(game) {
         e.stopPropagation();
         showConfirmModal(game.name, card);
     });
+
+    // Bind move button
+    const moveBtn = card.querySelector('.move-game-btn');
+    if (moveBtn) {
+        moveBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openGameMoveModal(game);
+        });
+    }
 
     // Bind Mod Kur button
     const modBtn = card.querySelector('.mod-install-btn');
@@ -250,6 +273,30 @@ export function createGameCard(game) {
     }
 
     return card;
+}
+
+function openGameMoveModal(game) {
+    const nameEl = document.getElementById('game-move-name');
+    const sourceEl = document.getElementById('game-move-source');
+    const destInput = document.getElementById('game-move-dest-input');
+    const confirmBtn = document.getElementById('game-move-confirm-btn');
+    const progressArea = document.getElementById('game-move-progress-area');
+    const progressBar = document.getElementById('game-move-progress-bar');
+    const statusText = document.getElementById('game-move-status-text');
+
+    if (nameEl) nameEl.textContent = game.name;
+    const gameRoot = game.gameRoot || (game.exePath ? game.exePath.replace(/\\[^\\]+$/, '') : '');
+    if (sourceEl) sourceEl.textContent = gameRoot;
+    if (destInput) destInput.value = '';
+    if (confirmBtn) confirmBtn.disabled = true;
+    if (progressArea) progressArea.style.display = 'none';
+    if (progressBar) progressBar.style.width = '0%';
+    if (statusText) statusText.textContent = '';
+
+    // Store game ref for confirm handler
+    document.getElementById('game-move-modal')._game = game;
+
+    openModal('game-move-modal');
 }
 
 function openModModal(game) {
@@ -998,6 +1045,101 @@ export function initGamesListeners() {
             }
         }
     });
+
+    // Game Move Modal listeners
+    const moveBrowseBtn = document.getElementById('game-move-browse-btn');
+    if (moveBrowseBtn) {
+        moveBrowseBtn.addEventListener('click', async () => {
+            const folder = await window.electronAPI.selectFolder();
+            if (folder) {
+                const destInput = document.getElementById('game-move-dest-input');
+                const confirmBtn = document.getElementById('game-move-confirm-btn');
+                if (destInput) destInput.value = folder;
+                if (confirmBtn) confirmBtn.disabled = false;
+            }
+        });
+    }
+
+    const moveCancelBtn = document.getElementById('game-move-cancel-btn');
+    if (moveCancelBtn) {
+        moveCancelBtn.addEventListener('click', () => closeModal('game-move-modal'));
+    }
+
+    const moveConfirmBtn = document.getElementById('game-move-confirm-btn');
+    if (moveConfirmBtn) {
+        moveConfirmBtn.addEventListener('click', async () => {
+            const modal = document.getElementById('game-move-modal');
+            const game = modal?._game;
+            if (!game) return;
+
+            const destInput = document.getElementById('game-move-dest-input');
+            const destFolder = destInput?.value?.trim();
+            if (!destFolder) return;
+
+            const gameRoot = game.gameRoot || (game.exePath ? game.exePath.replace(/\\[^\\]+$/, '') : '');
+            const progressArea = document.getElementById('game-move-progress-area');
+            const progressBar = document.getElementById('game-move-progress-bar');
+            const statusText = document.getElementById('game-move-status-text');
+
+            moveConfirmBtn.disabled = true;
+            moveBrowseBtn && (moveBrowseBtn.disabled = true);
+            moveCancelBtn && (moveCancelBtn.disabled = true);
+            if (progressArea) progressArea.style.display = 'block';
+
+            window.electronAPI.onGameMoveProgress((data) => {
+                if (progressBar) progressBar.style.width = `${data.percent || 0}%`;
+                if (statusText) statusText.textContent = data.message || '';
+            });
+
+            try {
+                const result = await window.electronAPI.moveGame({ gameRoot, destFolder });
+                window.electronAPI.removeGameMoveListeners();
+
+                if (result.success) {
+                    closeModal('game-move-modal');
+                    showInfoModal(t('dlss.successTitle'), `${game.name} ${t('games.moveGameSuccess') || 'başarıyla taşındı!'}`);
+                } else {
+                    showInfoModal(t('dlss.errorTitle'), `${t('games.moveGameError') || 'Taşıma hatası:'} ${result.error}`, true);
+                    moveConfirmBtn.disabled = false;
+                    moveBrowseBtn && (moveBrowseBtn.disabled = false);
+                    moveCancelBtn && (moveCancelBtn.disabled = false);
+                }
+            } catch (e) {
+                window.electronAPI.removeGameMoveListeners();
+                showInfoModal(t('dlss.errorTitle'), e.message, true);
+                moveConfirmBtn.disabled = false;
+            }
+        });
+    }
+
+    // Game session tracking — save play time and notify
+    if (window.electronAPI.onGameSessionEnded) {
+        window.electronAPI.onGameSessionEnded((data) => {
+            const { gameName, durationSeconds } = data;
+            const key = 'onyx_playtime_' + gameName;
+            const prev = parseInt(localStorage.getItem(key)) || 0;
+            localStorage.setItem(key, (prev + durationSeconds).toString());
+
+            // Show tray notification
+            if (window.electronAPI.showNotification) {
+                const mins = Math.round(durationSeconds / 60);
+                window.electronAPI.showNotification({
+                    title: gameName,
+                    body: `${mins} dakika oynandı. Toplam: ${Math.round((prev + durationSeconds) / 60)} dk`
+                });
+            }
+
+            // Refresh game card play time display
+            const ptId = 'pt-' + gameName.replace(/[^a-z0-9]/gi, '_');
+            const ptEl = document.getElementById(ptId);
+            if (ptEl) {
+                const totalSecs = prev + durationSeconds;
+                const hrs = Math.floor(totalSecs / 3600);
+                const mins2 = Math.floor((totalSecs % 3600) / 60);
+                ptEl.textContent = hrs > 0 ? `⏱ ${hrs} sa ${mins2} dk` : `⏱ ${mins2} dk`;
+            }
+        });
+    }
 
     // Platform tags filter listeners
     const platformBtns = document.querySelectorAll('.platform-tag-btn');

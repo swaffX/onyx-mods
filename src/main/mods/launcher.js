@@ -54,8 +54,9 @@ async function launchExeDirectly(exePath) {
             // Wait a tiny bit to check if spawn failed immediately
             setTimeout(() => {
                 if (!resolved) {
+                    const pid = child.pid;
                     child.unref();
-                    resolve({ success: true });
+                    resolve({ success: true, pid });
                 }
             }, 100);
 

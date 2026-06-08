@@ -22,6 +22,22 @@ let isScanning = false;
 // C-06: Prevent duplicate IPC handler registration
 let ipcRegistered = false;
 
+function monitorGameProcess(event, gameName, pid) {
+    const startTime = Date.now();
+    const interval = setInterval(() => {
+        try {
+            process.kill(pid, 0); // throws if PID no longer exists
+        } catch (e) {
+            clearInterval(interval);
+            const durationSeconds = Math.round((Date.now() - startTime) / 1000);
+            if (durationSeconds < 5) return; // ignore very short sessions (launch fail)
+            if (!event.sender.isDestroyed()) {
+                event.sender.send('game-session-ended', { gameName, durationSeconds });
+            }
+        }
+    }, 5000);
+}
+
 function registerIpcHandlers() {
     if (ipcRegistered) return;
     ipcRegistered = true;
@@ -49,7 +65,11 @@ function registerIpcHandlers() {
     });
 
     ipcMain.handle('launch-game', async (event, game) => {
-        return await require('./mods/launcher').launchGame(game);
+        const result = await require('./mods/launcher').launchGame(game);
+        if (result.success && result.pid) {
+            monitorGameProcess(event, game.name, result.pid);
+        }
+        return result;
     });
 
     // Scanner
@@ -703,6 +723,95 @@ function registerIpcHandlers() {
         }
 
         return config.getExistingGamesState();
+    });
+
+    // ── Shader Cache ──────────────────────────────────────────────────────────
+    const shaderCache = require('./mods/shaderCache');
+
+    ipcMain.handle('get-shader-cache-info', async () => {
+        return await shaderCache.getShaderCacheInfo();
+    });
+
+    ipcMain.handle('clean-shader-cache', async (event, selectedPaths) => {
+        return await shaderCache.cleanShaderCaches(selectedPaths);
+    });
+
+    // ── Mod Update Check ─────────────────────────────────────────────────────
+    ipcMain.handle('check-mod-updates', async () => {
+        const results = {};
+        const checks = [
+            { key: 'dlssEnabler',  fetch: () => dlssEnabler.getDlssEnablerReleases() },
+            { key: 'optiScaler',   fetch: () => optiScaler.getOptiScalerReleases() },
+            { key: 'streamline',   fetch: () => streamline.getStreamlineReleases() },
+            { key: 'optiPatcher',  fetch: () => optiPatcher.getOptiPatcherReleases() },
+        ];
+        await Promise.all(checks.map(async ({ key, fetch }) => {
+            try {
+                const releases = await fetch();
+                const latest = Array.isArray(releases) && releases.length > 0 ? releases[0].tag_name || releases[0].name || '' : '';
+                results[key] = latest.replace(/^v/i, '');
+            } catch (e) {
+                results[key] = null;
+            }
+        }));
+        return results;
+    });
+
+    // ── Disk Usage ───────────────────────────────────────────────────────────
+    ipcMain.handle('get-games-disk-usage', async (event) => {
+        const games = config.getExistingGamesState();
+        const { exec } = require('child_process');
+        const util = require('util');
+        const execAsync = util.promisify(exec);
+        const results = [];
+
+        for (const game of games) {
+            const gameRoot = game.gameRoot;
+            if (!gameRoot || !fs.existsSync(gameRoot)) continue;
+            try {
+                const safe = gameRoot.replace(/'/g, "''");
+                const r = await execAsync(
+                    `powershell -NoProfile -NonInteractive -Command "(Get-ChildItem -Path '${safe}' -Recurse -Force -ErrorAction SilentlyContinue | Measure-Object -Property Length -Sum).Sum"`,
+                    { timeout: 15000 }
+                );
+                const sizeBytes = parseInt(r.stdout.trim()) || 0;
+                results.push({ name: game.name, sizeBytes, gameRoot });
+
+                if (!event.sender.isDestroyed()) {
+                    event.sender.send('disk-usage-progress', { name: game.name, sizeBytes, done: false });
+                }
+            } catch (e) {
+                results.push({ name: game.name, sizeBytes: 0, gameRoot });
+            }
+        }
+
+        if (!event.sender.isDestroyed()) {
+            event.sender.send('disk-usage-progress', { done: true });
+        }
+        return results;
+    });
+
+    // ── Game Mover ───────────────────────────────────────────────────────────
+    const gameMover = require('./mods/gameMover');
+
+    ipcMain.handle('move-game', async (event, { gameRoot, destFolder }) => {
+        return await gameMover.moveGame(gameRoot, destFolder, (progress) => {
+            if (!event.sender.isDestroyed()) {
+                event.sender.send('game-move-progress', progress);
+            }
+        });
+    });
+
+    // ── Notification ─────────────────────────────────────────────────────────
+    ipcMain.on('show-notification', (event, { title, body }) => {
+        try {
+            const { Notification } = require('electron');
+            if (Notification.isSupported()) {
+                new Notification({ title, body }).show();
+            }
+        } catch (e) {
+            console.error('[IPC] show-notification error:', e.message);
+        }
     });
 
     // C-05: Secure Link Opener via IPC — only allow http/https URLs

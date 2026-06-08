@@ -142,4 +142,28 @@ contextBridge.exposeInMainWorld('electronAPI', {
     windowClose:    () => ipcRenderer.send('window-close'),
     onWindowMaximized:   (cb) => ipcRenderer.on('window-maximized',   () => cb(true)),
     onWindowUnmaximized: (cb) => ipcRenderer.on('window-maximized',   (_e, v) => cb(v)),
+
+    // Shader Cache
+    getShaderCacheInfo:  () => ipcRenderer.invoke('get-shader-cache-info'),
+    cleanShaderCache:    (paths) => ipcRenderer.invoke('clean-shader-cache', paths),
+
+    // Mod Updates
+    checkModUpdates: () => ipcRenderer.invoke('check-mod-updates'),
+
+    // Disk Usage
+    getGamesDiskUsage: () => ipcRenderer.invoke('get-games-disk-usage'),
+    onDiskUsageProgress: (cb) => ipcRenderer.on('disk-usage-progress', (_e, data) => cb(data)),
+    removeDiskUsageListeners: () => ipcRenderer.removeAllListeners('disk-usage-progress'),
+
+    // Game Mover
+    moveGame: (data) => ipcRenderer.invoke('move-game', data),
+    onGameMoveProgress: (cb) => ipcRenderer.on('game-move-progress', (_e, data) => cb(data)),
+    removeGameMoveListeners: () => ipcRenderer.removeAllListeners('game-move-progress'),
+
+    // Game Session Tracking
+    onGameSessionEnded: (cb) => ipcRenderer.on('game-session-ended', (_e, data) => cb(data)),
+    removeGameSessionListeners: () => ipcRenderer.removeAllListeners('game-session-ended'),
+
+    // Notifications
+    showNotification: (data) => ipcRenderer.send('show-notification', data),
 });

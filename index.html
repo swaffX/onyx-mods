@@ -263,6 +263,15 @@
                     </div>
                 </div>
 
+                <!-- Disk Usage Summary -->
+                <div class="dashboard-section-title" style="margin-top: 28px;">
+                    <h3 data-i18n="home.diskUsageTitle">Disk Kullanımı</h3>
+                </div>
+                <div id="disk-usage-section">
+                    <div id="disk-usage-loading" style="color: var(--text-secondary); font-size: 13px; padding: 12px 0;">Yükleniyor...</div>
+                    <div id="disk-usage-list" class="disk-usage-list" style="display:none;"></div>
+                </div>
+
             </div>
 
             <div class="tab-content" id="games">
@@ -661,6 +670,24 @@
                     </div>
                 </div>
 
+                <!-- Bulk Compression -->
+                <div class="dashboard-section-title" style="margin-top: 40px;">
+                    <h3 data-i18n="compress.bulkTitle">Toplu Sıkıştırma</h3>
+                </div>
+                <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 16px;" data-i18n="compress.bulkDesc">Tüm oyun klasörlerinizi seçili yöntemle tek seferde sıkıştırın.</p>
+                <div id="bulk-compress-container">
+                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 12px;">
+                        <button id="bulk-compress-btn" class="scan-start-btn" data-i18n="compress.bulkStart">Tüm Oyunları Sıkıştır</button>
+                        <span id="bulk-compress-status" style="font-size: 13px; color: var(--text-secondary);"></span>
+                    </div>
+                    <div id="bulk-compress-progress" style="display:none;">
+                        <div class="comp-progress-container" style="margin-bottom: 8px;">
+                            <div id="bulk-compress-bar" class="comp-progress-bar current" style="width: 0%;"></div>
+                        </div>
+                        <div id="bulk-compress-log" style="font-size: 12px; color: var(--text-secondary); max-height: 80px; overflow-y: auto;"></div>
+                    </div>
+                </div>
+
                 <!-- Compression History -->
                 <div class="dashboard-section-title" style="margin-top: 28px;">
                     <h3 data-i18n="compress.historyTitle">Sıkıştırma Geçmişi</h3>
@@ -1050,6 +1077,23 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Shader Cache Cleaner -->
+                <div class="dashboard-section-title" style="margin-top: 40px;">
+                    <h3 data-i18n="tools.shaderCacheTitle">Shader Cache Temizleyici</h3>
+                </div>
+                <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 16px;" data-i18n="tools.shaderCacheDesc">GPU shader cache dosyaları zamanla birikerek disk alanı kaplar. Güvenli dizinler temizlenir — oyun verileri etkilenmez.</p>
+
+                <div id="shader-cache-container">
+                    <div id="shader-cache-loading" style="color: var(--text-secondary); font-size: 13px; padding: 12px 0;">Analiz ediliyor...</div>
+                    <div id="shader-cache-list" class="shader-cache-list" style="display:none;"></div>
+                    <div id="shader-cache-empty" style="display:none; color: var(--text-secondary); font-size: 13px; padding: 12px 0;" data-i18n="tools.shaderCacheEmpty">Temizlenecek shader cache bulunamadı.</div>
+                    <div id="shader-cache-actions" style="display:none; margin-top: 14px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                        <button id="shader-cache-clean-btn" class="scan-start-btn" data-i18n="tools.shaderCacheClean">Seçilenleri Temizle</button>
+                        <button id="shader-cache-select-all-btn" class="scan-close-btn" data-i18n="tools.shaderCacheSelectAll">Tümünü Seç</button>
+                        <span id="shader-cache-total" style="font-size: 13px; color: var(--text-secondary);"></span>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
@@ -1063,6 +1107,31 @@
                 <button class="mod-option-btn" data-mod="DLSS Enabler">DLSS Enabler</button>
                 <button class="mod-option-btn" data-mod="Optiscaler">Optiscaler</button>
                 <button class="mod-option-btn" data-mod="Streamline">Streamline</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Move Modal -->
+    <div id="game-move-modal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <span class="close-modal" data-target="game-move-modal">&times;</span>
+            <h3 style="margin-top: 0;" data-i18n="games.moveGameTitle">Oyun Taşıma Aracı</h3>
+            <p id="game-move-name" style="font-weight: 600; color: var(--accent-color); margin-bottom: 4px;"></p>
+            <p id="game-move-source" style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px; word-break: break-all;"></p>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;" data-i18n="games.moveGameDesc">Oyun klasörünü başka bir sürücüye taşıyın. Orijinal konumda NTFS junction oluşturulur — oyun farkı algılamaz.</p>
+            <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 16px; flex-wrap: wrap;">
+                <input id="game-move-dest-input" type="text" class="settings-input" style="flex:1; min-width: 200px;" placeholder="Hedef klasör yolu..." readonly>
+                <button id="game-move-browse-btn" class="scan-close-btn" data-i18n="games.moveGameSelectDest">Hedef Klasör Seç</button>
+            </div>
+            <div id="game-move-progress-area" style="display:none; margin-bottom: 16px;">
+                <div class="comp-progress-container" style="margin-bottom: 8px;">
+                    <div id="game-move-progress-bar" class="comp-progress-bar current" style="width: 0%;"></div>
+                </div>
+                <div id="game-move-status-text" style="font-size: 12px; color: var(--text-secondary);"></div>
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button id="game-move-cancel-btn" class="scan-close-btn" data-i18n="games.moveGameCancel">İptal</button>
+                <button id="game-move-confirm-btn" class="scan-start-btn" disabled data-i18n="games.moveGameConfirm">Taşımayı Başlat</button>
             </div>
         </div>
     </div>

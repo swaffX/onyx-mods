@@ -1,6 +1,27 @@
 import { showInfoModal } from './modals/info.js';
 
+async function checkAndShowModUpdateBadge() {
+    try {
+        const results = await window.electronAPI.checkModUpdates();
+        if (!results) return;
+        const updateCount = Object.values(results).filter(r => r && r.hasUpdate).length;
+        if (updateCount === 0) return;
+        const modsNavItem = document.querySelector('.nav-item[data-target="modes"]');
+        if (!modsNavItem) return;
+        if (modsNavItem.querySelector('.mod-update-badge')) return;
+        const badge = document.createElement('span');
+        badge.className = 'mod-update-badge';
+        badge.textContent = updateCount;
+        modsNavItem.appendChild(badge);
+    } catch (e) {
+        // silent — badge is non-critical
+    }
+}
+
 export function initNavigation() {
+    // Check for mod updates and show badge on Modlar nav item
+    setTimeout(checkAndShowModUpdateBadge, 3000);
+
     // External links logic (using event delegation to support dynamic translation strings)
     document.addEventListener('click', (e) => {
         const link = e.target.closest('.external-link');

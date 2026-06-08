@@ -1,10 +1,51 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, Tray, Menu, nativeImage } = require('electron');
+const path = require('path');
 const config = require('./config');
 const ipc = require('./ipc');
 const windowManager = require('./window');
 const { initAutoUpdater } = require('./updater');
 
 const gotTheLock = app.requestSingleInstanceLock();
+let tray = null;
+
+function createTray(mainWindow) {
+    try {
+        const iconPath = path.resolve(__dirname, '..', '..', 'icons', 'program_logo.ico');
+        const icon = nativeImage.createFromPath(iconPath);
+        tray = new Tray(icon.isEmpty() ? nativeImage.createEmpty() : icon);
+        tray.setToolTip('Onyx Mods');
+
+        const contextMenu = Menu.buildFromTemplate([
+            {
+                label: 'Göster',
+                click: () => {
+                    if (mainWindow) {
+                        mainWindow.show();
+                        mainWindow.focus();
+                    }
+                }
+            },
+            { type: 'separator' },
+            {
+                label: 'Çıkış',
+                click: () => app.quit()
+            }
+        ]);
+
+        tray.setContextMenu(contextMenu);
+        tray.on('double-click', () => {
+            if (mainWindow) {
+                if (mainWindow.isVisible()) {
+                    mainWindow.focus();
+                } else {
+                    mainWindow.show();
+                }
+            }
+        });
+    } catch (e) {
+        console.error('[TRAY] Error creating tray:', e.message);
+    }
+}
 
 if (!gotTheLock) {
     app.quit();
@@ -13,6 +54,7 @@ if (!gotTheLock) {
         const myWindow = BrowserWindow.getAllWindows()[0];
         if (myWindow) {
             if (myWindow.isMinimized()) myWindow.restore();
+            myWindow.show();
             myWindow.focus();
         }
     });
@@ -22,10 +64,10 @@ if (!gotTheLock) {
         config.loadExistingGames();
         config.loadBlacklist();
 
-        // C-06: Guard against duplicate IPC handler registration (e.g. macOS 'activate' re-triggers)
         ipc.registerIpcHandlers();
 
-        windowManager.createWindow();
+        const mainWindow = windowManager.createWindow();
+        createTray(mainWindow);
         initAutoUpdater();
 
         app.on('activate', function () {
