@@ -61,6 +61,9 @@ function registerIpcHandlers() {
             await scanner.runScan(event, scanSettings);
         } catch(e) {
             console.error('Scan error', e);
+            if (!event.sender.isDestroyed()) {
+                event.sender.send('scan-error', e.message || 'Bilinmeyen tarama hatası');
+            }
         } finally {
             isScanning = false;
             // M-18: Guard against sending to a destroyed window

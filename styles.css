@@ -175,6 +175,46 @@ body {
     gap: 10px;
 }
 
+/* Responsive nav — shrink at smaller window widths */
+@media (max-width: 1200px) {
+    .header-nav {
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+    .nav-list .nav-item {
+        padding: 10px 14px;
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 1000px) {
+    .header-nav {
+        margin-left: 8px;
+        margin-right: 8px;
+    }
+    .nav-list .nav-item {
+        padding: 10px 10px;
+        font-size: 12px;
+    }
+    .header-brand h1 {
+        display: none;
+    }
+    .header-logo {
+        margin-right: 0;
+    }
+}
+
+@media (max-width: 850px) {
+    .nav-list .nav-item {
+        padding: 10px 7px;
+        font-size: 11px;
+    }
+    .free-games-nav-btn span:last-child,
+    .settings-nav-btn span:last-child {
+        display: none;
+    }
+}
+
 .window-controls {
     display: flex;
     align-items: center;
@@ -3035,4 +3075,48 @@ body:not([data-theme="dark"]) .game-search-input:focus {
     border-color: var(--accent-color);
     color: var(--accent-color);
     box-shadow: 0 0 12px rgba(59, 130, 246, 0.15);
+}
+
+/* Compression History */
+.compression-history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.compression-history-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 13px;
+}
+
+.comp-hist-name {
+    flex: 1;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.comp-hist-algo {
+    flex-shrink: 0;
+}
+
+.comp-hist-saved {
+    flex-shrink: 0;
+    min-width: 40px;
+    text-align: right;
+}
+
+.comp-hist-date {
+    flex-shrink: 0;
+    min-width: 90px;
+    text-align: right;
 }

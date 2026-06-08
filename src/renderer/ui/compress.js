@@ -38,9 +38,58 @@ function toggleProcessing(processing) {
     }
 }
 
+const HISTORY_KEY = 'onyx_compression_history';
+const HISTORY_MAX = 20;
+
+function saveCompressionHistoryEntry(entry) {
+    try {
+        const raw = localStorage.getItem(HISTORY_KEY);
+        const history = raw ? JSON.parse(raw) : [];
+        history.unshift(entry);
+        if (history.length > HISTORY_MAX) history.length = HISTORY_MAX;
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    } catch (e) { /* silent */ }
+}
+
+function renderCompressionHistory() {
+    const container = document.getElementById('compression-history-list');
+    if (!container) return;
+
+    try {
+        const raw = localStorage.getItem(HISTORY_KEY);
+        const history = raw ? JSON.parse(raw) : [];
+
+        const emptyEl = document.getElementById('compression-history-empty');
+        if (history.length === 0) {
+            if (emptyEl) emptyEl.style.display = '';
+            return;
+        }
+        if (emptyEl) emptyEl.style.display = 'none';
+
+        // Remove old entries (keep empty placeholder)
+        [...container.children].forEach(ch => {
+            if (ch.id !== 'compression-history-empty') ch.remove();
+        });
+
+        history.forEach(entry => {
+            const row = document.createElement('div');
+            row.className = 'compression-history-row';
+            const date = new Date(entry.ts).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' });
+            row.innerHTML = `
+                <span class="comp-hist-name">${entry.name}</span>
+                <span class="comp-hist-algo utag utag-dlss">${entry.algorithm}</span>
+                <span class="comp-hist-saved" style="color: var(--accent-color); font-weight: 700;">${entry.spaceSaved}%</span>
+                <span class="comp-hist-date" style="color: var(--text-secondary); font-size: 12px;">${date}</span>
+            `;
+            container.appendChild(row);
+        });
+    } catch (e) { /* silent */ }
+}
+
 export async function initCompress() {
     // C-02: Remove any accumulated progress listeners before adding new ones
     window.electronAPI.removeCompressionProgressListeners();
+    renderCompressionHistory();
 
     // 1. Core Elements
     const selectFolderBtn = document.getElementById('select-folder-btn');
@@ -142,6 +191,19 @@ export async function initCompress() {
                     document.getElementById('realtime-progress-text').textContent = formatPercent(100);
                     const statusText = document.getElementById('realtime-status-text');
                     if (statusText) statusText.textContent = t('compress.completed');
+
+                    // Save compression history entry
+                    const spaceSaved = (folder.rawUncompressedBytes && folder.rawCompressedBytes && folder.rawUncompressedBytes > 0)
+                        ? Math.max(0, Math.round(((folder.rawUncompressedBytes - folder.rawCompressedBytes) / folder.rawUncompressedBytes) * 100))
+                        : 0;
+                    saveCompressionHistoryEntry({
+                        name: folder.name,
+                        algorithm: folder.method,
+                        spaceSaved,
+                        ts: Date.now()
+                    });
+                    renderCompressionHistory();
+
                     showInfoModal(t('opti.successTitle'), t('compress.compressDone'));
                 }
             } catch (e) {

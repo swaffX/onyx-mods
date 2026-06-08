@@ -8,6 +8,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     onGameFound: (callback) => { ipcRenderer.removeAllListeners('game-found'); ipcRenderer.on('game-found', (_event, game) => callback(game)); },
     onScanProgress: (callback) => { ipcRenderer.removeAllListeners('scan-progress'); ipcRenderer.on('scan-progress', (_event, percent) => callback(percent)); },
     onScanComplete: (callback) => { ipcRenderer.removeAllListeners('scan-complete'); ipcRenderer.on('scan-complete', () => callback()); },
+    onScanError: (callback) => { ipcRenderer.removeAllListeners('scan-error'); ipcRenderer.on('scan-error', (_event, msg) => callback(msg)); },
     addManualGame: () => ipcRenderer.invoke('add-manual-game'),
     saveManualGame: (data) => ipcRenderer.invoke('save-manual-game', data),
     toggleFavorite: (gameName) => ipcRenderer.invoke('toggle-favorite', gameName),

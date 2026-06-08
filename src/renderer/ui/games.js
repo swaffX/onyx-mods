@@ -302,6 +302,20 @@ export async function updateHomeStats() {
     const optiEl = document.getElementById('optiscaler-count');
     if (optiEl) optiEl.textContent = optiCount;
 
+    const gamesCountEl = document.getElementById('total-games-count');
+    if (gamesCountEl) gamesCountEl.textContent = games.length;
+
+    const lastScanEl = document.getElementById('last-scan-date');
+    if (lastScanEl) {
+        const ts = localStorage.getItem('onyx_last_scan_ts');
+        if (ts) {
+            const d = new Date(parseInt(ts));
+            lastScanEl.textContent = d.toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' });
+        } else {
+            lastScanEl.textContent = '—';
+        }
+    }
+
     // Backward compatibility support for modded-games-count
     const oldEl = document.getElementById('modded-games-count');
     if (oldEl) {
@@ -795,11 +809,24 @@ export function initGamesListeners() {
         container.appendChild(createGameCard(game));
     });
 
+    if (window.electronAPI.onScanError) {
+        window.electronAPI.onScanError((msg) => {
+            state.isScanning = false;
+            const loading = getLoadingEl();
+            if (loading) loading.style.display = 'none';
+            const sortSelectEl = document.getElementById('game-sort-select');
+            if (sortSelectEl) sortSelectEl.disabled = false;
+            showInfoModal(t('dlss.errorTitle'), `${t('games.scanError') || 'Tarama hatası'}: ${msg}`, true);
+        });
+    }
+
     window.electronAPI.onScanComplete(async () => {
         state.isScanning = false;
         const loading = getLoadingEl();
         const container = getGamesContainer();
         if (loading) loading.style.display = 'none';
+
+        localStorage.setItem('onyx_last_scan_ts', Date.now().toString());
 
         // FIX 1a: Re-enable sort dropdown after scan completes
         const sortSelectEl = document.getElementById('game-sort-select');

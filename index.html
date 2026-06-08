@@ -120,6 +120,20 @@
                             <div class="stat-label">OptiScaler</div>
                         </div>
                     </div>
+                    <div class="stat-card total-games">
+                        <div class="stat-icon-wrapper">🎮</div>
+                        <div class="stat-info-group">
+                            <div id="total-games-count" class="stat-value">0</div>
+                            <div class="stat-label" data-i18n="home.totalGames">Toplam Oyun</div>
+                        </div>
+                    </div>
+                    <div class="stat-card last-scan">
+                        <div class="stat-icon-wrapper">🔍</div>
+                        <div class="stat-info-group">
+                            <div id="last-scan-date" class="stat-value" style="font-size: 14px;">—</div>
+                            <div class="stat-label" data-i18n="home.lastScan">Son Tarama</div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="dashboard-section-title">
@@ -535,7 +549,13 @@
                     </div>
                 </div>
 
-
+                <!-- Compression History -->
+                <div class="dashboard-section-title" style="margin-top: 28px;">
+                    <h3 data-i18n="compress.historyTitle">Sıkıştırma Geçmişi</h3>
+                </div>
+                <div id="compression-history-list" class="compression-history-list">
+                    <p id="compression-history-empty" style="color: var(--text-secondary); font-size: 13px;" data-i18n="compress.historyEmpty">Henüz sıkıştırma yapılmadı.</p>
+                </div>
 
             </div>
 
