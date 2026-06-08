@@ -66,6 +66,15 @@ function renderCompressionHistory() {
         }
         if (emptyEl) emptyEl.style.display = 'none';
 
+        // Update home page stat cards
+        const compCountEl = document.getElementById('total-compress-count');
+        if (compCountEl) compCountEl.textContent = history.length;
+        const avgEl = document.getElementById('avg-space-saved');
+        if (avgEl && history.length > 0) {
+            const avg = Math.round(history.reduce((s, e) => s + (e.spaceSaved || 0), 0) / history.length);
+            avgEl.textContent = `${avg}%`;
+        }
+
         // Remove old entries (keep empty placeholder)
         [...container.children].forEach(ch => {
             if (ch.id !== 'compression-history-empty') ch.remove();

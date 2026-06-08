@@ -24,6 +24,8 @@ export const tr = {
         totalMods: 'Toplam Kurulu Mod',
         totalGames: 'Toplam Oyun',
         lastScan: 'Son Tarama',
+        totalCompress: 'Sıkıştırılan Klasör',
+        avgSavings: 'Ort. Disk Tasarrufu',
         systemInfo: 'Sistem Bilgileri',
         sysGpu: 'Ekran Kartı',
         sysCpu: 'İşlemci',
@@ -583,6 +585,7 @@ export const tr = {
         attribution: 'GamerPower.com tarafından sağlanmaktadır',
         filterAll: 'Tüm Platformlar',
         noResults: 'Aradığınız kriterlere uygun ücretsiz oyun veya fırsat bulunamadı.',
+        offlineCache: 'İnternet bağlantısı yok — önceki veriler gösteriliyor.',
     },
     tools: {
         title: 'Araçlar',

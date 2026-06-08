@@ -16,7 +16,6 @@ import { initUpdateListeners } from './ui/modals/update.js';
 import { initModSelectionListeners } from './ui/modals/modSelection.js';
 import { initSettingsListeners as initModalSettingsListeners } from './ui/modals/settings.js';
 import { initDlssVersionListeners } from './ui/modals/dlssVersions.js';
-import { initVideos } from './ui/videos.js';
 import { initUpdatesTab } from './ui/updates-tab.js';
 import { initFreeGames } from './ui/free-games.js';
 import { initI18n, setLanguage, getCurrentLang, applyTranslations } from './i18n/i18n.js';
@@ -63,7 +62,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     initBlacklistListeners();
     initSettingsListeners();
     initCompress();
-    initVideos();
     initUpdatesTab();
     initFreeGames();
 

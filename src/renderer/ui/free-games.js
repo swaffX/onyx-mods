@@ -87,6 +87,8 @@ async function loadFreeGames(force = false) {
     if (paginationContainer) paginationContainer.innerHTML = '';
     loading.style.display = 'block';
     error.style.display = 'none';
+    const offlineBadge = document.getElementById('free-games-offline-badge');
+    if (offlineBadge) offlineBadge.style.display = 'none';
 
     // Caching check
     if (!force) {
@@ -131,6 +133,23 @@ async function loadFreeGames(force = false) {
     } catch (err) {
         console.error('Error fetching or rendering free games:', err);
         loading.style.display = 'none';
+
+        // Try expired cache as fallback before showing error
+        const cachedData = localStorage.getItem(CACHE_KEY);
+        if (cachedData) {
+            try {
+                allGiveaways = JSON.parse(cachedData);
+                filteredGiveaways = allGiveaways;
+                currentPage = 1;
+                applyFilters();
+
+                // Show offline badge
+                const offlineBadge = document.getElementById('free-games-offline-badge');
+                if (offlineBadge) offlineBadge.style.display = 'flex';
+                return;
+            } catch (e) { /* cache corrupt, fall through to error */ }
+        }
+
         error.style.display = 'block';
         if (paginationContainer) paginationContainer.innerHTML = '';
     }

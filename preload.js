@@ -100,7 +100,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
     removeCompressionProgressListeners: () => ipcRenderer.removeAllListeners('compression-progress'),
 
     // YouTube RSS and External Link opening
-    fetchYoutubeVideos: () => ipcRenderer.invoke('fetch-youtube-videos'),
     fetchFreeGames: () => ipcRenderer.invoke('fetch-free-games'),
     openExternalLink: (url) => ipcRenderer.send('open-external-link', url),
 

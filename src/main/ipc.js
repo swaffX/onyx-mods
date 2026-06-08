@@ -520,24 +520,6 @@ function registerIpcHandlers() {
         }
     });
 
-    // YouTube RSS Feed Fetcher
-    ipcMain.handle('fetch-youtube-videos', async () => {
-        return new Promise((resolve, reject) => {
-            const url = 'https://www.youtube.com/feeds/videos.xml?channel_id=UCCeWDMKoZfZSNOn0pRIGBcw';
-            https.get(url, (res) => {
-                let data = '';
-                res.on('data', (chunk) => {
-                    data += chunk;
-                });
-                res.on('end', () => {
-                    resolve(data);
-                });
-            }).on('error', (err) => {
-                reject(err);
-            });
-        });
-    });
-
     // GamerPower Free Games Fetcher using modern fetch API
     ipcMain.handle('fetch-free-games', async () => {
         try {

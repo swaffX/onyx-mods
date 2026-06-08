@@ -24,6 +24,8 @@ export const en = {
         totalMods: 'Total Installed Mods',
         totalGames: 'Total Games',
         lastScan: 'Last Scan',
+        totalCompress: 'Compressed Folders',
+        avgSavings: 'Avg. Space Saved',
         systemInfo: 'System Info',
         sysGpu: 'GPU',
         sysCpu: 'CPU',
@@ -584,6 +586,7 @@ export const en = {
         attribution: 'Provided by GamerPower.com',
         filterAll: 'All Platforms',
         noResults: 'No free games or giveaways found matching your criteria.',
+        offlineCache: 'No internet connection — showing previously cached data.',
     },
     tools: {
         title: 'Tools',
