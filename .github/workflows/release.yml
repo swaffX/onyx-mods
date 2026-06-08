@@ -32,9 +32,14 @@ jobs:
       - name: Release'i yayınla (draft → published)
         shell: pwsh
         run: |
-          $generated = gh api /repos/${{ github.repository }}/releases/generate-notes `
-            --method POST -f "tag_name=${{ github.ref_name }}" | ConvertFrom-Json
-          $generated.body | Out-File -FilePath notes.md -Encoding utf8
-          gh release edit "${{ github.ref_name }}" --draft=false --latest --notes-file notes.md
+          $tag = "${{ github.ref_name }}"
+          $prev = git describe --tags --abbrev=0 HEAD^ 2>$null
+          if ($prev) {
+            $notes = git log "$prev..HEAD" --pretty=format:"- %s" --no-merges | Where-Object { $_ -notmatch "Co-Authored-By|noreply@" }
+          } else {
+            $notes = git log --pretty=format:"- %s" --no-merges | Where-Object { $_ -notmatch "Co-Authored-By|noreply@" }
+          }
+          ($notes -join "`n") | Out-File -FilePath notes.md -Encoding utf8
+          gh release edit $tag --draft=false --latest --notes-file notes.md
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
