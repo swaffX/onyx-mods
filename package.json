@@ -1,23 +1,23 @@
 {
-  "name": "v-manager",
+  "name": "swx-manager",
   "version": "0.1.0",
-  "description": "V-Manager made by vuenxx",
+  "description": "SWX-Manager made by swaffX",
   "main": "main.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/vuenxx/v-manager"
+    "url": "https://github.com/swaffX/swx-manager"
   },
   "scripts": {
     "start": "electron .",
     "build": "electron-builder --win --x64 --publish always"
   },
   "build": {
-    "appId": "com.vuenxx.vmanager",
-    "productName": "V-Manager",
+    "appId": "com.swaffx.swxmanager",
+    "productName": "SWX-Manager",
     "publish": {
       "provider": "github",
-      "owner": "vuenxx",
-      "repo": "v-manager"
+      "owner": "swaffX",
+      "repo": "swx-manager"
     },
     "extraResources": [
       {
@@ -30,7 +30,7 @@
       "icon": "icons/program_logo.ico"
     }
   },
-  "author": "vuenxx",
+  "author": "swaffX",
   "license": "UNLICENSED",
   "devDependencies": {
     "electron": "^29.1.0",
