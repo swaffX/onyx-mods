@@ -13,6 +13,25 @@
 </head>
 
 <body data-theme="dark">
+
+    <!-- Onboarding Overlay — shown only on first launch -->
+    <div id="onboarding-overlay" class="onboarding-overlay" style="display:none;">
+        <div class="ob-content">
+            <img src="program_logo.png" alt="Onyx Mods" class="ob-logo">
+            <h1 class="ob-title">Onyx Mods</h1>
+            <p class="ob-subtitle" data-i18n="onboarding.subtitle">Oyunlarınıza mod kurun, yönetin ve performansınızı artırın.</p>
+            <div class="ob-dots">
+                <span class="ob-dot active"></span>
+                <span class="ob-dot"></span>
+                <span class="ob-dot"></span>
+                <span class="ob-dot"></span>
+                <span class="ob-dot"></span>
+            </div>
+            <button id="onboarding-start-btn" class="ob-start-btn" data-i18n="onboarding.startBtn">Hadi Başlayalım</button>
+            <p class="ob-credit">by swaffX</p>
+        </div>
+    </div>
+
     <div class="app-container">
         <!-- Main Content -->
         <main class="main-content">
@@ -165,6 +184,63 @@
                         <button class="promo-action-btn" data-i18n="home.promoModsBtn">Sürümleri İncele ➔</button>
                     </div>
 
+                </div>
+
+                <!-- Free Games Banner — shown when giveaways available -->
+                <div id="free-games-banner" class="free-games-banner" style="display:none;">
+                    <div class="fgb-left">
+                        <div class="fgb-icon">🎁</div>
+                        <div class="fgb-text">
+                            <h4 data-i18n="home.fgbTitle">Ücretsiz Oyunlar Sizi Bekliyor!</h4>
+                            <p id="fgb-count-text" data-i18n="home.fgbDesc">Şu anda ücretsiz alınabilecek oyunlar mevcut.</p>
+                        </div>
+                    </div>
+                    <div class="fgb-actions">
+                        <button class="fgb-cta-btn" id="fgb-cta-btn" data-i18n="home.fgbBtn">Ücretsiz Oyunlara Bak</button>
+                        <button class="fgb-dismiss-btn" id="fgb-dismiss-btn" title="Kapat">✕</button>
+                    </div>
+                </div>
+
+                <!-- System Info -->
+                <div class="dashboard-section-title" style="margin-top: 28px;">
+                    <h3 data-i18n="home.systemInfo">Sistem Bilgileri</h3>
+                </div>
+                <div class="sysinfo-grid" id="sysinfo-grid">
+                    <div class="sysinfo-card">
+                        <span class="sysinfo-icon">🖥️</span>
+                        <div class="sysinfo-body">
+                            <span class="sysinfo-label" data-i18n="home.sysGpu">Ekran Kartı</span>
+                            <span class="sysinfo-value" id="si-gpu">—</span>
+                        </div>
+                    </div>
+                    <div class="sysinfo-card">
+                        <span class="sysinfo-icon">⚡</span>
+                        <div class="sysinfo-body">
+                            <span class="sysinfo-label" data-i18n="home.sysCpu">İşlemci</span>
+                            <span class="sysinfo-value" id="si-cpu">—</span>
+                        </div>
+                    </div>
+                    <div class="sysinfo-card">
+                        <span class="sysinfo-icon">🧠</span>
+                        <div class="sysinfo-body">
+                            <span class="sysinfo-label" data-i18n="home.sysRam">Bellek</span>
+                            <span class="sysinfo-value" id="si-ram">—</span>
+                        </div>
+                    </div>
+                    <div class="sysinfo-card">
+                        <span class="sysinfo-icon">🔩</span>
+                        <div class="sysinfo-body">
+                            <span class="sysinfo-label" data-i18n="home.sysMb">Anakart</span>
+                            <span class="sysinfo-value" id="si-mb">—</span>
+                        </div>
+                    </div>
+                    <div class="sysinfo-card">
+                        <span class="sysinfo-icon">🪟</span>
+                        <div class="sysinfo-body">
+                            <span class="sysinfo-label">Windows</span>
+                            <span class="sysinfo-value" id="si-win">—</span>
+                        </div>
+                    </div>
                 </div>
 
             </div>

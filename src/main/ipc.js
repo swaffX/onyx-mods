@@ -78,6 +78,38 @@ function registerIpcHandlers() {
         return await utils.getSystemDrives();
     });
 
+    // System Hardware Info
+    ipcMain.handle('get-system-info', async () => {
+        const os = require('os');
+        const { exec } = require('child_process');
+        const util = require('util');
+        const execAsync = util.promisify(exec);
+
+        const cpu = (os.cpus()[0]?.model || '').replace(/\s+/g, ' ').trim() || 'Bilinmiyor';
+        const ramGB = Math.round(os.totalmem() / (1024 ** 3));
+
+        let gpu = 'Bilinmiyor';
+        let motherboard = 'Bilinmiyor';
+        let windowsVersion = os.release();
+
+        try {
+            const r = await execAsync('powershell -NoProfile -NonInteractive -Command "Get-CimInstance Win32_VideoController | Select-Object -First 1 -ExpandProperty Name"', { timeout: 5000 });
+            if (r.stdout.trim()) gpu = r.stdout.trim();
+        } catch (e) {}
+
+        try {
+            const r = await execAsync('powershell -NoProfile -NonInteractive -Command "(Get-CimInstance Win32_BaseBoard).Product"', { timeout: 5000 });
+            if (r.stdout.trim()) motherboard = r.stdout.trim();
+        } catch (e) {}
+
+        try {
+            const r = await execAsync('powershell -NoProfile -NonInteractive -Command "(Get-CimInstance Win32_OperatingSystem).Caption"', { timeout: 5000 });
+            if (r.stdout.trim()) windowsVersion = r.stdout.trim().replace('Microsoft ', '');
+        } catch (e) {}
+
+        return { cpu, ramGB, gpu, motherboard, windowsVersion };
+    });
+
     // Manual Game adds — now opens a FOLDER dialog (game_root), not a file dialog
     ipcMain.handle('add-manual-game', async (event) => {
         console.log('[IPC] add-manual-game triggered');

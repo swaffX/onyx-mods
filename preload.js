@@ -134,6 +134,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
         ipcRenderer.removeAllListeners('update-error');
     },
 
+    // System Info
+    getSystemInfo: () => ipcRenderer.invoke('get-system-info'),
+
     // Window controls
     windowMinimize: () => ipcRenderer.send('window-minimize'),
     windowMaximize: () => ipcRenderer.send('window-maximize'),
