@@ -367,6 +367,7 @@ body {
     display: flex;
     flex-direction: column;
     overflow-y: auto;
+    scrollbar-gutter: stable;
 }
 
 .theme-toggle-btn {

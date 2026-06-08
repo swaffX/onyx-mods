@@ -88,6 +88,10 @@ export const en = {
         video: 'Video',
         github: 'GitHub',
         downloadSite: 'Download Site',
+        toolSuggestion: 'Tool Suggestion',
+        rtssDesc: 'In-game FPS counter and performance overlay. Recommended for measuring the impact of your mods.',
+        rtssBtn: 'Visit Site',
+        download: 'Download',
     },
     updates: {
         title: 'Updates',

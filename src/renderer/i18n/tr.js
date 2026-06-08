@@ -88,6 +88,10 @@ export const tr = {
         video: 'Video',
         github: 'GitHub',
         downloadSite: 'İndirme Sitesi',
+        toolSuggestion: 'Araç Önerisi',
+        rtssDesc: 'Oyun içi FPS sayacı ve performans overlay\'i için. Modlarınızın etkisini ölçmek için önerilir.',
+        rtssBtn: 'Siteye Git',
+        download: 'İndir',
     },
     updates: {
         title: 'Güncellemeler',
