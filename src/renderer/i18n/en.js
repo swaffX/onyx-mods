@@ -159,7 +159,7 @@ export const en = {
         appTab: 'Application Settings',
         gameTab: 'Game Settings',
         devTab: 'Developer',
-        devIntro: "Hi! I'm Berkay.",
+        devIntro: "Hi! I'm swaff.",
         devText1: 'I developed this program completely open-source so that players can manage next-gen graphics and performance mods like DLSS, FSR, and Optiscaler with a single click and safely, without dealing with complex folder structures.',
         devText2: 'As a content creator, I support all my work on technology and game optimizations with guide videos on my YouTube channel. I am committed to keeping SWX-Manager, which I developed with my passion for software and gaming, completely free and ad-free. If this project has been useful to you, you can give me the biggest support by subscribing to the channel!',
         themeSubtext: 'Change the application theme to dark or light mode.',

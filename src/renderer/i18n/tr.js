@@ -158,7 +158,7 @@ export const tr = {
         appTab: 'Uygulama Ayarları',
         gameTab: 'Oyun Ayarları',
         devTab: 'Geliştirici',
-        devIntro: 'Selam! Ben Berkay.',
+        devIntro: 'Selam! Ben swaff.',
         devText1: 'Bu programı, oyuncuların DLSS, FSR ve Optiscaler gibi yeni nesil grafik ve performans modlarını karmaşık klasör yapılarıyla uğraşmadan, tek tıkla ve güvenle yönetebilmesi için tamamen açık kaynaklı olarak geliştirdim.',
         devText2: 'Bir içerik üreticisi olarak, teknoloji ve oyun optimizasyonları üzerine yaptığım tüm çalışmaları YouTube kanalımda rehber videolarıyla destekliyorum. Yazılıma ve oyun dünyasına olan tutkumla geliştirdiğim SWX-Manager\'ı tamamen ücretsiz ve reklamsız tutmaya kararlıyım. Eğer proje işine yaradıysa, kanala abone olarak bana en büyük desteği verebilirsin!',
         themeSubtext: 'Uygulama temasını karanlık veya aydınlık mod olarak değiştirin.',

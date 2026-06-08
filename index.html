@@ -33,7 +33,6 @@
                         </li>
                         <li><button class="nav-item" data-target="updates"
                                 data-i18n="nav.updates">Güncellemeler</button></li>
-                        <li><button class="nav-item" data-target="videos" data-i18n="nav.videos">Videolar</button></li>
                         <li><button class="nav-item" data-target="tools" data-i18n="nav.tools">Araçlar</button></li>
                     </ul>
                 </nav>
@@ -139,17 +138,6 @@
                         <button class="promo-action-btn" data-i18n="home.promoModsBtn">Sürümleri İncele ➔</button>
                     </div>
 
-                    <!-- Promo Card 3: Videos -->
-                    <div class="promo-card" data-target-tab="videos">
-                        <div class="promo-header">
-                            <div class="promo-icon">📺</div>
-                            <h4 data-i18n="home.promoVideosTitle">Youtube Rehberleri</h4>
-                        </div>
-                        <p class="promo-desc" data-i18n="home.promoVideosDesc">Videolar yerinden Youtube kanalımda
-                            işinize yarayabilecek içerikleri
-                            görüntüleyip, izleyebilirsiniz.</p>
-                        <button class="promo-action-btn" data-i18n="home.promoVideosBtn">Videoları İzle ➔</button>
-                    </div>
                 </div>
 
             </div>
@@ -298,7 +286,7 @@
 
             <div class="tab-content" id="updates">
                 <h2>Güncellemeler</h2>
-                <p>V-Manager'ı güncel tutmak için bu sayfayı kullanın.</p>
+                <p>SWX-Manager'ı güncel tutmak için bu sayfayı kullanın.</p>
 
                 <!-- ── Durum Kartı ─────────────────────────────────────────── -->
                 <div id="update-status-card" class="update-status-card status-idle">
@@ -740,31 +728,25 @@
                 <!-- Sub-Tab 3: Geliştirici -->
                 <div class="settings-sub-tab-content" id="settings-dev" style="display: none;">
                     <div class="developer-profile-card">
-                        <img src="https://yt3.googleusercontent.com/4kMx__Gae623XQ10lETvpfSisHc8ict_bj2f5xfilvoRwdOIFsmx8Zu0As3lS3wiCLqNR_m02qg=s1920-c-k-c0x00ffffff-no-rj"
-                            class="developer-avatar" alt="Berkay">
                         <div class="developer-info">
-                            <h3 data-i18n="settings.devIntro">Selam! Ben Berkay.</h3>
+                            <h3 data-i18n="settings.devIntro">Selam! Ben swaff.</h3>
                             <p data-i18n="settings.devText1">Bu programı, oyuncuların DLSS, FSR ve Optiscaler gibi yeni
                                 nesil grafik ve performans modlarını karmaşık klasör yapılarıyla uğraşmadan, tek tıkla
                                 ve güvenle yönetebilmesi için tamamen açık kaynaklı olarak geliştirdim.</p>
                             <p data-i18n="settings.devText2">Bir içerik üreticisi olarak, teknoloji ve oyun
                                 optimizasyonları üzerine yaptığım tüm çalışmaları YouTube kanalımda rehber videolarıyla
-                                destekliyorum. Yazılıma ve oyun dünyasına olan tutkumla geliştirdiğim V-Manager'ı
+                                destekliyorum. Yazılıma ve oyun dünyasına olan tutkumla geliştirdiğim SWX-Manager'ı
                                 tamamen ücretsiz ve reklamsız tutmaya kararlıyım. Eğer proje işine yaradıysa, kanala
                                 abone olarak bana en büyük desteği verebilirsin!</p>
 
                             <div class="developer-links">
                                 <a href="#" class="external-link dev-link-btn github-btn"
-                                    data-url="https://github.com/vuenxx">
+                                    data-url="https://github.com/swaffX">
                                     <span class="icon">🌐</span> GitHub
                                 </a>
                                 <a href="#" class="external-link dev-link-btn youtube-btn"
-                                    data-url="https://www.youtube.com/@vuenxxmx">
+                                    data-url="https://www.youtube.com/@swaffval">
                                     <span class="icon">📺</span> YouTube
-                                </a>
-                                <a href="#" class="external-link dev-link-btn discord-btn"
-                                    data-url="https://discord.com/invite/SnRpn3ADNF">
-                                    <span class="icon">💬</span> Discord
                                 </a>
                             </div>
                         </div>
@@ -772,16 +754,6 @@
                 </div>
             </div>
 
-            <!-- Videos Tab -->
-            <div class="tab-content" id="videos" style="display: none;">
-                <h2 data-i18n="videos.title">Videolar</h2>
-                <p data-i18n="videos.subtitle">YouTube kanalımdan son yayınlanan videolar.</p>
-                <div id="videos-loading" class="videos-loading" data-i18n="videos.loading">Videolar yükleniyor...</div>
-                <div id="videos-error" class="videos-error" style="display: none;" data-i18n="videos.error">Videolar
-                    yüklenirken bir hata oluştu.
-                    Lütfen bağlantınızı kontrol edin.</div>
-                <div class="videos-grid" id="videos-container"></div>
-            </div>
 
             <!-- Free Games Tab -->
             <div class="tab-content" id="free-games" style="display: none;">
@@ -967,7 +939,7 @@
             <h3 style="margin-top: 0; color: var(--accent-color);" data-i18n="confirmModal.title">Emin misiniz?</h3>
             <p style="font-size: 14px; line-height: 1.6; color: var(--text-secondary); margin-top: 15px;"
                 data-i18n="confirmModal.body">
-                Bu oyun veya program listeden kaldırılacak ve oyuna ait veriler V-Manager'ın veri tabanından
+                Bu oyun veya program listeden kaldırılacak ve oyuna ait veriler SWX-Manager'ın veri tabanından
                 silinecektir. İsterseniz kara listeye ekleyebilir ve daha sonraki tarama işlemlerinde gözükmemesini
                 sağlayabilirsiniz. Değişiklliği geri almak için ise kara listeyi ayarlarda görüntülebilirsiniz.
             </p>

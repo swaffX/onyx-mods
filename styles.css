@@ -51,8 +51,9 @@ body {
 
 /* Header Styles (Unified Top Navigation) */
 .top-header {
-    height: 76px;
+    height: 56px;
     padding: 0 28px;
+    -webkit-app-region: drag;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -73,6 +74,7 @@ body {
     gap: 12px;
     flex-shrink: 0;
     white-space: nowrap;
+    -webkit-app-region: no-drag;
 }
 
 .header-logo {
@@ -132,6 +134,7 @@ body {
 }
 
 .nav-item {
+    -webkit-app-region: no-drag;
     text-align: center;
     padding: 8px 16px;
     background: transparent;
