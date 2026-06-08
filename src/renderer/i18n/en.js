@@ -1,4 +1,4 @@
-/** V-Manager — English locale */
+/** SWX-Manager — English locale */
 export const en = {
     nav: {
         home: 'Home',
@@ -18,7 +18,7 @@ export const en = {
         toggle: '🇹🇷 TR',
     },
     home: {
-        title: 'V-Manager Dashboard',
+        title: 'SWX-Manager Dashboard',
         subtitle: 'Monitor application status, manage your installed mods, and quickly access new content.',
         quickMenu: 'Quick Menu & Discover',
         totalMods: 'Total Installed Mods',
@@ -88,7 +88,7 @@ export const en = {
     },
     updates: {
         title: 'Updates',
-        subtitle: 'Use this page to keep V-Manager up to date.',
+        subtitle: 'Use this page to keep SWX-Manager up to date.',
         notChecked: 'Update check not performed.',
         currentVersion: 'Current Version:',
         checkBtn: 'Check for Updates',
@@ -161,7 +161,7 @@ export const en = {
         devTab: 'Developer',
         devIntro: "Hi! I'm Berkay.",
         devText1: 'I developed this program completely open-source so that players can manage next-gen graphics and performance mods like DLSS, FSR, and Optiscaler with a single click and safely, without dealing with complex folder structures.',
-        devText2: 'As a content creator, I support all my work on technology and game optimizations with guide videos on my YouTube channel. I am committed to keeping V-Manager, which I developed with my passion for software and gaming, completely free and ad-free. If this project has been useful to you, you can give me the biggest support by subscribing to the channel!',
+        devText2: 'As a content creator, I support all my work on technology and game optimizations with guide videos on my YouTube channel. I am committed to keeping SWX-Manager, which I developed with my passion for software and gaming, completely free and ad-free. If this project has been useful to you, you can give me the biggest support by subscribing to the channel!',
         themeSubtext: 'Change the application theme to dark or light mode.',
         languageTitle: 'Language / Dil',
         blacklistTitle: 'Blacklist',
@@ -244,7 +244,7 @@ export const en = {
     },
     confirmModal: {
         title: 'Are you sure?',
-        body: "This game or application will be removed from the list and its data will be deleted from V-Manager's database. You can add it to the blacklist to prevent it from appearing in future scans. To undo the change, view the blacklist in Settings.",
+        body: "This game or application will be removed from the list and its data will be deleted from SWX-Manager's database. You can add it to the blacklist to prevent it from appearing in future scans. To undo the change, view the blacklist in Settings.",
         blacklistBtn: 'Add to Blacklist',
         removeBtn: 'Remove from List',
         cancelBtn: 'Cancel',

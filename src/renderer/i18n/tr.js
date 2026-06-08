@@ -1,4 +1,4 @@
-/** V-Manager — Türkçe dil dosyası */
+/** SWX-Manager — Türkçe dil dosyası */
 export const tr = {
     nav: {
         home: 'Ana Sayfa',
@@ -18,7 +18,7 @@ export const tr = {
         toggle: '🇬🇧 EN',
     },
     home: {
-        title: 'V-Manager Kontrol Paneli',
+        title: 'SWX-Manager Kontrol Paneli',
         subtitle: 'Uygulama durumunu izleyin, kurulu modlarınızı yönetin ve yeni içeriklere hızlıca erişin.',
         quickMenu: 'Hızlı Menü & Keşfet',
         totalMods: 'Toplam Kurulu Mod',
@@ -88,7 +88,7 @@ export const tr = {
     },
     updates: {
         title: 'Güncellemeler',
-        subtitle: "V-Manager'ı güncel tutmak için bu sayfayı kullanın.",
+        subtitle: "SWX-Manager'ı güncel tutmak için bu sayfayı kullanın.",
         notChecked: 'Güncelleme kontrolü yapılmadı.',
         isLatest: 'En güncel sürümü kullanıyorsunuz.',
         currentVersion: 'Mevcut Sürüm:',
@@ -160,7 +160,7 @@ export const tr = {
         devTab: 'Geliştirici',
         devIntro: 'Selam! Ben Berkay.',
         devText1: 'Bu programı, oyuncuların DLSS, FSR ve Optiscaler gibi yeni nesil grafik ve performans modlarını karmaşık klasör yapılarıyla uğraşmadan, tek tıkla ve güvenle yönetebilmesi için tamamen açık kaynaklı olarak geliştirdim.',
-        devText2: 'Bir içerik üreticisi olarak, teknoloji ve oyun optimizasyonları üzerine yaptığım tüm çalışmaları YouTube kanalımda rehber videolarıyla destekliyorum. Yazılıma ve oyun dünyasına olan tutkumla geliştirdiğim V-Manager\'ı tamamen ücretsiz ve reklamsız tutmaya kararlıyım. Eğer proje işine yaradıysa, kanala abone olarak bana en büyük desteği verebilirsin!',
+        devText2: 'Bir içerik üreticisi olarak, teknoloji ve oyun optimizasyonları üzerine yaptığım tüm çalışmaları YouTube kanalımda rehber videolarıyla destekliyorum. Yazılıma ve oyun dünyasına olan tutkumla geliştirdiğim SWX-Manager\'ı tamamen ücretsiz ve reklamsız tutmaya kararlıyım. Eğer proje işine yaradıysa, kanala abone olarak bana en büyük desteği verebilirsin!',
         themeSubtext: 'Uygulama temasını karanlık veya aydınlık mod olarak değiştirin.',
         languageTitle: 'Dil / Language',
         blacklistTitle: 'Kara Liste',
@@ -243,7 +243,7 @@ export const tr = {
     },
     confirmModal: {
         title: 'Emin misiniz?',
-        body: "Bu oyun veya program listeden kaldırılacak ve oyuna ait veriler V-Manager'ın veri tabanından silinecektir. İsterseniz kara listeye ekleyebilir ve daha sonraki tarama işlemlerinde gözükmemesini sağlayabilirsiniz. Değişikliği geri almak için ise kara listeyi ayarlarda görüntüleyebilirsiniz.",
+        body: "Bu oyun veya program listeden kaldırılacak ve oyuna ait veriler SWX-Manager'ın veri tabanından silinecektir. İsterseniz kara listeye ekleyebilir ve daha sonraki tarama işlemlerinde gözükmemesini sağlayabilirsiniz. Değişikliği geri almak için ise kara listeyi ayarlarda görüntüleyebilirsiniz.",
         blacklistBtn: 'Kara Listeye Ekle',
         removeBtn: 'Listeden Kaldır',
         cancelBtn: 'İptal',
