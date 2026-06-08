@@ -44,7 +44,7 @@ async function launchExeDirectly(exePath) {
                 if (err.code === 'EACCES') {
                     resolve({ 
                         success: false, 
-                        error: 'Oyun yönetici yetkisi (UAC) gerektiriyor olabilir. Lütfen SWX-Manager\'ı yönetici olarak çalıştırmayı deneyin veya oyunu doğrudan kendi istemcisinden başlatın.'
+                        error: 'Oyun yönetici yetkisi (UAC) gerektiriyor olabilir. Lütfen Onyx Mods\'u yönetici olarak çalıştırmayı deneyin veya oyunu doğrudan kendi istemcisinden başlatın.'
                     });
                 } else {
                     resolve({ success: false, error: `Oyun başlatılamadı: ${err.message}` });

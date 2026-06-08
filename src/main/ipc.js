@@ -526,10 +526,10 @@ function registerIpcHandlers() {
         return new Promise((resolve, reject) => {
             const options = {
                 hostname: 'api.github.com',
-                path: '/repos/swaffX/swx-manager/releases',
+                path: '/repos/swaffX/onyx-mods/releases',
                 method: 'GET',
                 headers: {
-                    'User-Agent': 'SWX-Manager-App',
+                    'User-Agent': 'Onyx-Mods-App',
                     'Accept': 'application/vnd.github.v3+json'
                 }
             };

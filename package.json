@@ -1,23 +1,23 @@
 {
-  "name": "swx-manager",
+  "name": "onyx-mods",
   "version": "0.1.2",
-  "description": "SWX-Manager made by swaffX",
+  "description": "Onyx Mods made by swaffX",
   "main": "main.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/swaffX/swx-manager"
+    "url": "https://github.com/swaffX/onyx-mods"
   },
   "scripts": {
     "start": "electron .",
     "build": "electron-builder --win --x64 --publish always"
   },
   "build": {
-    "appId": "com.swaffx.swxmanager",
-    "productName": "SWX-Manager",
+    "appId": "com.swaffx.onyxmods",
+    "productName": "Onyx Mods",
     "publish": {
       "provider": "github",
       "owner": "swaffX",
-      "repo": "swx-manager"
+      "repo": "onyx-mods"
     },
     "extraResources": [
       {
