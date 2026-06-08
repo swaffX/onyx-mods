@@ -516,10 +516,10 @@ function registerIpcHandlers() {
         return new Promise((resolve, reject) => {
             const options = {
                 hostname: 'api.github.com',
-                path: '/repos/vuenxx/v-manager/releases',
+                path: '/repos/swaffX/swx-manager/releases',
                 method: 'GET',
                 headers: {
-                    'User-Agent': 'V-Manager-App',
+                    'User-Agent': 'SWX-Manager-App',
                     'Accept': 'application/vnd.github.v3+json'
                 }
             };
