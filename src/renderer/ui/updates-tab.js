@@ -119,7 +119,7 @@ async function _loadReleaseHistory() {
                             <span class="release-version-tag">${_escSafe(r.tag_name)}</span>
                              ${isLatest ? `<span class="utag utag-dlssEnabler" style="font-size:11px;" data-i18n="updates.latestBadge">${t('updates.latestBadge')}</span>` : ''}
                             ${isPrerelease ? '<span class="utag" style="font-size:11px; background:rgba(251,191,36,0.15); color:#fbbf24; border:1px solid rgba(251,191,36,0.3);">Pre-release</span>' : ''}
-                            ${r.name && r.name !== r.tag_name ? `<span class="release-title">${_escSafe(r.name)}</span>` : ''}
+                            ${r.name && r.name !== r.tag_name && !/^v?\d+[\.\d]*$/.test(r.name.trim()) ? `<span class="release-title">${_escSafe(r.name)}</span>` : ''}
                         </div>
                         ${date ? `<span class="release-date">${date}</span>` : ''}
                     </div>
