@@ -737,7 +737,8 @@ body {
 .mod-install-btn,
 .mod-uninstall-btn,
 .mod-manage-btn,
-.mod-settings-btn {
+.mod-settings-btn,
+.move-game-btn {
     border: 1px solid rgba(255, 255, 255, 0.08);
     padding: 10px 18px;
     border-radius: 10px;
@@ -778,6 +779,18 @@ body {
     border-color: rgba(16, 185, 129, 0.4);
     transform: scale(1.05);
     box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+}
+
+.move-game-btn {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    border-color: rgba(239, 68, 68, 0.2);
+}
+
+.move-game-btn:hover {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    border-color: rgba(239, 68, 68, 0.4);
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.35);
 }
 
 .mod-manage-btn {

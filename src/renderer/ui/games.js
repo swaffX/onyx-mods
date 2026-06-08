@@ -73,10 +73,9 @@ export function createGameCard(game) {
                 <div class="game-actions-wrapper">
                     <button class="game-launch-btn" data-game="${game.name}"> ${t('games.launchGame')}</button>
                     <button class="mod-install-btn" data-game="${game.name}">${t('games.installMod')}</button>
+                    <button class="move-game-btn" data-game="${game.name}">${t('games.moveGame') || 'Taşı'}</button>
                     ${(game.hasDlssEnabler || game.hasStreamline || game.hasOptiscaler) ? `<button class="mod-manage-btn" data-game="${game.name}">${t('games.manageMod')}</button>` : ''}
                     ${(game.hasDlssEnabler || game.hasOptiscaler) ? `<button class="mod-settings-btn" data-game="${game.name}">${t('games.modSettings')}</button>` : ''}
-                </div>
-                    <button class="move-game-btn" data-game="${game.name}">${t('games.moveGame') || 'Taşı'}</button>
                 </div>
                 <button class="remove-game-btn" data-game="${game.name}">${t('games.removeGame')}</button>
             </div>
