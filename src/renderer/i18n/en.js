@@ -596,5 +596,9 @@ export const en = {
         treesizeDesc: 'Visualize your disk space. Find which folders take up the most space in seconds and clear unnecessary files to free up space.',
         everythingTitle: 'Everything Search',
         everythingDesc: 'Find files and folders on your computer instantly. Save time with an ultra-fast search engine and manage your files.',
+        malwarebytesTitle: 'Malwarebytes',
+        malwarebytesDesc: 'Powerful protection against viruses, malware and spyware. Runs quietly in the background during gaming sessions.',
+        wrcTitle: 'Wise Registry Cleaner',
+        wrcDesc: 'Scans the Windows registry and removes unnecessary or broken entries. Cleans up leftovers from uninstalled programs.',
     },
 };

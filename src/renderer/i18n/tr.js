@@ -595,5 +595,9 @@ export const tr = {
         treesizeDesc: 'Disk alanınızı görselleştirin. Hangi klasörlerin en çok yer kapladığını saniyeler içinde bulun ve gereksiz dosyaları temizleyerek yer açın.',
         everythingTitle: 'Everything Search',
         everythingDesc: 'Bilgisayarınızdaki dosya ve klasörleri anında bulun. Ultra hızlı arama motoru ile zaman kazanın, dosyalarınızı yönetin.',
+        malwarebytesTitle: 'Malwarebytes',
+        malwarebytesDesc: 'Virüs, kötü amaçlı yazılım ve casus yazılımlara karşı güçlü koruma. Oyun oturumlarında arka planda sessizce çalışır.',
+        wrcTitle: 'Wise Registry Cleaner',
+        wrcDesc: 'Windows kayıt defterini tarar, gereksiz ve bozuk girdileri temizler. Kaldırılan programların bıraktığı artıkları siler.',
     },
 };
