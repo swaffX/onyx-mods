@@ -255,25 +255,24 @@ function _updateProgressBar(percent, bytesPerSec) {
  */
 function _renderNotes(notes) {
     if (!notes) return `<p style="color:var(--text-secondary);">${t('updates.noNotes')}</p>`;
-    if (typeof notes === 'string') notes = _cleanBody(notes);
 
     // Dizi formatında gelebilir [{ version, note }]
     if (Array.isArray(notes)) {
         return notes.map(n =>
             `<div style="margin-bottom:12px;">
                 <strong style="color:var(--accent-color); font-size:12px;">v${_escSafe(n.version)}</strong>
-                <div style="margin-top:6px;">${_markdownToHtml(n.note || '')}</div>
+                <div style="margin-top:6px;">${_markdownToHtml(_cleanBody(n.note || ''))}</div>
              </div>`
         ).join('<hr style="border:none;border-top:1px solid rgba(255,255,255,0.06);margin:12px 0;">');
     }
 
+    if (typeof notes === 'string') notes = _cleanBody(notes);
+
     // HTML mi yoksa markdown mı kontrol et
     if (typeof notes === 'string' && notes.trim().startsWith('<')) {
-        // HTML gelmiş — doğrudan render et
         return `<div class="release-notes-rendered">${notes}</div>`;
     }
 
-    // Markdown gelmiş — dönüştür
     return _markdownToHtml(String(notes));
 }
 
@@ -289,7 +288,8 @@ function _cleanBody(body) {
             const l = line.trim().toLowerCase();
             return !l.startsWith('co-authored-by:') &&
                    !l.startsWith('signed-off-by:') &&
-                   !l.startsWith('co-authored by:');
+                   !l.startsWith('co-authored by:') &&
+                   !l.includes('noreply@anthropic.com');
         })
         .join('\n')
         .trim();
