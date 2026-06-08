@@ -1,259 +1,249 @@
-Copyright (C) 2026 Berkay Küçükbekar. All Rights Reserved. (Tüm Hakları Saklıdır.)
-This software and its source code are proprietary. Unauthorized copying, 
-modification, distribution, or creation of derivative works via any medium 
-is strictly prohibited.
+<div align="center">
 
-# 🎮 V-Manager
+# ◈ Onyx Mods
 
-<p align="center">
-  <img src="program_logo.png" alt="V-Manager Logo" width="128" height="128" />
-</p>
+**Windows oyuncuları için hepsi bir arada mod yöneticisi ve sistem yardımcısı.**
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Platform-Windows-blue?style=for-the-badge&logo=windows" alt="Platform: Windows" />
-  <img src="https://img.shields.io/badge/Framework-Electron-activegreen?style=for-the-badge&logo=electron" alt="Framework: Electron" />
-  <img src="https://img.shields.io/badge/License-Proprietary-red?style=for-the-badge" alt="License: Proprietary" />
-  <img src="https://img.shields.io/badge/Status-Early%20Access%20%2F%20Erken%20Eri%C5%9Fim-purple?style=for-the-badge" alt="Status: Early Access" />
-</p>
+---
 
-<p align="center">
-  <a href="https://www.youtube.com/@vuenxxmx">
-    <img src="https://img.shields.io/badge/YouTube-vuenxxmx-red?style=for-the-badge&logo=youtube" alt="YouTube" />
-  </a>
-  <a href="https://discord.com/invite/SnRpn3ADNF">
-    <img src="https://img.shields.io/badge/Discord-Sunucuya%20Katıl-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord" />
-  </a>
-</p>
+[![Version](https://img.shields.io/github/v/release/swaffX/onyx-mods?style=for-the-badge&color=44d62c&label=Sürüm)](https://github.com/swaffX/onyx-mods/releases/latest)
+[![Platform](https://img.shields.io/badge/Platform-Windows-0078D4?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/swaffX/onyx-mods/releases/latest)
+[![Electron](https://img.shields.io/badge/Electron-35-47848F?style=for-the-badge&logo=electron&logoColor=white)](https://www.electronjs.org/)
+[![License](https://img.shields.io/badge/Lisans-Proprietary-ef4444?style=for-the-badge)](./LICENSE)
 
-[🇹🇷 Türkçe](#-türkçe) | [🇬🇧 English](#-english)
+[🇹🇷 Türkçe](#-türkçe) · [🇬🇧 English](#-english)
+
+</div>
 
 ---
 
 ## 🇹🇷 Türkçe
 
-> **vuenxx** tarafından geliştirilen, oyun kütüphanenizi yönetmenizi, performans artırıcı grafik modlarını kurmanızı ve oyunlarınızı sıkıştırarak disk alanından tasarruf etmenizi sağlayan hepsi bir arada Windows masaüstü yardımcısı.
+**swaffX** tarafından geliştirilen Onyx Mods; oyun kütüphanenizi yönetmenizi, performans artırıcı grafik modlarını kurmanızı ve oyunlarınızı sıkıştırarak disk alanı kazanmanızı sağlayan modern bir Windows masaüstü uygulamasıdır.
 
-### 🌟 Öne Çıkan Özellikler
+### Özellikler
 
-V-Manager, modern oyuncuların ihtiyaç duyduğu mod yönetimi, disk alanı tasarrufu ve oyun keşfi gibi birçok güçlü aracı tek bir çatı altında birleştirir:
+<table>
+<tr>
+<td width="50%">
 
-*   🔍 **Gelişmiş Oyun Tarama:** **Steam**, **Epic Games**, **GOG Galaxy**, **Xbox**, **EA App** ve **Ubisoft Connect** platformlarındaki oyunları otomatik olarak algılar. Ayrıca Windows Kayıt Defteri (Registry) ve manuel tanımlanan klasörleri de tarayabilir.
-*   🖼️ **Otomatik Kapak Görseli:** Bulunan oyunlar için **SteamGrid DB API** kullanarak otomatik olarak kapak görsellerini indirir ve şık bir oyun kütüphanesi oluşturur.
-*   ⚡ **Tek Tıkla Grafik Modu Kurulumu:** Oyunlarınıza DLSS Enabler, OptiScaler ve Streamline gibi performans artıran ve kare oluşturma (Frame Generation) sağlayan modları güvenli bir şekilde kurar ve yönetir.
-*   🔧 **Otomatik DLSS Enabler Kurulumu:** DLSS Enabler'ı seçilen oyuna birkaç tıklamayla otomatik olarak indirir ve kurar.
-*   📝 **Yapılandırma Dosyası Düzenleyici:** `OptiScaler.ini` ve `dlss-enabler.ini` gibi `.ini` yapılandırma dosyalarını doğrudan program üzerinden kolayca düzenleyin. *(Yakında: Hazır Ayar (Preset) sistemi!)*
-*   🎁 **Ücretsiz Oyunlar & Keyler:** **GamePower Free API** entegrasyonu sayesinde anlık ücretsiz oyunları ve dağıtılan keyleri doğrudan uygulama içinden takip edin.
-*   🧰 **Araçlar:** Oyun deneyiminizi iyileştirecek faydalı uygulamaların derlenmiş listesine tek bir yerden ulaşın.
-*   🎮 **Geliştiriciye Göre Desteklenen Oyunlar:** Hangi oyunların DLSS Enabler veya OptiScaler ile desteklendiğini geliştirici bazında filtreleyerek görüntüleyin.
-*   💾 **Akıllı Oyun Sıkıştırma:** Windows'un yerleşik sıkıştırma algoritmalarını (**XPRESS 4K/8K/16K ve LZX**) kullanarak oyun klasörlerinizi sıkıştırır. Oyunlar oynanabilir kalırken diskte devasa alan açılır!
-*   📺 **YouTube Entegrasyonu:** Grafik modlarının kurulum rehberlerini ve en yeni oyun videolarını doğrudan uygulama içerisindeki "Videolar" sekmesinden izlemenizi sağlar.
-*   🎨 **Premium Arayüz & Karanlık Tema:** Kullanıcı dostu, modern animasyonlara sahip, `Plus Jakarta Sans` yazı tipiyle tasarlanmış göz yormayan karanlık tema.
+**🔍 Oyun Tarama**  
+Steam, Epic, GOG, Xbox, EA App ve Ubisoft Connect'ten otomatik oyun tespiti. Kayıt Defteri ve özel klasör desteği dahil.
 
----
+**⚡ Tek Tıkla Mod Kurulumu**  
+DLSS Enabler, OptiScaler, Streamline, OptiPatcher ve FSR4 dosyalarını birkaç tıkla kur, güncelle veya kaldır.
 
-### 🛠️ Desteklenen Grafik Modları
+**🖼️ SteamGridDB Entegrasyonu**  
+Bulunan oyunlar için otomatik kapak görseli indirir.
 
-V-Manager, günümüzün en popüler upscaler ve kare oluşturma modlarının yönetimini basitleştirir:
+**📝 INI Yapılandırma Editörü**  
+`OptiScaler.ini` ve `dlss-enabler.ini` dosyalarını doğrudan uygulama içinden düzenle. Preset kaydet ve yükle.
 
-| Mod Adı | Açıklama | V-Manager Entegrasyonu |
-| :--- | :--- | :--- |
-| **DLSS Enabler** | NVIDIA RTX olmayan ekran kartlarında dahi Multi Frame Generation (Kare Oluşturma) özelliğini aktif hale getirir. | Yerel sürümleri listeleme, otomatik ve manuel kurulum, güvenli kaldırma ve enjeksiyon kontrolü. |
-| **OptiScaler** | DLSS/FSR/XeSS arasında köprü kuran açık kaynaklı ölçeklendirme aracı. | GitHub Releases API üzerinden en güncel sürümleri çekme, otomatik `.7z` indirme, ayıklama ve kurma. |
-| **Streamline** | NVIDIA'nın Streamline SDK kütüphanelerini yönetir. | Derinlemesine arama (BFS) ile `sl.*.dll` konumunu bulma, güncellemelere karşı yedekleme ve hash doğrulamalı geri yükleme. |
-| **OptiPatcher** | OptiScaler için ek uyumluluk ve stabilite yamaları sağlar. | GitHub üzerinden otomatik sürüm kontrolü ve kurulum desteği. |
-| **FSR4 Dosyaları** | FSR4 mod kütüphaneleri için gerekli dosyaları barındırır. | Harici indirme sunucusundan son sürüm dosyalarını çekebilme imkanı. |
+**💾 Akıllı Disk Sıkıştırma**  
+XPRESS 4K/8K/16K ve LZX algoritmalarıyla oyunları sıkıştır. Oyunlar oynanabilir kalır, diskte alan açılır. Sıkıştırma geçmişi otomatik kaydedilir.
 
----
+</td>
+<td width="50%">
 
-### 🗜️ Disk Alanından Tasarruf: Akıllı Sıkıştırma
+**🎁 Ücretsiz Oyunlar**  
+GamerPower API entegrasyonu ile anlık ücretsiz oyunları takip et. Çevrimdışıyken önbellekli veri gösterilir.
 
-Uygulamanın **Sıkıştır** sekmesi altında, Windows'un Compact OS teknolojisini kullanarak klasörleri sıkıştırabilirsiniz:
+**🖥️ Sistem Bilgisi Paneli**  
+GPU, CPU, RAM, Anakart ve Windows sürümü ana sayfada gösterilir. AMD/Intel GPU'larda DLSS uyumsuzluk uyarısı içerir.
 
-*   **XPRESS 4K:** Hızlı sıkıştırma, düşük işlemci kullanımı (Ortalama %21 sıkıştırma oranı).
-*   **XPRESS 8K / 16K:** Dengeli ve yüksek sıkıştırma oranları.
-*   **LZX:** Maksimum sıkıştırma oranı (Yüksek işlemci gücü gerektirir, arşiv veya büyük oyunlar için idealdir).
+**⏱️ Son Oynanma Zamanı**  
+Her oyun kartında son oynanma zamanı gösterilir (az önce / X dk / X sa / dün / X gün).
 
----
+**📊 Ana Sayfa İstatistikleri**  
+Toplam kurulu mod, oyun sayısı, sıkıştırılan klasör ve ortalama disk tasarrufu.
 
-### 🚀 Geliştiriciler İçin Kurulum
+**🔄 Otomatik Güncelleme**  
+electron-updater ile GitHub Releases üzerinden otomatik güncelleme.
 
-Projeyi yerel bilgisayarınızda çalıştırmak veya geliştirmek için aşağıdaki adımları takip edebilirsiniz:
-
-#### Gereksinimler
-*   [Node.js](https://nodejs.org/) (v18 veya daha yeni bir sürüm önerilir)
-*   Windows İşletim Sistemi (Modların ve sıkıştırma araçlarının çalışabilmesi için gereklidir)
-
-#### Adımlar
-1.  **Projeyi Klonlayın:**
-    ```bash
-    git clone https://github.com/vuenxx/v-manager.git
-    cd v-manager
-    ```
-
-2.  **Bağımlılıkları Yükleyin:**
-    ```bash
-    npm install
-    ```
-
-3.  **Uygulamayı Geliştirici Modunda Başlatın:**
-    ```bash
-    npm start
-    ```
-
-4.  **Uygulamayı Derleyin (Production Release):**
-    ```bash
-    npm run build
-    ```
-    *Bu komut, Windows (`x64`) için kurulabilir bir `.exe` yükleyicisi (NSIS) oluşturur ve `dist/` klasörüne kaydeder.*
+</td>
+</tr>
+</table>
 
 ---
 
-### 📂 Proje Yapısı
+### Desteklenen Grafik Modları
 
-Uygulamanın temel modülleri ve görevleri şu şekildedir:
+| Mod | Açıklama | Entegrasyon |
+|:----|:---------|:------------|
+| **DLSS Enabler** | RTX olmayan kartlarda Multi Frame Generation sağlar | Yerel sürüm listesi, otomatik/manuel kurulum, güvenli kaldırma |
+| **OptiScaler** | DLSS/FSR/XeSS köprüsü (açık kaynak) | GitHub Releases API, `.7z` indirme, ayıklama ve kurulum |
+| **Streamline** | NVIDIA Streamline SDK kütüphaneleri | BFS ile `sl.*.dll` bulma, yedekleme ve hash doğrulamalı geri yükleme |
+| **OptiPatcher** | OptiScaler için ek uyumluluk yamaları | GitHub üzerinden otomatik sürüm takibi ve kurulum |
+| **FSR4** | FSR4 mod kütüphanesi dosyaları | Harici sunucudan son sürüm çekme |
 
-```text
-├── main.js                 # Electron ana süreci (bootstrap)
-├── preload.js              # Güvenli IPC köprüsü (Main ↔ Renderer)
-├── index.html              # Kullanıcı arayüzü HTML yapısı
-├── styles.css              # Premium modern CSS tasarımı
-├── src/                    # Uygulama kaynak kodları
-│   └── main/
-│       ├── config.js       # Yapılandırma, oyun listesi ve yollar
-│       ├── ipc.js          # IPC iletişim kanalları (Main handlers)
-│       ├── scanner.js      # Çoklu platform oyun tarayıcısı
-│       ├── utils.js        # Dosya hash, sürüm okuma ve API araçları
-│       └── window.js       # BrowserWindow yönetim modülü
-├── mods/                   # Mod yükleme ve kaldırma mantıkları
-│       ├── dlssEnabler.js  # DLSS Enabler yönetimi
-│       ├── optiScaler.js   # OptiScaler otomatik indirici & kurucu
-│       ├── streamline.js   # Streamline yedekleme ve güncelleme sistemi
-│       ├── uninstaller.js  # Güvenli mod kaldırma modülü
-│       └── compressor.js   # Sıkıştırma motoru
-└── package.json            # Proje bağımlılıkları ve scriptler
+---
+
+### Sıkıştırma Algoritmaları
+
+| Algoritma | Hız | Oran | Önerilen Kullanım |
+|:----------|:----|:-----|:-----------------|
+| XPRESS 4K | ⚡⚡⚡ Hızlı | ~21% | Aktif oynanan oyunlar |
+| XPRESS 8K | ⚡⚡ Orta | ~25% | Dengeli kullanım |
+| XPRESS 16K | ⚡ Yavaş | ~28% | Az oynanan büyük oyunlar |
+| LZX | 🐢 En Yavaş | ~35% | Arşiv / nadir oynanan oyunlar |
+
+---
+
+### Kurulum
+
+1. [**Releases**](https://github.com/swaffX/onyx-mods/releases/latest) sayfasından en son `.exe` yükleyicisini indir
+2. Çalıştır ve kurulumu tamamla
+3. Kur, oyna, optimize et
+
+---
+
+### Geliştirici Kurulumu
+
+**Gereksinimler:** Node.js v18+ · Windows 10/11
+
+```bash
+git clone https://github.com/swaffX/onyx-mods.git
+cd onyx-mods
+npm install
+
+npm start        # Geliştirici modu
+npm run build    # Production build → dist/
 ```
 
 ---
 
-### 🔑 Lisans ve Geri Bildirim
+### Proje Yapısı
 
-Bu yazılım ve kaynak kodları tescillidir (Proprietary). Berkay Küçükbekar'ın yazılı izni olmaksızın kopyalanması, değiştirilmesi, dağıtılması veya herhangi bir ortamda türetilmiş eserler oluşturulması kesinlikle yasaktır. Tüm hakları saklıdır.
+```
+onyx-mods/
+├── main.js                  # Electron ana süreç
+├── preload.js               # Güvenli IPC köprüsü (contextBridge)
+├── index.html               # Uygulama arayüzü
+├── styles.css               # Tema ve stil (Razer green accent)
+├── icons/program_logo.ico   # Çok boyutlu ikon (16/24/32/48/64/256px)
+├── nsis/installer.nsh       # Özel NSIS kurulum makroları
+├── src/
+│   ├── main/
+│   │   ├── ipc.js           # IPC kanalları (60+ handler)
+│   │   ├── scanner.js       # Çoklu platform oyun tarayıcı
+│   │   ├── config.js        # Oyun listesi ve yol yönetimi
+│   │   ├── updater.js       # electron-updater entegrasyonu
+│   │   └── mods/            # Mod modülleri
+│   │       ├── dlssEnabler.js
+│   │       ├── optiScaler.js
+│   │       ├── streamline.js
+│   │       ├── compressor.js
+│   │       └── ...
+│   └── renderer/
+│       ├── index.js         # Renderer başlatıcı
+│       ├── i18n/            # Türkçe / İngilizce (600+ anahtar)
+│       └── ui/              # Sekme ve modal bileşenleri
+└── package.json
+```
 
-Karşılaştığınız hataları veya önerilerinizi **Issues** sekmesinden bildirebilirsiniz.
+---
+
+### Lisans
+
+Bu yazılım tescillidir. **swaffX'in** yazılı izni olmaksızın kopyalanamaz, değiştirilemez veya dağıtılamaz.  
+© 2026 swaffX. Tüm hakları saklıdır.
+
+Hata bildirimi ve öneriler için [Issues](https://github.com/swaffX/onyx-mods/issues).
 
 ---
 
 ## 🇬🇧 English
 
-> An all-in-one Windows desktop companion developed by **vuenxx** that lets you manage your game library, install performance-boosting graphics mods, and save disk space by compressing your games.
+**Onyx Mods** is a modern all-in-one Windows desktop companion developed by **swaffX** for managing your game library, installing performance-boosting graphics mods, and saving disk space through compression.
 
-### 🌟 Key Features
+### Features
 
-V-Manager brings together many powerful tools that modern gamers need — mod management, disk space savings, and game discovery — all under one roof:
+<table>
+<tr>
+<td width="50%">
 
-*   🔍 **Advanced Game Scanning:** Automatically detects games from **Steam**, **Epic Games**, **GOG Galaxy**, **Xbox**, **EA App**, and **Ubisoft Connect**. Can also scan the Windows Registry and manually defined folders.
-*   🖼️ **Automatic Cover Art:** Downloads cover images automatically for found games using the **SteamGridDB API**, creating a sleek game library.
-*   ⚡ **One-Click Graphics Mod Installation:** Safely installs and manages performance-enhancing mods with Frame Generation support — including DLSS Enabler, OptiScaler, and Streamline.
-*   🔧 **Automated DLSS Enabler Installation:** Automatically downloads and installs DLSS Enabler to your selected game in just a few clicks.
-*   📝 **Config File Editor:** Edit `.ini` configuration files such as `OptiScaler.ini` and `dlss-enabler.ini` directly through the program. *(Coming soon: Preset system!)*
-*   🎁 **Free Games & Keys:** Track currently free games and distributed keys in real time via the integrated **GamePower Free API** — without ever leaving the app.
-*   🧰 **Tools:** A curated list of useful applications to enhance your gaming experience, all accessible from one place.
-*   🎮 **Supported Games by Developer:** Browse which games support DLSS Enabler or OptiScaler, filterable by developer.
-*   💾 **Smart Game Compression:** Compresses your game folders using Windows' built-in compression algorithms (**XPRESS 4K/8K/16K and LZX**). Games remain fully playable while freeing up massive disk space!
-*   📺 **YouTube Integration:** Watch installation guides for graphics mods and the latest game videos directly from the "Videos" tab inside the app.
-*   🎨 **Premium UI & Dark Theme:** A user-friendly, modern dark theme with smooth animations, crafted with the `Plus Jakarta Sans` typeface.
+**🔍 Game Scanning**  
+Auto-detects games from Steam, Epic, GOG, Xbox, EA App, and Ubisoft Connect. Also supports Registry and custom folder scanning.
 
----
+**⚡ One-Click Mod Installation**  
+Install, update, and remove DLSS Enabler, OptiScaler, Streamline, OptiPatcher, and FSR4 in a few clicks.
 
-### 🛠️ Supported Graphics Mods
+**🖼️ SteamGridDB Integration**  
+Automatically downloads cover artwork for detected games.
 
-V-Manager simplifies the management of today's most popular upscaler and frame generation mods:
+**📝 INI Config Editor**  
+Edit `OptiScaler.ini` and `dlss-enabler.ini` directly inside the app. Save and load presets.
 
-| Mod Name | Description | V-Manager Integration |
-| :--- | :--- | :--- |
-| **DLSS Enabler** | Enables Multi Frame Generation even on non-NVIDIA RTX graphics cards. | List local versions, automated & manual install, safe uninstall, and injection control. |
-| **OptiScaler** | An open-source scaling bridge between DLSS, FSR, and XeSS. | Fetches latest releases via GitHub Releases API, with automatic `.7z` download, extraction, and install. |
-| **Streamline** | Manages NVIDIA's Streamline SDK libraries. | Locates `sl.*.dll` with deep BFS search, backs up before updates, and restores with hash verification. |
-| **OptiPatcher** | Provides additional compatibility and stability patches for OptiScaler. | Automatic version check and installation support via GitHub. |
-| **FSR4 Files** | Hosts the necessary files for FSR4 mod libraries. | Fetches the latest files from an external download server. |
+**💾 Smart Disk Compression**  
+Compress game folders with XPRESS 4K/8K/16K and LZX. Games stay fully playable. Compression history is automatically logged.
 
----
+</td>
+<td width="50%">
 
-### 🗜️ Save Disk Space: Smart Compression
+**🎁 Free Games**  
+Track free games and giveaways in real time via GamerPower API. Shows cached data when offline.
 
-Under the **Compress** tab, you can compress folders using Windows' Compact OS technology:
+**🖥️ System Info Panel**  
+Displays GPU, CPU, RAM, Motherboard, and Windows version on the home page. Includes DLSS compatibility warning for AMD/Intel GPUs.
 
-*   **XPRESS 4K:** Fast compression, low CPU usage (average ~21% compression ratio).
-*   **XPRESS 8K / 16K:** Balanced and high compression ratios.
-*   **LZX:** Maximum compression ratio (requires high CPU power — ideal for archives or large games).
+**⏱️ Last Played Timestamps**  
+Each game card shows when it was last launched (just now / X min / X hr / yesterday / X days).
 
----
+**📊 Home Page Stats**  
+Total installed mods, game count, compressed folders, and average disk savings.
 
-### 🚀 Developer Setup
+**🔄 Auto-Update**  
+Automatic updates via electron-updater and GitHub Releases.
 
-To run or contribute to the project on your local machine, follow these steps:
-
-#### Requirements
-*   [Node.js](https://nodejs.org/) (v18 or newer recommended)
-*   Windows OS (required for mods and compression tools to function)
-
-#### Steps
-1.  **Clone the Repository:**
-    ```bash
-    git clone https://github.com/vuenxx/v-manager.git
-    cd v-manager
-    ```
-
-2.  **Install Dependencies:**
-    ```bash
-    npm install
-    ```
-
-3.  **Start in Developer Mode:**
-    ```bash
-    npm start
-    ```
-
-4.  **Build for Production:**
-    ```bash
-    npm run build
-    ```
-    *This command creates an installable `.exe` (NSIS) for Windows (`x64`) and saves it to the `dist/` folder.*
+</td>
+</tr>
+</table>
 
 ---
 
-### 📂 Project Structure
+### Supported Graphics Mods
 
-The core modules of the application and their responsibilities:
+| Mod | Description | Integration |
+|:----|:------------|:------------|
+| **DLSS Enabler** | Enables Multi Frame Generation on non-RTX cards | Local version listing, auto/manual install, safe removal |
+| **OptiScaler** | Open-source DLSS/FSR/XeSS bridge | GitHub Releases API, `.7z` download, extraction and install |
+| **Streamline** | NVIDIA Streamline SDK libraries | BFS-based `sl.*.dll` locator, backup and hash-verified restore |
+| **OptiPatcher** | Additional compatibility patches for OptiScaler | Auto version tracking and install via GitHub |
+| **FSR4** | FSR4 mod library files | Latest file fetch from external server |
 
-```text
-├── main.js                 # Electron main process (bootstrap)
-├── preload.js              # Secure IPC bridge (Main ↔ Renderer)
-├── index.html              # UI HTML structure
-├── styles.css              # Premium modern CSS design
-├── src/                    # Application source code
-│   └── main/
-│       ├── config.js       # Configuration, game list, and paths
-│       ├── ipc.js          # IPC communication channels (Main handlers)
-│       ├── scanner.js      # Multi-platform game scanner
-│       ├── utils.js        # File hash, version reading, and API utilities
-│       └── window.js       # BrowserWindow management module
-├── mods/                   # Mod install and uninstall logic
-│       ├── dlssEnabler.js  # DLSS Enabler manager
-│       ├── optiScaler.js   # OptiScaler auto-downloader & installer
-│       ├── streamline.js   # Streamline backup and update system
-│       ├── uninstaller.js  # Safe mod removal module
-│       └── compressor.js   # Compression engine
-└── package.json            # Project dependencies and scripts
+---
+
+### Installation
+
+1. Download the latest `.exe` installer from the [**Releases**](https://github.com/swaffX/onyx-mods/releases/latest) page
+2. Run and complete the installation
+
+---
+
+### Developer Setup
+
+**Requirements:** Node.js v18+ · Windows 10/11
+
+```bash
+git clone https://github.com/swaffX/onyx-mods.git
+cd onyx-mods
+npm install
+
+npm start        # Developer mode
+npm run build    # Production build → dist/
 ```
 
 ---
 
-### 🔑 License & Feedback
+### License
 
-This software and its source code are proprietary. Unauthorized copying, modification, distribution, or creation of derivative works via any medium is strictly prohibited. Copyright (C) 2026 Berkay Küçükbekar. All Rights Reserved.
+This software is proprietary. Copying, modification, or distribution without **swaffX's** written permission is strictly prohibited.  
+© 2026 swaffX. All rights reserved.
 
-You can report bugs or suggestions via the **Issues** tab.
+Report bugs and suggestions via [Issues](https://github.com/swaffX/onyx-mods/issues).
 
 ---
-<p align="center">Made with ❤️ by <a href="https://github.com/vuenxx">vuenxx</a></p>
+
+<div align="center">
+Made with ❤️ by <a href="https://github.com/swaffX">swaffX</a>
+</div>
